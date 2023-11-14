@@ -1,5 +1,9 @@
 {
-  "accentColor": "",
-  "baseFontSize": 20,
-  "theme": "moonstone"
+  "accentColor": "#05c1ff",
+  "baseFontSize": 28,
+  "theme": "obsidian",
+  "cssTheme": "Minimal",
+  "translucency": false,
+  "nativeMenus": false,
+  "monospaceFontFamily": ""
 }

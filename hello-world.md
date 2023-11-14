@@ -15,3 +15,6 @@ hexo cl && hexo g && hexo d
 ```
 
 + 该方法适用于**多个设备**配置博客使用！
+
++ 欢迎使用 **obsidian** 软件进行 Blog 的编写！
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311141704482.png)

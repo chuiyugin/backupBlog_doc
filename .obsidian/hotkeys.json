@@ -8,16 +8,7 @@
       "key": "Z"
     }
   ],
-  "outline:open-for-current": [
-    {
-      "modifiers": [
-        "Mod",
-        "Shift"
-      ],
-      "key": "L"
-    }
-  ],
-  "editor:toggle-inline-math": [
+  "editor:insert-mathblock": [
     {
       "modifiers": [
         "Mod",
@@ -26,9 +17,15 @@
       "key": "S"
     }
   ],
-  "workspace:goto-tab-1": [],
-  "workspace:goto-tab-2": [],
-  "workspace:goto-tab-3": [],
+  "outline:open": [
+    {
+      "modifiers": [
+        "Mod",
+        "Shift"
+      ],
+      "key": "L"
+    }
+  ],
   "editor:set-heading-1": [
     {
       "modifiers": [
@@ -53,6 +50,11 @@
       "key": "3"
     }
   ],
+  "workspace:goto-tab-1": [],
+  "workspace:goto-tab-2": [],
+  "workspace:goto-tab-3": [],
+  "workspace:goto-tab-4": [],
+  "workspace:goto-tab-5": [],
   "editor:set-heading-4": [
     {
       "modifiers": [
@@ -77,9 +79,17 @@
       "key": "6"
     }
   ],
-  "workspace:goto-tab-4": [],
-  "workspace:goto-tab-5": [],
   "workspace:goto-tab-6": [],
+  "editor:toggle-highlight": [
+    {
+      "modifiers": [
+        "Alt",
+        "Mod"
+      ],
+      "key": "Q"
+    }
+  ],
+  "workspace:close": [],
   "editor:toggle-code": [
     {
       "modifiers": [
@@ -88,5 +98,7 @@
       ],
       "key": "X"
     }
-  ]
+  ],
+  "easy-typing-obsidian:easy-typing-format-selection": [],
+  "easy-typing-obsidian:easy-typing-format-article": []
 }
