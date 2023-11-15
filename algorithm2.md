@@ -2025,23 +2025,45 @@ int main(){
 ## C++标准模板库(STL)介绍
 
 ### vector的常见用法详解
-
 + `vector`->变长数组，即"长度根据需要而自动改变的数组";
-+ 要使用`vector`，需要添加`vector`头文件，即`#include <vector>`;
++ 要使用 `vector`，需要添加 `vector` 头文件，即 `#include <vector>`;
+#### vector 的定义
++ 单独定义一个 `vector`：
+```cpp
+vector<typename> name;
+```
++ 上面 `vector<typename> name` 的定义相当于一维数组 `typename name[size]` ，只是其长度可以根据需要进行变化，比较**节省空间->变长数组**。
++ 与一维数组一样，上述 `typename` 可以是**任何基本类型**，如 `int`、`double`、`char`、结构体等；
++ 也可以是 STL 标准容器，如 `vector`、`set`、`queue` 等；
++ 如果 `typename` 也是一个 STL 容器，定义的时候需要将 `>>` 变为 `> >`:
+```cpp
+vector<vector<int> > name;//>>要加上空格
+```
++ 对于二维数组定义，有以下两种方法：
+1. 第一种定义方法：
+```cpp
+vector<typename> Arrayname[arraySize];
+vector<int> vi[100];
+```
++ 这样 `Arrayname[0]` 至 `Arrayname[arraySize-1]` 中每一个都是一个 `vector` 容器。
+2. 第二种定义方法：
+```cpp
+vector<vector<int> > Arrayname;//>>要加上空格
+```
++ 与第一种定义方法不同，上述写法的一维长度已经固定为 `arraySize`，另一维才是“变长”的；
++ 而第二种写法两个维度都是“变长”的。
 
 ## 算法初步
 
 ### 排序
 
 + 本章先介绍**两种**基础的排序算法：**选择排序**与**插入排序**。
-
 #### 选择排序
-
 + **简单选择排序**：对于一个序列`A`中的元素`A[1]-A[n]`，令`i`从`1`到`n`枚举，进行`n`趟操作，每趟从待排序部分`[i,n]`中选择最小元素，令其与待排序部分的第一个元素`A[i]`进行交换，这样元素`A[i]`就会与当前有序区间`[1,i-1]`形成新的有序区间`[1,i]`。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311011059055.png)
 
-+ 总共需要进行n趟操作(1<=i<=n)，每趟操作选出待排序部分[i,n]中的最小元素，令其与A[i]交换。总复杂度为$$O(n^2)$$
++ 总共需要进行n趟操作(1<=i<=n)，每趟操作选出待排序部分`[i,n]`中的最小元素，令其与`A[i]`交换。总复杂度为$O(n^2)$
 
 + 实现代码：
 
@@ -2068,18 +2090,14 @@ void select_sort(int list[],int num)
     }
 }
 ```
-
 #### 插入排序
-
 + **直接插入排序**：对于一个序列`A`中的元素`A[1]-A[n]`，令`i`从`1`到`n-1`枚举，进行`n-1`趟操作。假设某一趟时，序列`A`的前`i-1`个元素`A[1]-A[i-1]`已经有序，而范围`[i,n]`还未有序，那么该趟从范围`[1,i-1]`中寻找某个位置`j`，使得将`A[i]`插入位置`j`后(此时`A[j]-A[i-1]`会后移一位至`A[j+1]-A[i]`)，范围`[1,i]`有序。
 + 思想如下图所示：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311011319809.png)
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311011319528.png)
-
 + 实现代码：
-
 ```cpp
 //插入排序函数
 void insert_sort(int list[],int num)

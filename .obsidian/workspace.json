@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Assembly_language.md",
+                "file": "algorithm2.md",
                 "mode": "source",
                 "source": false
               }
@@ -69,7 +69,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "0edc808bdabaac2f",
@@ -105,7 +106,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Assembly_language.md",
+                "file": "algorithm2.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -122,7 +123,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Assembly_language.md",
+                "file": "algorithm2.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -142,7 +143,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Assembly_language.md"
+                "file": "algorithm2.md"
               }
             }
           },
@@ -154,12 +155,12 @@
               "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
-    "width": 260.5
+    "width": 200,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -173,7 +174,9 @@
   },
   "active": "1939e9efb4bd5fab",
   "lastOpenFiles": [
+    "日记和待办/2023-11-15.md",
     "algorithm2.md",
+    "Assembly_language.md",
     "algorithm.md",
     "日记和待办/2023-11-14.md",
     "hello-world.md",
@@ -182,7 +185,6 @@
     "Josephus.md",
     "Web.md",
     "2023-11-14.md",
-    "Assembly_language.md",
     "Myexe.md",
     "日记和待办",
     "graph counts.md",
