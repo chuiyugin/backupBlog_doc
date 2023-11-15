@@ -2052,6 +2052,62 @@ vector<vector<int> > Arrayname;//>>要加上空格
 ```
 + 与第一种定义方法不同，上述写法的一维长度已经固定为 `arraySize`，另一维才是“变长”的；
 + 而第二种写法两个维度都是“变长”的。
+### vector 容器内元素的访问
+vector 一般有一下两种访问方式：
+1. 通过下标访问
+2. 通过迭代器访问
+#### 通过下标访问
++ 与访问普通数组一样，对于一个定义为 `vector<int> vi;` 的 `vector` 的容器而言，直接访问 `vi[index]` 即可（如 `vi[0]`、`vi[1]`）。
++ 当然，下标是从 `0` 到 `vi.size ()-1`,否则访问超出这个范围内的元素可能会运行出错。
+#### 通过迭代器访问
++ 迭代器 (iterator)可以理解为一种类似**指针**的东西，其定义如下：
+```cpp
+vector<typename>::iterator it;
+```
++ 这样 `it` 就是一个 `vector<typename>::iterator` 型的变量，其中 `typename` 就是定义 `vector` 时填写的类型。
++ 得到迭代器 `it`，就可以通过 `*it` 来访问 `vector` 里的元素。
+```cpp
+vector<int> vi;
+for(int i=1;i<=5;i++)
+{
+	vi.push_back(i);//vi.push_back(i);是在vi的末尾添加元素i，即添加1 2 3 4 5
+}
+```
++ 可以通过类似下标和指针访问数组的方式来访问容器内的元素：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+int main()
+{
+    vector<int> vi;
+    for(int i=1;i<=5;i++)
+    {
+        vi.push_back(i);//vi.push_back(i);是在vi的末尾添加元素i，即添加1 2 3 4 5
+    }
+    //vi.begin()为取vi的首元素地址，而it指向这个地址
+    vector<int>::iterator it = vi.begin();
+    for(int i=0;i<5;i++)
+
+    {
+        printf("%d ",*(it+i));//输出vi[i]
+    }
+    system("pause");    // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出结果：
+```
+1 2 3 4 5 
+```
++ 从上述程序不难看出，`vi[i]`和`*(vi.begin()+i)`是等价的。
++ 关于 `vector` 两个函数的说明：
+1. `vi.begin()` 函数的作用是为取 vi 的首元素地址；
+2. `vi.end()` 函数的作用是取尾元素地址的**下一个地址**，`end()` 作为迭代器的末尾标志，不存储任何元素。
 
 ## 算法初步
 
@@ -2123,7 +2179,7 @@ void insert_sort(int list[],int num)
 
 ##### 如何使用sort()函数排序
 
-+ `sort()`函数的使用必须加上头文件`\#include <algorithm>`和`using namespace std;`，其使用方式如下：
++ `sort()`函数的使用必须加上头文件`#include <algorithm>`和`using namespace std;`，其使用方式如下：
 
 ```cpp
 sort(首元素地址(必填),尾元素地址的下一个地址(必填),比较函数(非必填));
