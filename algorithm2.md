@@ -2143,16 +2143,16 @@ int main()
 ```
 + 需要指出的是，在常用 STL 容器中，只有在 `vector` 和 `string` 中，才允许使用类似于 `vi.begin()+3` 这种迭代器加上**整数**的写法。
 ### vector 常用函数实例解析
-#### push_back ()
-+ 顾名思义，`push_back (x)` 就是在 vector 后面添加一个元素 `x`，时间复杂度为 $O(1)$。示例如下：
+#### push_back()
++ 顾名思义，`push_back(x)` 就是在 vector 后面添加一个元素 `x`，时间复杂度为 $O(1)$。示例如下：
 ```cpp
 vector<int> vi;
 for(int i=1;i<=5;i++)
 {
 	vi.push_back(i);//vi.push_back(i);是在vi的末尾添加元素i，即添加1 2 3 4 5
 ```
-#### pop_back ()
-+ 有添加就有删除，`pop_back ()` 用以删除 vector 的尾元素，时间复杂度为 $O(1)$。示例如下：
+#### pop_back()
++ 有添加就有删除，`pop_back()` 用以删除 vector 的尾元素，时间复杂度为 $O(1)$。示例如下：
 ```cpp
 #include <stdio.h>
 #include <stdlib.h>
@@ -2184,7 +2184,176 @@ int main()
 ```
 1 2 3 4
 ```
-
+#### size()
++ `size()` 用来获取 `vector` 中的元素个数，时间复杂度为 $O(1)$。`size()` 返回的是 `unsigned` 类型，不过一般而言使用 `%d` 不会出现太大问题。这一点，对于所有 STL 容器都是一样的。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+int main()
+{
+    vector<int> vi;
+    for(int i=1;i<=5;i++)
+    {
+        vi.push_back(i);//vi.push_back(i);是在vi的末尾添加元素i，即添加1 2 3 4 5
+    }
+    printf("%d",vi.size());
+    system("pause");    // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+5
+```
+#### clear()
++ `clear()` 用来清空 vector 中的所有元素，时间复杂度为 $O(N)$，其中 N 为 `vector` 中元素的个数。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+int main()
+{
+    vector<int> vi;
+    for(int i=1;i<=5;i++)
+    {
+        vi.push_back(i);//vi.push_back(i);是在vi的末尾添加元素i，即添加1 2 3 4 5
+    }
+    vi.clear();
+    printf("%d",vi.size());
+    system("pause");    // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+0
+```
+#### insert()
++ `insert(it,x)` 用来向 `vector` 的任意迭代器 `it` 处插入一个元素 `x`，时间复杂度 $O(N)$。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+int main()
+{
+    vector<int> vi;
+    for(int i=1;i<=5;i++)
+    {
+        vi.push_back(i);//vi.push_back(i);是在vi的末尾添加元素i，即添加1 2 3 4 5
+    }
+    vector<int>::iterator it = vi.begin();
+    vi.insert(it+2,-1);
+    for(int i=0;i<vi.size();i++)
+    {
+        printf("%d ",*(it+i));//输出vi[i],1 2 -1 3 4 5 
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+1 2 -1 3 4 5 
+```
+#### erase()
++ `erase()` 有两种用法：删除单个元素和删除一个区间内的所有元素。时间复杂度为 $O(N)$。
+1. 删除单个元素
++ `erase(it)` 即删除迭代器为 `it` 处的元素。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+int main()
+{
+    vector<int> vi;
+    for(int i=1;i<=5;i++)
+    {
+        vi.push_back(i);//vi.push_back(i);是在vi的末尾添加元素i，即添加1 2 3 4 5
+    }
+    vector<int>::iterator it = vi.begin();
+    vi.insert(it+2,-1);
+    for(int i=0;i<vi.size();i++)
+    {
+        printf("%d ",*(it+i));//输出vi[i],1 2 -1 3 4 5 
+    }
+    printf("\n");
+    vi.erase(it+2);
+    for(int i=0;i<vi.size();i++)
+    {
+        printf("%d ",*(it+i));//输出vi[i],1 2 3 4 5 
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+1 2 -1 3 4 5 
+1 2 3 4 5
+```
+2. 删除一个区间内的所有元素
++ `erase(first, last)` 即删除 `[first, last)` 内的所有元素。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+int main()
+{
+    vector<int> vi;
+    for(int i=1;i<=5;i++)
+    {
+        vi.push_back(i);//vi.push_back(i);是在vi的末尾添加元素i，即添加1 2 3 4 5
+    }
+    vector<int>::iterator it = vi.begin();
+    vi.insert(it+2,-1);
+    for(int i=0;i<vi.size();i++)
+    {
+        printf("%d ",*(it+i));//输出vi[i],1 2 -1 3 4 5 
+    }
+    printf("\n");
+    vi.erase(it+2,it+4);
+    for(int i=0;i<vi.size();i++)
+    {
+        printf("%d ",*(it+i));//输出vi[i],1 2 4 5 
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+1 2 -1 3 4 5 
+1 2 4 5
+```
++ 由上面的内容可以知道，要删除 vector 内的所有元素，可以使用 `vi.erase(vi.begin(),vi.end())`;
++ 当然，最方便的方法是使用 `vi.clear()`。
+#### vector 的常见用途
+##### 存储数据
+1. `vector` 本身可以作为数组使用，而且在一些元素个数不确定的场合可以很好地节省空间。
+2. 有些场合需要根据一些条件把部分数据输出在同一行，数据中间用空格隔开。由于输出数据的个数是**不确定**的，为了更方便地处理最后一个满足条件的数据后面不输出额外的空格，可以先用 `vector` 记录所有需要输出的数据，最后**一次性输出**。
+##### 用邻接表存储图
+1. 使用 `vector` 实现邻接表可以让一些**对指针不太熟悉**的使用者有一个比较方便的写法。
 
 ## 算法初步
 
