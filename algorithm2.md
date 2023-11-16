@@ -2108,6 +2108,83 @@ int main()
 + 关于 `vector` 两个函数的说明：
 1. `vi.begin()` 函数的作用是为取 vi 的首元素地址；
 2. `vi.end()` 函数的作用是取尾元素地址的**下一个地址**，`end()` 作为迭代器的末尾标志，不存储任何元素。
++ 除此之外，迭代器还实现了两种自加（自减操作同理）操作：
+1. `++it` 和 `--it`
+2. `it++`和 `it--`
++ 于是有另一种遍历 `vector` 中元素的写法：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+int main()
+{
+    vector<int> vi;
+    for(int i=1;i<=5;i++)
+    {
+	    vi.push_back(i);//vi.push_back(i);是在vi的末尾添加元素i，即添加1 2 3 4 5
+    }
+    //vector的迭代器不支持it<vi.end()写法，因此循环条件只能使用it!=vi.end()
+    vector<int>::iterator it = vi.begin();
+    for(it=vi.begin();it!=vi.end();it++)
+    {
+        printf("%d ",*it);
+    }
+    system("pause");    // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+1 2 3 4 5 
+```
++ 需要指出的是，在常用 STL 容器中，只有在 `vector` 和 `string` 中，才允许使用类似于 `vi.begin()+3` 这种迭代器加上**整数**的写法。
+### vector 常用函数实例解析
+#### push_back ()
++ 顾名思义，`push_back (x)` 就是在 vector 后面添加一个元素 `x`，时间复杂度为 $O(1)$。示例如下：
+```cpp
+vector<int> vi;
+for(int i=1;i<=5;i++)
+{
+	vi.push_back(i);//vi.push_back(i);是在vi的末尾添加元素i，即添加1 2 3 4 5
+```
+#### pop_back ()
++ 有添加就有删除，`pop_back ()` 用以删除 vector 的尾元素，时间复杂度为 $O(1)$。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+int main()
+{
+    vector<int> vi;
+    for(int i=1;i<=5;i++)
+    {
+        vi.push_back(i);//vi.push_back(i);是在vi的末尾添加元素i，即添加1 2 3 4 5
+    }
+    vi.pop_back();//删除vi的尾元素5
+    //vi.begin()为取vi的首元素地址，而it指向这个地址
+    vector<int>::iterator it = vi.begin();
+    for(int i=0;i<vi.size();i++)
+
+    {
+        printf("%d ",*(it+i));//输出vi[i]
+    }
+    system("pause");    // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+1 2 3 4
+```
+
 
 ## 算法初步
 

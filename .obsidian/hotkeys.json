@@ -17,15 +17,6 @@
       "key": "S"
     }
   ],
-  "outline:open": [
-    {
-      "modifiers": [
-        "Mod",
-        "Shift"
-      ],
-      "key": "L"
-    }
-  ],
   "editor:set-heading-1": [
     {
       "modifiers": [
@@ -125,6 +116,25 @@
         "Shift"
       ],
       "key": "X"
+    }
+  ],
+  "app:toggle-right-sidebar": [
+    {
+      "modifiers": [
+        "Mod",
+        "Shift"
+      ],
+      "key": "L"
+    }
+  ],
+  "file-explorer:new-file-in-new-pane": [],
+  "app:toggle-left-sidebar": [
+    {
+      "modifiers": [
+        "Mod",
+        "Shift"
+      ],
+      "key": "P"
     }
   ]
 }
