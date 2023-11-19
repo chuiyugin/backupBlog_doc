@@ -3910,6 +3910,7 @@ void F(int index,int sum)
 //主函数
 int main(){
     scanf("%d %d",&n,&k);
+    //去除重复数据输入并且写入重复的数量到哈希表中
     m=n;
     int t[MAX];
     for(int i=0;i<n;i++)
