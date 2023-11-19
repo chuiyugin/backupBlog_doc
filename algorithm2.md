@@ -2023,11 +2023,10 @@ int main(){
 + 总结：注意一下本题中在需要使用循环输入的时候要采用`getchar();`函数吸收一下换行符，否则换行符会输入至字符数组中！
 
 ## C++标准模板库(STL)介绍
-### vector
-#### vector的常见用法详解
+### vector的常见用法详解
 + `vector`->变长数组，即"长度根据需要而自动改变的数组";
 + 要使用 `vector`，需要添加 `vector` 头文件，即 `#include <vector>`;
-##### vector 的定义
+#### vector 的定义
 + 单独定义一个 `vector`：
 ```cpp
 vector<typename> name;
@@ -2503,7 +2502,7 @@ int main(){
     return 0;
 }
 ```
-+ 总结：这道题目相较于第一题多了 `剔除重复部分` 的代码。
++ 总结：这道题目相较于第一题多了**剔除重复部分**的代码。
 
 例题：[单词排列](https://sunnywhy.com/sfbj/4/3/138)
 + 代码：
@@ -2558,6 +2557,193 @@ int main(){
 }
 ```
 + 总结：这道题思路与**全排列**的题目是一致，需要注意的是 `string` 和 `vector` 的用法
+
+### set 的常见用法详解
++ `set` 翻译为集合，是一个内部**自动有序**而且**不包含重复元素**的容器；
++ 当有可能出现需要去掉重复元素的情况，而且有可能因为这些元素比较大或者类型不是 `int` 型而不能直接开散列表；
++ 上述情况可以使用 `set` 来保留元素本身而不考虑它的个数，而且 `set` 提供了更为直观的接口，并且加入 `set` 之后可以实现自动排序；
++ 要使用 set，需要添加 set 头文件，即 `#include <set>`,并且需要加上`using namespace std;`
+
+#### set 的定义
++ 单独定义一个 `set`：
+```cpp
+set<typename> name;
+```
++ typename 依然可以是任何基本类型，如 `int`、`double`、`char`、结构体等，或者是 `STL` 标准容器，例如 `vector`、`set`、`queue` 等。
+```cpp
+set<int> num;
+set<vector<int> > num;
+```
++ `set` 数组定义和 vector 也相同：
+```cpp
+set<typename> Arrayname[arraySize];
+set<int> a[100];
+```
++ 这样 `Arrayname[0]` 到 `Arrayname[arraySize-1]` 中每一个都是一个 `set` 容器。
+
+#### set 容器内元素的访问
++ set 只能通过迭代器 (`iterator`)访问：
+```cpp
+set<typename>::iterator it;
+set<int>::iterator it;
+set<char>::iterator it;
+```
++ 这样就得到了迭代器 `it`，并且可以通过 `*it` 来访问 set 里的元素。
++ 值得注意的是，除了 vector 和 string 之外的 STL 容器都不支持 `*(it+i)` 的访问方式，因此只能按照以下方式枚举：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <set>
+using namespace std;
+//主函数
+int main()
+{
+    set<int> st;
+    st.insert(3);//insert(x)将x插入set中
+    st.insert(5);
+    st.insert(2);
+    st.insert(3);
+    //注意，不支持it < st.end()的写法
+    for(set<int>::iterator it = st.begin();it!=st.end();it++)
+    {
+        printf("%d ",*it);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+2 3 5 
+```
++ 可以发现，`set` 内的元素自动递增排序，且自动去除了重复元素。
+
+#### set 常用函数实例解析
+##### insert()
++ `insert(x)` 可以将 `x` 插入 `set` 容器中，并自动排序和去重，时间复杂度为 $O(logN)$，其中 `N` 为 `set` 内的元素个数。
+##### find()
++ `find(value)` 返回 set 中对应值为 `value` 的迭代器，时间复杂度为 $O(logN)$，其中 `N` 为 `set` 内的元素个数。
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <set>
+using namespace std;
+//主函数
+int main()
+{
+    set<int> st;
+    st.insert(3);//insert(x)将x插入set中
+    st.insert(5);
+    st.insert(2);
+    st.insert(3);
+    //注意，不支持it < st.end()的写法
+    set<int>::iterator it=st.find(2);
+    printf("%d",*it);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+2
+```
+
+##### erase()
++ `erase()` 有两种用法：
+1. 删除单个元素；
+2. 删除一个区间内所有元素。
++ 删除单个元素有两种方法：
++ `st.erase(it)`，`it` 为所需要删除元素的迭代器。时间复杂度为 $O(1)$。可以结合 `find()` 函数来使用，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <set>
+using namespace std;
+//主函数
+int main()
+{
+    set<int> st;
+    st.insert(3);//insert(x)将x插入set中
+    st.insert(5);
+    st.insert(2);
+    st.insert(3);
+    //注意，不支持it < st.end()的写法
+    set<int>::iterator it;
+    st.erase(st.find(2));
+    for(set<int>::iterator it = st.begin();it!=st.end();it++)
+    {
+        printf("%d ",*it);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+3 5 
+```
++ `st.erase(value)`，`value` 为所需要删除元素的值。时间复杂度度为 $O(logN)$，其中 `N` 为 `set` 内的元素个数。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <set>
+using namespace std;
+//主函数
+int main()
+{
+    set<int> st;
+    st.insert(3);//insert(x)将x插入set中
+    st.insert(5);
+    st.insert(2);
+    st.insert(3);
+    //注意，不支持it < st.end()的写法
+    //set<int>::iterator it;
+    //st.erase(st.find(2));
+    st.erase(2);
+    for(set<int>::iterator it = st.begin();it!=st.end();it++)
+    {
+        printf("%d ",*it);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+3 5 
+```
++ 删除一个区间内的所有元素：
++ `st.erase(first,last)` 可以删除一个区间内的所有元素，其中 `first` 为所需要删除区间的起始迭代器，而 `last` 则为所需要删除区间的末尾迭代器的下一个地址，也即为删除 `[first, last)`。时间复杂度为 $O(last-first)$。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <set>
+using namespace std;
+//主函数
+int main()
+{
+    set<int> st;
+    st.insert(3);//insert(x)将x插入set中
+    st.insert(5);
+    st.insert(2);
+    st.insert(3);
+    st.insert(1);
+    st.insert(4);
+    //注意，不支持it < st.end()的写法
+    set<int>::iterator it;
+    st.erase(st.find(3),st.end());//删除元素3至set末尾之间的元素
+    for(set<int>::iterator it = st.begin();it!=st.end();it++)
+    {
+        printf("%d ",*it);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+1 2 
+```
 
 ## 算法初步
 
