@@ -2744,6 +2744,65 @@ int main()
 ```
 1 2 
 ```
+##### size()
++ `size()` 用来获取 set 内的元素个数，时间复杂度为 $O(1)$。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <set>
+using namespace std;
+//主函数
+int main()
+{
+    set<int> st;
+    st.insert(3);//insert(x)将x插入set中
+    st.insert(5);
+    st.insert(2);
+    st.insert(3);
+    st.insert(1);
+    st.insert(4);
+    printf("%d",st.size());
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+5
+```
+
+##### clear()
++ `clear()` 用来清空 set 内的所有元素，时间复杂度为 $O(N)$，其中 `N` 为 `set` 内的元素个数。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <set>
+using namespace std;
+//主函数
+int main()
+{
+    set<int> st;
+    st.insert(3);//insert(x)将x插入set中
+    st.insert(5);
+    st.insert(2);
+    st.insert(3);
+    st.insert(1);
+    st.insert(4);
+    st.clear();
+    printf("%d",st.size());
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```
+0
+```
+
+### set 的常见用途
+1. `set` 最主要的作用是**自动去重并按照升序排序**，因此碰到需要去重但是却不方便直接开数组的情况，可以尝试用 `set` 解决。
+2. `set` 中元素是唯一的，如果需要处理**不唯一**的情况，则需要使用 `multiset`。
+3. C++11 标准中还增加了 `unordered_set`,以散列代替 `set` 内部的红黑树（一种自平衡二叉查找树）实现，使其可以用来处理**只去重但不排序**的需求，速度比 `set` 快很多！
 
 ## 算法初步
 
