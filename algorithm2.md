@@ -1750,7 +1750,7 @@ int main(){
 }
 ```
 
-+ 总结：虽然本题我采用了日期减法作为函数进行运算，但是和日期减法的想法相似，主要思想如下：
++ 总结：虽然本题我采用了日期减法作为函数进行运算，但是和日期加法的想法相似，主要思想如下：
 
   + 直接给日期加上指定的天数并不是很容易的事情，所以我们可以换个思路，**每次只加1天**，**一直加到指定的天数为止**。这样我们就把问题转换为计算加1天之后的新日期，而这个问题就相对简单许多。
   + 假设当前日期的年、月、日分别是year、month、day，那么加一天之后 day 就变成了 day+1，之后我们需要判断这个新的day是否超过了当前月份month 所拥有的总天数，如果没超过，那么相安无事，算法结束；如果超过了，那么就需要令月份month 加 1、同时让day重置为 1（即把日期变为下一个月的 1 号）。接下来，如果加了 1 之后的月份 month 变为了 13 月，那么就需要令年份year加 1、同时置月份 month重置为 1（即把日期变为下一年的 1 月）。
@@ -2023,11 +2023,11 @@ int main(){
 + 总结：注意一下本题中在需要使用循环输入的时候要采用`getchar();`函数吸收一下换行符，否则换行符会输入至字符数组中！
 
 ## C++标准模板库(STL)介绍
-
-### vector的常见用法详解
+### vector
+#### vector的常见用法详解
 + `vector`->变长数组，即"长度根据需要而自动改变的数组";
 + 要使用 `vector`，需要添加 `vector` 头文件，即 `#include <vector>`;
-#### vector 的定义
+##### vector 的定义
 + 单独定义一个 `vector`：
 ```cpp
 vector<typename> name;
@@ -2052,14 +2052,14 @@ vector<vector<int> > Arrayname;//>>要加上空格
 ```
 + 与第一种定义方法不同，上述写法的一维长度已经固定为 `arraySize`，另一维才是“变长”的；
 + 而第二种写法两个维度都是“变长”的。
-### vector 容器内元素的访问
+#### vector 容器内元素的访问
 vector 一般有一下两种访问方式：
 1. 通过下标访问
 2. 通过迭代器访问
-#### 通过下标访问
+##### 通过下标访问
 + 与访问普通数组一样，对于一个定义为 `vector<int> vi;` 的 `vector` 的容器而言，直接访问 `vi[index]` 即可（如 `vi[0]`、`vi[1]`）。
 + 当然，下标是从 `0` 到 `vi.size ()-1`,否则访问超出这个范围内的元素可能会运行出错。
-#### 通过迭代器访问
+##### 通过迭代器访问
 + 迭代器 (iterator)可以理解为一种类似**指针**的东西，其定义如下：
 ```cpp
 vector<typename>::iterator it;
@@ -2142,8 +2142,8 @@ int main()
 1 2 3 4 5 
 ```
 + 需要指出的是，在常用 STL 容器中，只有在 `vector` 和 `string` 中，才允许使用类似于 `vi.begin()+3` 这种迭代器加上**整数**的写法。
-### vector 常用函数实例解析
-#### push_back()
+#### vector 常用函数实例解析
+##### push_back()
 + 顾名思义，`push_back(x)` 就是在 vector 后面添加一个元素 `x`，时间复杂度为 $O(1)$。示例如下：
 ```cpp
 vector<int> vi;
@@ -2151,7 +2151,7 @@ for(int i=1;i<=5;i++)
 {
 	vi.push_back(i);//vi.push_back(i);是在vi的末尾添加元素i，即添加1 2 3 4 5
 ```
-#### pop_back()
+##### pop_back()
 + 有添加就有删除，`pop_back()` 用以删除 vector 的尾元素，时间复杂度为 $O(1)$。示例如下：
 ```cpp
 #include <stdio.h>
@@ -2184,7 +2184,7 @@ int main()
 ```
 1 2 3 4
 ```
-#### size()
+##### size()
 + `size()` 用来获取 `vector` 中的元素个数，时间复杂度为 $O(1)$。`size()` 返回的是 `unsigned` 类型，不过一般而言使用 `%d` 不会出现太大问题。这一点，对于所有 STL 容器都是一样的。示例如下：
 ```cpp
 #include <stdio.h>
@@ -2210,7 +2210,7 @@ int main()
 ```
 5
 ```
-#### clear()
+##### clear()
 + `clear()` 用来清空 vector 中的所有元素，时间复杂度为 $O(N)$，其中 N 为 `vector` 中元素的个数。示例如下：
 ```cpp
 #include <stdio.h>
@@ -2237,7 +2237,7 @@ int main()
 ```
 0
 ```
-#### insert()
+##### insert()
 + `insert(it,x)` 用来向 `vector` 的任意迭代器 `it` 处插入一个元素 `x`，时间复杂度 $O(N)$。示例如下：
 ```cpp
 #include <stdio.h>
@@ -2268,7 +2268,7 @@ int main()
 ```
 1 2 -1 3 4 5 
 ```
-#### erase()
+##### erase()
 + `erase()` 有两种用法：删除单个元素和删除一个区间内的所有元素。时间复杂度为 $O(N)$。
 1. 删除单个元素
 + `erase(it)` 即删除迭代器为 `it` 处的元素。示例如下：
@@ -2354,6 +2354,210 @@ int main()
 2. 有些场合需要根据一些条件把部分数据输出在同一行，数据中间用空格隔开。由于输出数据的个数是**不确定**的，为了更方便地处理最后一个满足条件的数据后面不输出额外的空格，可以先用 `vector` 记录所有需要输出的数据，最后**一次性输出**。
 ##### 用邻接表存储图
 1. 使用 `vector` 实现邻接表可以让一些**对指针不太熟悉**的使用者有一个比较方便的写法。
+#### vector 的例题
+例题：[子集I](https://sunnywhy.com/sfbj/4/3/129)
++ 代码：
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+#include <vector>
+using namespace std;
+vector<vector<int> > result;
+vector<int> temp;
+int n;
+
+//递归输出子集1函数
+void F(int index)
+{
+    //递归边界
+    if(index == n+1)
+    {
+        result.push_back(temp);
+    }
+    //递归式
+    else
+    {
+        temp.push_back(index);
+        F(index+1);
+        temp.pop_back();
+        F(index+1);
+    }
+}
+
+//比较函数，从小到大排序
+bool cmp(vector<int> &a,vector<int> &b)//引用的写法
+{
+    if(a.size()!=b.size())
+        return a.size()<b.size();
+    else
+        return a<b;
+}
+
+//主函数
+int main(){
+    scanf("%d",&n);
+    F(1);
+    sort(result.begin(),result.end(),cmp);
+    for(int i=0;i<result.size();i++)
+    {
+        for(int j=0;j<result[i].size();j++)
+        {
+            printf("%d",result[i][j]);
+            if(j!=result[i].size()-1)
+                printf(" ");
+        }
+        printf("\n");
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：这道题目巧妙应用了 `vector` 是变长数组的特性，并且使用递归的方法实现。注意对二维 `vector` 变量进行排序的时候可以使用**引用**的方法。
+
+例题：[子集III](https://sunnywhy.com/sfbj/4/3/131)
++ 代码：
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+#include <vector>
+using namespace std;
+vector<vector<int> > result;
+vector<int> temp;
+int num[15];
+int n;
+
+//递归输出子集1函数
+void F(int index)
+{
+    //递归边界
+    if(index == n+1)
+    {
+        result.push_back(temp);
+    }
+        //递归式
+    else
+    {
+        temp.push_back(num[index]);
+        F(index+1);
+        temp.pop_back();
+        F(index+1);
+    }
+}
+
+//比较函数，从小到大排序
+bool cmp(vector<int> &a,vector<int> &b)//引用的写法
+{
+    if(a.size()!=b.size())
+        return a.size()<b.size();
+    else
+        return a<b;
+}
+
+//主函数
+int main(){
+    scanf("%d",&n);
+    for(int i=1;i<=n;i++)
+    {
+        scanf("%d",&num[i]);
+    }
+    F(1);
+    sort(result.begin(),result.end(),cmp);
+    vector<vector<int> >::iterator it = result.begin();
+    for(int i=0;i<result.size()-1;i++)
+    {
+        if(result[i].size()==result[i+1].size())
+        {
+            int flag=0;
+            for(int j=0;j<result[i].size();j++)
+            {
+                if(result[i][j]!=result[i+1][j])
+                {
+                    flag++;
+                }
+            }
+            if(!flag)
+            {
+                result.erase(it+i+1);
+                i--;
+            }
+        }
+    }
+	//剔除重复部分
+    for(int i=0;i<result.size();i++)
+    {
+        for(int j=0;j<result[i].size();j++)
+        {
+            printf("%d",result[i][j]);
+            if(j!=result[i].size()-1)
+                printf(" ");
+        }
+        printf("\n");
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：这道题目相较于第一题多了 `剔除重复部分` 的代码。
+
+例题：[单词排列](https://sunnywhy.com/sfbj/4/3/138)
++ 代码：
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <vector>
+using namespace std;
+const int MAX = 300;
+int n;
+bool hashTable[MAX] = {false};
+string str,temp;
+vector<string> result;
+
+//递归输出单词排序数
+void F(int index)
+{
+    //递归边界
+    if(index == n)
+    {
+        result.push_back(temp);
+    }
+    //递归式
+    for(int k=0;k<n;k++)
+    {
+        if(!hashTable[str[k]])
+        {
+            hashTable[str[k]]=true;
+            temp.push_back(str[k]);
+            F(index+1);
+            hashTable[str[k]]=false;
+            temp.pop_back();
+        }
+    }
+}
+
+//主函数
+int main(){
+    cin>>str;
+    n=str.length();
+    F(0);
+    sort(result.begin(),result.end());//按照字典序排列
+    for(int i = 0; i < result.size(); i++) {
+        cout << result[i] << endl;
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：这道题思路与**全排列**的题目是一致，需要注意的是 `string` 和 `vector` 的用法
 
 ## 算法初步
 
@@ -3620,7 +3824,124 @@ int main(){
 }
 ```
 
-+ 总结：这题与**自然数分解之方案数**较为相似，只需要把递归函数`temp`的计数改为计算乘积最大值即可。
++ 总结：这题与**自然数分解之方案数**较为相似，只需要把递归函数 `temp` 的计数改为计算乘积最大值即可。
+
+例题：[有限制的选数II](https://sunnywhy.com/sfbj/4/3/141)
++ 代码：
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <vector>
+using namespace std;
+const int MAX = 15;
+int n,k,ans=0;
+int num[MAX];
+
+//递归函数求解有限制的选数
+void F(int index,int sum)
+{
+    //递归边界
+    if(index==n)
+    {
+        if(sum==k)
+            ans++;
+        return;
+    }
+    //递归式
+    for(int i=0;i<=(k-sum)/num[index];i++)//在循环中加上了本身的数据
+    {
+        F(index+1,sum+i*num[index]);//根据加上了本身的数据再继续往后递归
+    }
+}
+
+//主函数
+int main(){
+    scanf("%d %d",&n,&k);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&num[i]);
+    }
+    F(0,0);
+    printf("%d",ans);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：这道题目的巧妙之处在于设计了在循环中加上了**本身的数据**，随后根据加上了本身的数据再继续往后递归。
+
+例题：[有限制的选数III](https://sunnywhy.com/sfbj/4/3/142)
++ 代码：
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <vector>
+using namespace std;
+const int MAX = 15;
+const int MAXN = 150;
+int n,k,ans=0,m;
+int num[MAX],p[MAX];
+int hashTable[MAXN] = {0};
+
+//递归函数求解有限制的选数
+void F(int index,int sum)
+{
+    //递归边界
+    if(index==m)
+    {
+        if(sum==k)
+            ans++;
+        return;
+    }
+    //递归式
+    for(int i=0;i<=min((k-sum)/p[index],hashTable[p[index]]);i++)//去除重复数据
+    {
+        F(index+1,sum+i*p[index]);
+    }
+}
+
+//主函数
+int main(){
+    scanf("%d %d",&n,&k);
+    m=n;
+    int t[MAX];
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&t[i]);
+        hashTable[t[i]]++;
+        if(i>0&&t[i]==t[i-1])
+        {
+            m--;
+        }
+    }
+    int l=0;
+    for(int i=0;i<MAXN;i++)
+    {
+        if(hashTable[i]!=0)
+        {
+            p[l]=i;
+            l++;
+        }
+    }
+    // printf("%d\n",m);
+    // for(int i=0;i<m;i++)
+    // {
+    //     printf("%d ",p[i]);
+    // }
+    F(0,0);
+    printf("%d",ans);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：这道题目的与上一道题目思路类似，巧妙之处同样在于设计了在循环中加上了本身的数据，随后根据加上了本身的数据再继续往后递归，不同点在于所能加上自身的数据从小于等于 `k` 变成了小于等于 `k` 和**输入的数据本身的数量**。
 
 #### 动态规划
 
