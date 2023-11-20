@@ -2647,6 +2647,38 @@ int main()
 ```
 2
 ```
++ 注意当 `st.find(x)` 函数没有找到相对应的元素时，返回的是 `st.end()`。
+例题：[set-find与erase迭代器](https://sunnywhy.com/sfbj/6/2/248)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <set>
+using namespace std;
+//主函数
+int main()
+{
+    set<int> st;
+    int num,n,k;
+    scanf("%d %d",&n,&k);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&num);
+        st.insert(num);
+    }
+    set<int>::iterator it = st.find(k);
+    if(it!=st.end())//注意当 `st.find(x)` 函数没有找到相对应的元素时，返回的是 `st.end()`
+        st.erase(it);
+    for(set<int>::iterator it=st.begin();it!=st.end();it++)
+    {
+        if(it!=st.begin())
+            printf(" ");
+        printf("%d",*it);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
 
 ##### erase()
 + `erase()` 有两种用法：
