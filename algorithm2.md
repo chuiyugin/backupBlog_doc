@@ -2836,6 +2836,435 @@ int main()
 2. `set` 中元素是唯一的，如果需要处理**不唯一**的情况，则需要使用 `multiset`。
 3. C++11 标准中还增加了 `unordered_set`,以散列代替 `set` 内部的红黑树（一种自平衡二叉查找树）实现，使其可以用来处理**只去重但不排序**的需求，速度比 `set` 快很多！
 
+### string 的常见用法详解
++ 在 C 语言中，一般使用字符数组 `char str[]` 来存放字符串，但是使用字符数组有时会显得操作麻烦，而且容易因为经验不足产生错误。
++ 如果要使用 `string`，需要添加 `string` 头文件，即 `#include <string>`,除此之外，还需要加上 `using namespace std;`。
+
+#### string 的定义
++ 定义 `string` 的方式跟基本数据类型相同，只需要在 `string` 后跟上变量名即可, 也可以直接给 `string` 类型变量赋值，示例如下：
+```cpp
+string str;
+string str = "yugin chui!";
+```
+
+#### string 中内容的访问
+1. 通过下标访问
+- 一般而言，可以直接像字符数组那样去访问 `string`：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+using namespace std;
+//主函数
+int main()
+{
+    string str = "yugin chui!";
+    for(int i=0;i<str.length();i++)
+    {
+        printf("%c",str[i]);//输出"yugin chui!"
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+yugin chui!
+```
++ 如果要读入和输出整个字符串，则只能使用 `cin` 和 `cout`：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str;
+    cin >> str;
+    cout << str;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 上述代码对于任意字符串输入，都会有输出同样的字符串。
++ 同样，采用 `c_str()` 将 `string` 类型转换为字符数组进行输出，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str = "yugin chui!";
+    printf("%s\n",str.c_str());//采用c_str()将string类型转换为字符数组进行输出
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+yugin chui!
+```
+2. 通过迭代器访问
++ 由于有些函数如 `insert()` 和 `erase()` 要求以迭代器为参数，因此需要学习。
++ 由于 `string` 不像其他 STL 容器那样需要参数，因此可以直接定义：
+```cpp
+string::iterator it;
+```
++ 这样就得到了迭代器 `it`，并且可以通过 `*it` 来访问 `string` 中的每一位：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str = "yugin chui!";
+    for(string::iterator it = str.begin();it != str.end();it++)
+    {
+        printf("%c",*it);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+yugin chui!
+```
++ 最后指出，`string` 和 `vector` 一样，支持直接对迭代器进行加减某个数字，如 `str.begin()+3` 的写法是可行的。
+#### string 常用函数实例解析
++ 因为 `string` 的函数有很多，但是有许多函数并不常用，因此只介绍几个常用函数。
+##### operator+=
++ 这是 `string` 的加法，可以将两个 `string` 直接拼起来。，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str1 = "yugin chui!";
+    string str2 = "Dear ";
+    string str;
+    str = str2 + str1;//将str2加str1,赋值给str
+    cout << str << endl;
+    str2 += str1;//直接将str1拼接到str2上
+    cout << str2 << endl;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+Dear yugin chui!
+Dear yugin chui!
+```
+##### compare operator
++ 两个 `string` 类型可以直接使用 `==`、`!=`、`<=`、`>=`、`<`、`>`，比较规则是**字典序**，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str1 = "aa";
+    string str2 = "aaa";
+    string str3 = "abc";
+    string str4 = "xyj";
+    if(str1 < str2) 
+        printf("OK1\n");
+    if(str1 != str3) 
+        printf("OK2\n");
+    if(str4 >= str3) 
+        printf("OK3\n");
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+OK1
+OK2
+OK3
+```
+##### length()/size()
++ `length()` 返回 `string` 的长度，即存放的字符数，时间复杂度为 $O(1)$。`size()` 和 `length()` 基本相同。
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str1 = "aa";
+    printf("%d %d\n",str1.length(),str1.size());
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+2 2
+```
+##### insert()
++ `string` 的 `insert()` 函数有许多种写法，时间复杂度 $O(N)$：
+1. `insert(pos, string)`，在 `pos` 号位置插入字符串 `string`，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str1 = "aa";
+    string str2 = "bb";
+    str1.insert(1,str2);
+    cout << str1 << endl;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+abba
+```
+2. `insert(it,it2,it3)`, `it` 是原字符串的预插入位置，`it2` 和 `it3` 是待插字符串的首尾迭代器，用来表示字符串 `[it2, it3)` 将被插在 `it` 的位置上，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str1 = "aa";
+    string str2 = "bb";
+    str1.insert(str1.begin()+1,str2.begin(),str2.end());
+    cout << str1 << endl;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+abba
+```
+##### erase()
++ `erase()` 有两种用法：删除单个元素、删除一个区间内的所有元素。时间复杂度均为 $O(N)$。
+1. 删除单个元素
++ `str.erase(it)` 用于删除单个元素，`it` 为需要删除元素的迭代器。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str1 = "aa";
+    string str2 = "bb";
+    str1.insert(str1.begin()+1,str2.begin(),str2.end());
+    str1.erase(str1.begin()+1);
+    cout << str1 << endl;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+aba
+```
+2. 删除一个区间内的所有元素。
++ 删除一个区间内的所有元素有**两种**方法：
++ `str.erase(first,last)`，其中 `first` 为需要删除的区间的起始迭代器，而 last 则为需要删除的区间的末尾迭代器的下一个地址，也即为删除 `[first, last)`。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str1 = "aa";
+    string str2 = "bbc";
+    str1.insert(str1.begin()+1,str2.begin(),str2.end());
+    str1.erase(str1.begin()+1,str1.begin()+3);
+    cout << str1 << endl;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+aca
+```
++ `str.erase(pos,length)`，其中 `pos` 为需要开始删除的起始位置，`length` 为删除的字符个数，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str1 = "aa";
+    string str2 = "bbc";
+    str1.insert(str1.begin()+1,str2.begin(),str2.end());
+    str1.erase(1,2);//删除从1号位开始的2个字符，即bb
+    cout << str1 << endl;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+aca
+```
+##### clear()
++ `clear()` 用以清空 `string` 中的数据，时间复杂度一般为 $O(1)$。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str1 = "aa";
+    string str2 = "bbc";
+    str1.insert(str1.begin()+1,str2.begin(),str2.end());
+    str1.erase(1,2);//删除从1号位开始的2个字符，即bb
+    str1.clear();
+    cout << str1.size() << endl;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+0
+```
+##### substr()
++ `substr(pos, len)` 返回从 `pos` 号位开始、长度为 `len` 的子串，时间复杂度为 $O(len)$。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str1 = "Dear yugin chui!";
+    cout << str1.substr(5,5) << endl;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+yugin
+```
+##### string::npos
++ `string::npos` 是一个常数，其本身的值为 `-1`，但由于是 `unsigned_int` 类型，因此实际上也可以认为是 `unsigned_int` 类型的最大值。`string::npos` 用以作为 `find` 函数失配时的返回值。例如在下面的实例中可以认为 `string::npos` 等于 `-1` 或者 `4294967295`。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    if(string::npos==-1)
+        printf("-1 is true\n"); 
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+-1 is true
+```
+##### find()
++ `str.find(str2)`，当 `str2` 是 `str` 的子串时，返回其在 `str` 中第一次出现的位置，如果 `str2` 不是 `str` 的子串时，那么返回 `string::npos`；
++ `str.find(str2,pos)`，从 `str` 的 `pos` 号位开始匹配 `str2`，返回值与上面相同。
++ 时间复杂度为 $O(nm)$，其中 `n` 和 `m` 分别为 `str` 和 `str2` 的长度。
++ 示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str = "Dear yugin chui!";
+    string str1 = "yugin";//能够找到
+    string str2 = "yugin!";//找不到
+    if(str.find(str1)!=string::npos)
+        cout << str.find(str1) << endl;
+    if(str.find(str2)==string::npos)
+        printf("%d\n",str.find(str2));
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+5
+-1
+```
+##### replace()
++ `str.replace(pos,len,str2)` 把 `str` 从 `pos` 号位开始、长度为 `len` 的子串替换为 `str2`；
++ `str.replace(it1,it2,str2)` 把 `str` 的迭代器 `[it1, it2)` 范围的子串替换为 `str2`。
++ 时间复杂度为 $O(str.length())$，示例如下:
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str = "Maybe you will turn around.";
+    string str2 = "will not";
+    string str3 = "Surely";
+    cout << str.replace(10,4,str2) << endl;
+    cout << str.replace(str.begin(),str.begin()+5,str3) << endl;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+Maybe you will not turn around.
+Surely you will not turn around.
+```
+
 ## 算法初步
 
 ### 排序
