@@ -3264,6 +3264,85 @@ int main()
 Maybe you will not turn around.
 Surely you will not turn around.
 ```
+#### string 的例题
+例题：[A1060 Are They Equal](https://pintia.cn/problem-sets/994805342720868352/exam/problems/994805413520719872?type=7&page=0)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+int n;
+
+//处理函数
+string my_deal(string s,int& e)
+{
+    int k=0;//s的下标
+    while(s.length()>0&&s[0]=='0')
+    {
+        s.erase(s.begin());//去掉s的前导0
+    }
+    if(s[0]=='.')//第一位是小数点说明s小于1
+    {
+        s.erase(s.begin());//去掉s的小数点
+        while(s.length()>0&&s[0]=='0')
+        {
+            s.erase(s.begin());//去掉s的小数点后面的0
+            e--;
+        }
+    }
+    else//第一位不是小数点说明s大于1
+    {
+        while(k<s.length()&&s[k]!='.')//寻找小数点并且得到e
+        {
+            k++;
+            e++;
+        }
+        if(k<s.length())//说明碰到了小数点
+            s.erase(s.begin()+k);//去掉小数点
+    }
+    if(s.length()==0)//说明去除前导0后等于0
+            e=0;
+    int i=0;
+    k=0;
+    string res;
+    while(i<n)//循环达到设定的精度
+    {
+        if(k<s.length())//只要还有数字，就往后面加
+        {
+            res+=s[k];
+            k++;
+        }
+        else
+            res+='0';//没有数字而且没到达精度就补0
+        i++; 
+    }
+    return res;
+}
+
+//主函数
+int main()
+{
+    string s1,s2,s3,s4;
+    cin >> n >> s1 >> s2;
+    int e1 = 0;
+    int e2 = 0;
+    s3 = my_deal(s1,e1);
+    s4 = my_deal(s2,e2);
+    if(s3==s4&&e1==e2)
+    {
+        cout<<"YES 0."<<s3<<"*10^"<<e1<<endl;
+    }
+    else
+    {
+        cout<<"NO 0."<<s3<<"*10^"<<e1<<" 0."<<s4<<"*10^"<<e2<<endl;
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：`string` 类型能够方便处理上述题目，**思路**详见代码部分和《算法笔记》P210-P212。
 
 ## 算法初步
 
