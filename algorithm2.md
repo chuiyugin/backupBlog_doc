@@ -2941,6 +2941,32 @@ yugin chui!
 + 最后指出，`string` 和 `vector` 一样，支持直接对迭代器进行加减某个数字，如 `str.begin()+3` 的写法是可行的。
 #### string 常用函数实例解析
 + 因为 `string` 的函数有很多，但是有许多函数并不常用，因此只介绍几个常用函数。
+##### getline(cin, str);
++ 使用这个函数能够读入一整行字符串，而不会在**空格**处中断！示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    string str;
+    getline(cin, str);//读入一整行字符串
+    cout << str << endl;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输入：
+```text
+good bad
+```
++ 输出：
+```text
+good bad
+```
 ##### operator+=
 + 这是 `string` 的加法，可以将两个 `string` 直接拼起来。，示例如下：
 ```cpp
@@ -4508,109 +4534,6 @@ int main(){
 
 + 总结：这种题目主要找准递归的**起始位置**，根据**起始位置**即可输出完整图形。
 
-#### 一种递归式的非零自然数全分解方法
-
-+ 在开始讲之前，首先介绍一下这个方法针对的问题背景：一个非零自然数(1,2,3,……)既不重复也不遗漏地任意分解为非零自然数(如：3=1+1+1=1+2)，在本篇暂且称为非零自然数的全分解。
-+ 在非零自然数的全分解中，总共有多少种分解方法，并列出所有分解方法，在本篇暂且称为非零自然数的全分解问题。
-
-##### 基本概念
-
-1. **分解末项**
-   + 一个分解中的最后一项称为分解末项。如“3=1+2”中分解末项为“2”，再如“3=1+1+1”中分解末项为“1”。
-2. **分解基数B**
-  + 分解基数，在数值上定义为分解末项的前一项，举个例子：“5=1+4”称为分解基数B=1的一个分解，“5=1+2+2”称为分解基数B=2的一个分解。
-  + 我们也可以把“5=1+4”到“5=1+2+2”的过程理解为一个将分解末项“4”按分解基数B=2的分解。实际上这种理解更为重要，因为在本方法中，我们本质上也是针对分解末项的分解。
-
-##### 分解规则
-
-1. 关于分解基数
-     + **分解基数单调不减**。如：“7=2+5=2+1+4”为一个错误的分解过程，因为第一级分解基数为2，第二级分解基数为1，违反分解基数单调不减原则。所以，“7=2+5=2+2+3”才是一个正确的分解过程。
-2. 关于分解末项
-     + **分解末项应不小于分解基数**。如：“5=1+1+3”为一个正确的分解，“5=1+3+1”为一个错误的分解。
-
-![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311102020016.jpeg)
-
-+ 根据前述的两条分解规则，对7的全分解过程如上图所示，可以看到总共有14种分解方法。实际上，7的全分解就是这14种分解方法。
-
-例题：[自然数分解之方案数](https://sunnywhy.com/sfbj/4/3/125)
-
-+ 代码：
-
-```cpp
-#include <cstdio>
-#include <string.h>
-#include <iostream>
-#include <algorithm>
-#include <cmath>
-using namespace std;
-
-//递归求解自然数分解方案数量函数
-int func(int pre,int now)
-{
-    int temp=0;
-    for(int i=1;2*i<=now;i++)
-    {
-        if(i>=pre)
-        {
-            temp+=func(i,now-i);
-            temp++;
-        }
-    }
-    return temp;
-}
-
-//主函数
-int main(){
-    int n,num;
-    scanf("%d",&n);
-    num = func(0,n);
-    printf("%d",num);
-    return 0;
-}
-```
-
-+ 总结：
-  + **递归边界**是：当我们需要拆分的数为1时，表示无法拆分，因此返回0。
-  + 总而言之，`func(pre,now)`所返回的整数表示该组合后续能够拆分的总数。
-
-例题：[自然数分解之最大积](https://sunnywhy.com/sfbj/4/3/124)
-
-+ 代码：
-
-```cpp
-#include <cstdio>
-#include <string.h>
-#include <iostream>
-#include <algorithm>
-#include <cmath>
-using namespace std;
-
-//递归求解自然数分解之最大积
-int func(int pre,int now)
-{
-    int my_max=-1;
-    for(int i=1;2*i<=now;i++)
-    {
-        if(i>=pre)
-        {
-            my_max=max(my_max,max(i*(now-i),func(i,now-i)));
-        }
-    }
-    return max(my_max,pre*my_max);
-}
-
-//主函数
-int main(){
-    int n,num;
-    scanf("%d",&n);
-    num = func(0,n);
-    printf("%d",num);
-    return 0;
-}
-```
-
-+ 总结：这题与**自然数分解之方案数**较为相似，只需要把递归函数 `temp` 的计数改为计算乘积最大值即可。
-
 例题：[有限制的选数II](https://sunnywhy.com/sfbj/4/3/141)
 + 代码：
 ```cpp
@@ -4728,6 +4651,163 @@ int main(){
 }
 ```
 + 总结：这道题目的与上一道题目思路类似，巧妙之处同样在于设计了在循环中加上了本身的数据，随后根据加上了本身的数据再继续往后递归，不同点在于所能加上自身的数据从小于等于 `k` 变成了小于等于 `k` 和**输入的数据本身的数量**。
+
+例题：[背包问题](https://sunnywhy.com/sfbj/4/3/143)
++ 代码：
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <vector>
+using namespace std;
+const int MAX = 15;
+const int MAXN = 10000110;
+int n,k;
+int num[MAX],value[MAXN];
+int max_value = -1;
+
+//递归函数求解有限制的选数
+void F(int index,int sum,int temp_value)
+{
+    //递归边界
+    if(index==n)
+    {
+        max_value = max(max_value,temp_value);
+        //printf("%d %d\n",sum,max_value);
+        return;
+    }
+    //递归式
+    if(sum+num[index]<=k)//在进入增加总容量的递归前判断是否超过了背包容量，不一定能够正好达到背包最大容量
+    {
+        F(index+1,sum+num[index],temp_value+value[index]);
+    }
+    F(index+1,sum,temp_value);
+}
+
+//主函数
+int main(){
+    scanf("%d %d",&n,&k);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&num[i]);
+    }
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&value[i]);
+    }
+    F(0,0,0);
+    printf("%d",max_value);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：这道题目与上面的**有限的选数**题目思路基本类似，主要不同点在于提供的数据不一定能够达到背包的最大容量，因此需要在进入增加总容量的递归前判断是否**超过**了背包容量。
+
+#### 一种递归式的非零自然数全分解方法
+
++ 在开始讲之前，首先介绍一下这个方法针对的问题背景：一个非零自然数(1,2,3,……)既不重复也不遗漏地任意分解为非零自然数(如：3=1+1+1=1+2)，在本篇暂且称为非零自然数的全分解。
++ 在非零自然数的全分解中，总共有多少种分解方法，并列出所有分解方法，在本篇暂且称为非零自然数的全分解问题。
+
+##### 基本概念
+
+1. **分解末项**
+   + 一个分解中的最后一项称为分解末项。如“3=1+2”中分解末项为“2”，再如“3=1+1+1”中分解末项为“1”。
+2. **分解基数B**
+  + 分解基数，在数值上定义为分解末项的前一项，举个例子：“5=1+4”称为分解基数B=1的一个分解，“5=1+2+2”称为分解基数B=2的一个分解。
+  + 我们也可以把“5=1+4”到“5=1+2+2”的过程理解为一个将分解末项“4”按分解基数B=2的分解。实际上这种理解更为重要，因为在本方法中，我们本质上也是针对分解末项的分解。
+
+##### 分解规则
+
+1. 关于分解基数
+     + **分解基数单调不减**。如：“7=2+5=2+1+4”为一个错误的分解过程，因为第一级分解基数为2，第二级分解基数为1，违反分解基数单调不减原则。所以，“7=2+5=2+2+3”才是一个正确的分解过程。
+2. 关于分解末项
+     + **分解末项应不小于分解基数**。如：“5=1+1+3”为一个正确的分解，“5=1+3+1”为一个错误的分解。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311102020016.jpeg)
+
++ 根据前述的两条分解规则，对7的全分解过程如上图所示，可以看到总共有14种分解方法。实际上，7的全分解就是这14种分解方法。
+
+例题：[自然数分解之方案数](https://sunnywhy.com/sfbj/4/3/125)
+
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <string.h>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+
+//递归求解自然数分解方案数量函数
+int func(int pre,int now)
+{
+    int temp=0;
+    for(int i=1;2*i<=now;i++)
+    {
+        if(i>=pre)
+        {
+            temp+=func(i,now-i);
+            temp++;
+        }
+    }
+    return temp;
+}
+
+//主函数
+int main(){
+    int n,num;
+    scanf("%d",&n);
+    num = func(0,n);
+    printf("%d",num);
+    return 0;
+}
+```
+
++ 总结：
+  + **递归边界**是：当我们需要拆分的数为1时，表示无法拆分，因此返回0。
+  + 总而言之，`func(pre,now)`所返回的整数表示该组合后续能够拆分的总数。
+
+例题：[自然数分解之最大积](https://sunnywhy.com/sfbj/4/3/124)
+
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <string.h>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+
+//递归求解自然数分解之最大积
+int func(int pre,int now)
+{
+    int my_max=-1;
+    for(int i=1;2*i<=now;i++)
+    {
+        if(i>=pre)
+        {
+            my_max=max(my_max,max(i*(now-i),func(i,now-i)));
+        }
+    }
+    return max(my_max,pre*my_max);
+}
+
+//主函数
+int main(){
+    int n,num;
+    scanf("%d",&n);
+    num = func(0,n);
+    printf("%d",num);
+    return 0;
+}
+```
+
++ 总结：这题与**自然数分解之方案数**较为相似，只需要把递归函数 `temp` 的计数改为计算乘积最大值即可。
 
 #### 动态规划
 
