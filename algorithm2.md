@@ -3656,6 +3656,146 @@ int main()
 0
 ```
 
+### queue 的常见用法详解
++ `queue` 翻译为队列，在 STL 中则是实现了一个**先进先出**的容器。
+#### queue 的定义
++ 要使用 `queue`，应先添加头文件 `#include <queue>`，并在头文件下面添加 `using namespace std;`
++ `queue` 的定义写法和其他 STL 容器相同，`typename` 可以是任意基本数据类型或者容器：
+```cpp
+queue<typename> name;
+```
+#### queue 容器内元素的访问
++ 由于队列 `queue` 本身就是**先进先出**的限制性数据结构，因此在 STL 中只能通过 `front()` 来访问队首元素，或者是通过 `back()` 来访问队尾元素。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <queue>
+using namespace std;
+
+//主函数
+int main()
+{
+    queue<int> q;
+    for(int i=1;i<=5;i++)
+    {
+        q.push(i);//q.push(i);用以将i压入队列，因此依次入队1 2 3 4 5
+    }
+    printf("%d %d\n",q.front(),q.back());//输出结果1 5
+    system("pause");    // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+1 5
+```
+#### queue 常用函数实例解析
+##### push()
++ `push(x)` 将 `x` 进行入队，时间复杂度为 $O(1)$。
+##### front()、back()
++ `front()` 和 `back()` 可以分别获得队首元素和队尾元素,时间复杂度为 $O(1)$。
+##### pop()
++ `pop()` 令队首元素出队，时间复杂度为 $O(1)$。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <queue>
+using namespace std;
+
+//主函数
+int main()
+{
+    queue<int> q;
+    for(int i=1;i<=5;i++)
+    {
+        q.push(i);//q.push(i);用以将i压入队列，因此依次入队1 2 3 4 5
+    }
+    for(int i=1;i<=3;i++)
+    {
+        q.pop();//出队首元素1 2 3
+    }
+    printf("%d %d\n",q.front(),q.back());
+    system("pause");    // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+4 5
+```
+##### empty()
++ `empty()` 检测 `queue` 是否为空，返回 `true` 则空，返回 `false` 则非空。时间复杂度为 $O(1)$。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <queue>
+using namespace std;
+
+//主函数
+int main()
+{
+    queue<int> q;
+    if(q.empty() == true)//一开始队列中没有元素，所以为空
+    {
+        printf("EMPTY!\n");
+    }
+    else
+    {
+        printf("NOT EMPTY!\n");
+    }
+    for(int i=1;i<=5;i++)
+    {
+        q.push(i);//q.push(i);用以将i压入队列，因此依次入队1 2 3 4 5
+    }
+    if(q.empty() == true)
+    {
+        printf("EMPTY!\n");
+    }
+    else
+    {
+        printf("NOT EMPTY!\n");
+    }
+    system("pause");    // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+EMPTY!
+NOT EMPTY!
+```
+##### size()
++ `size()` 返回 queue 内元素的个数，时间复杂度为 $O(1)$。实例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <queue>
+using namespace std;
+
+//主函数
+int main()
+{
+    queue<int> q;
+    for(int i=1;i<=5;i++)
+    {
+        q.push(i);//q.push(i);用以将i压入队列，因此依次入队1 2 3 4 5
+    }
+    printf("%d\n",q.size());
+    system("pause");    // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+5
+```
+#### queue 的常见用途
++ 当需要实现广度优先搜索时，可以不用自己手动实现一个队列，而是用 `queue` 作为代替，以提高程序的准确性。
++ 需要注意的是，使用 `front()` 和 `pop()` 函数前，必须用 `empty()` 判断队列是否为空，否则可能因为队空而出现错误。
++ 延伸：STL 容器中还有两种容器与队列相关，分别是双端队列 (`deque`)和优先队列 (`priority_queue`)。
++ 双端队列 (`deque`)：首尾皆可插入和删除的队列；
++ 优先队列 (`priority_queue`)：使用堆实现的默认将当前队列最大元素置于队首的容器。
+
 ## 算法初步
 
 ### 排序
