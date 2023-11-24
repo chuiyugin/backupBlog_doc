@@ -3392,7 +3392,269 @@ map<string,int> mp;
 map<set<int>,string> mp;
 ```
 #### map 容器内元素访问
-
++ `map` 一般有两种访问方式：通过**下标**访问或通过**迭代器**访问。
+1. 通过下标访问
++ 和访问普通的数组是一样的，例如对一个定义为 `map<char, int> mp` 的 `map` 而言，就可以直接使用 `mp['c']` 的方式来访问它对应的整数。
++ 于是，当建立映射时，就可以直接使用 `mp['c']=20;` 这样和普通数组一样的方式。
++ 但要注意 map 中的键（key）是唯一的：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <map>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    map<char,int> mp;
+    mp['c']=20;
+    mp['c']=30;
+    printf("%d\n",mp['c']);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+30
+```
+2. 通过迭代器访问
++ `map` 迭代器的定义和其他 STL 容器迭代器定义的方式相同：
+```cpp
+map<typename1,typename2>::iterator it;
+```
++ `typename1` 和  `typename2` 就是定义 `map` 时填写的类型，这样就得到了迭代器 `it`。
++ 注意 `map` 迭代器的使用方式和其他 STL 容器的迭代器不同，因为 `map` 的每一对映射都有两个 `typename`，这决定了必须能通过一个 `it` 来同时访问键和值。
++ 事实上，`map` 可以使用 `it->first` 来访问键，使用 `it->second` 来访问值。
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <map>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    map<char,int> mp;
+    mp['a']=20;
+    mp['c']=30;
+    mp['b']=40;
+    for(map<char,int>::iterator it=mp.begin();it!=mp.end();it++)
+    {
+        printf("%c %d\n",it->first,it->second);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+a 20
+b 40
+c 30
+```
++ 现象：`map` 会以**键**从小到大的顺序自动排序，即 `a->b->c`。
++ 原理：由于 `map` 内部是使用**红黑树**实现的（`set` 也是），在建立映射的过程中会自动实现**从小到大**的排序功能。
+#### map 常用函数实例解析
+##### find()
++ `find(key)` 返回键为 `key` 的映射的迭代器，时间复杂度为 $O(logN)$，N 为 `map` 中映射的个数。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <map>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    map<char,int> mp;
+    mp['a']=20;
+    mp['c']=30;
+    mp['b']=40;
+    map<char,int>::iterator it=mp.find('c');
+    printf("%c %d\n",it->first,it->second);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+c 30
+```
++ 注意如果 `mp.find(key)` 如果找不到元素会返回 `mp.end()`，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <map>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    map<char,int> mp;
+    int n,num;
+    scanf("%d",&n);
+    char c;
+    for(int i=0;i<n;i++)
+    {
+        getchar();
+        scanf("%c %d",&c,&num);
+        mp[c]=num;
+    }
+    getchar();
+    scanf("%c",&c);
+    map<char,int>::iterator it=mp.find(c);
+    if(it!=mp.end())//如果找不到返回mp.end()
+        printf("%d",it->second);
+    else
+        printf("-1");
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+##### erase()
++ `erase()` 有两种用法：删除单个元素、删除一个区间内的所有元素。
+1. 删除单个元素
++ 删除单个元素有两种方法：
++ 第一种： `mp.erase(it)`，`it` 为需要删除的元素的迭代器。时间复杂度为 $O(1)$，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <map>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    map<char,int> mp;
+    mp['a']=20;
+    mp['c']=30;
+    mp['b']=40;
+    map<char,int>::iterator it=mp.find('c');
+    mp.erase(it);
+    for(map<char,int>::iterator it=mp.begin();it!=mp.end();it++)
+    {
+        printf("%c %d\n",it->first,it->second);
+    }
+    // printf("%c %d\n",it->first,it->second);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+a 20
+b 40
+```
++ 第二种：`mp.erase(key)`，`key` 为删除的映射键。时间复杂度为 $O(logN)$，N 为 `map` 中映射的个数。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <map>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    map<char,int> mp;
+    mp['a']=20;
+    mp['c']=30;
+    mp['b']=40;
+    map<char,int>::iterator it=mp.find('c');
+    mp.erase('c');
+    for(map<char,int>::iterator it=mp.begin();it!=mp.end();it++)
+    {
+        printf("%c %d\n",it->first,it->second);
+    }
+    // printf("%c %d\n",it->first,it->second);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+a 20
+b 40
+```
+2. 删除一个区间内的所有元素
++ `mp.erase(first,last)`，其中 `first` 为需要删除的区间的起始迭代器，而 `last` 则为需要删除的区间的末尾迭代器的下一个地址，也即为删除左闭右开的区间 `[first, last)`。时间复杂度为 $O(last-first)$，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <map>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    map<char,int> mp;
+    mp['a']=20;
+    mp['c']=30;
+    mp['b']=40;
+    map<char,int>::iterator it=mp.find('b');
+    mp.erase(it,mp.end());
+    for(map<char,int>::iterator it=mp.begin();it!=mp.end();it++)
+    {
+        printf("%c %d\n",it->first,it->second);
+    }
+    // printf("%c %d\n",it->first,it->second);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+a 20
+```
+##### size()
++ `size()` 用来获得 `map` 中映射的对数，时间复杂度为 $O(1)$。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <map>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    map<char,int> mp;
+    mp['a']=20;
+    mp['c']=30;
+    mp['b']=40;
+    printf("%d",mp.size());
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+3
+```
+##### clear()
++ `clear()` 用来清空 map 中的所有元素，复杂度为 $O(N)$，其中 N 为 `map` 中的元素个数，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <map>
+#include <iostream>
+using namespace std;
+//主函数
+int main()
+{
+    map<char,int> mp;
+    mp['a']=20;
+    mp['c']=30;
+    mp['b']=40;
+    mp.clear();
+    printf("%d",mp.size());
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+0
+```
 
 ## 算法初步
 
@@ -4729,6 +4991,63 @@ int main(){
 }
 ```
 + 总结：这道题目与上面的[有限制的选数](https://sunnywhy.com/sfbj/4/3/140)题目思路基本类似，主要不同点在于提供的数据**不一定能够达到背包的最大容量**，因此需要在进入增加总容量的递归前判断是否**超过**了背包容量。
+
+例题：[生成括号对](https://sunnywhy.com/sfbj/4/3/144)
++ 思路：
++ n 个括号对，也就是说一共 2 n 个字符，我们可以枚举 n 个`'('`分别放在什么位置，剩下的自然就是`')'`了。看起来很有道理，但是有一个问题，就是这个思路并没有办法通过循环直接实现。这其实已经进化成了一个搜索问题了，我们要搜索所有可以摆放括号的可能性。
++ 对于搜索问题而言，这已经很简单了，我们搜索的空间是明确的，2 n 个位置，搜索的内容，对于每个位置我们可以摆放`'('`也可以摆放`')'`。
++ 我们来思考一个问题：什么情况会出现右括号 `')'` 遇不到左括号 `'('` 呢？只有一种情况，就是当前出现右括号的个数超过了左括号，也就是说我们遍历一下字符串，如果中途出现右括号数量超过左括号的情况，那么就说明这个字符串是非法的。
++ 看起来没毛病对吧，但是有问题，我们为什么不在枚举的时候就判断呢，如果左括号放入的数量已经等于右括号了，那么就不往里放置右括号，这样不就可以保证搜索到的一定是合法的字符串吗？
++ 代码：
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <vector>
+#include <set>
+using namespace std;
+
+//变量
+int n;
+set<string> st;
+
+//递归函数生成括号对
+void F(int pos,int left,int right,string cur_str)
+{
+    //pos:当前字符串长度
+    //left:左括号数量
+    //right:右括号数量
+    //cur_str:当前字符串
+    if(pos==2*n)
+    {
+        st.insert(cur_str);
+    }
+    if(left<n)
+    {
+        F(pos+1,left+1,right,cur_str+'(');
+    }
+    if(right<n&&right<left)
+    {
+        F(pos+1,left,right+1,cur_str+')');
+    }
+}
+
+//主函数
+int main(){
+    scanf("%d",&n);
+    F(0,0,0,"");
+    for(set<string>::iterator it = st.begin();it!=st.end();it++)
+    {
+        cout << *it << endl;
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：在`right < n`后面加入了一个`right < left`这个条件。看似只有一个条件，但是这个条件起到的作用至关重要。整个算法的效率有了质的提升，实际上这也是**效率最高**的算法。
 
 #### 一种递归式的非零自然数全分解方法
 
