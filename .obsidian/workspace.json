@@ -128,9 +128,17 @@
                 "unlinkedCollapsed": true
               }
             }
+          },
+          {
+            "id": "b490c24077ba6817",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {}
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 4
       },
       {
         "id": "6a733a4544ee5554",
@@ -159,8 +167,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -174,11 +181,12 @@
   },
   "active": "1939e9efb4bd5fab",
   "lastOpenFiles": [
+    "algorithm.md",
+    "Myexe.md",
+    "algorithm2.md",
     "日记和待办/2023-11-16.md",
     "日记和待办/2023-11-15.md",
-    "algorithm2.md",
     "Assembly_language.md",
-    "algorithm.md",
     "日记和待办/2023-11-14.md",
     "hello-world.md",
     "points.md",
@@ -186,7 +194,6 @@
     "Josephus.md",
     "Web.md",
     "2023-11-14.md",
-    "Myexe.md",
     "日记和待办",
     "graph counts.md",
     "Fliplt.md",
