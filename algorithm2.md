@@ -5187,7 +5187,67 @@ int main(){
     return 0;
 }
 ```
-+ 总结：在`right < n`后面加入了一个`right < left`这个条件。看似只有一个条件，但是这个条件起到的作用至关重要。整个算法的效率有了质的提升，实际上这也是**效率最高**的算法。
++ 总结：在 `right < n` 后面加入了一个 `right < left` 这个条件。看似只有一个条件，但是这个条件起到的作用至关重要。整个算法的效率有了质的提升，实际上这也是**效率最高**的算法。
+
+例题：[加号之和](https://sunnywhy.com/sfbj/4/3/145)
++ 思路：以分解 **361** 为例：
+![image.png](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231125141921.png)
++ 代码：
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <vector>
+#include <set>
+using namespace std;
+
+//变量
+const int MAXN = 9;//字符串的最大长度
+char data[MAXN];//存储数字
+int n;
+
+//函数
+//head:开始字符的下标
+//tail:结尾字符的下一个位置
+int get_num(int head,int tail){
+    int sum=0;
+    for(int i=head;i<tail;i++){
+        sum=sum*10+data[i]-'0';
+    }
+    return sum;
+}
+
+int sum_num(int head,int tail,int len){
+    if(head+1==tail){
+        return get_num(head,tail);
+    }else{
+        //printf("head=%d tail=%d len=%d##\n",head,tail,len);
+        int sum=get_num(head,tail);
+        //printf("sum=%d#\n",sum);
+        for(int i=head+1;i<tail;i++){
+            sum+=get_num(head,i)*pow(2,tail-i-1)+sum_num(i,tail,tail-i);
+            //printf("get_num=%d#\n",get_num(head,i));
+        }
+        return sum;
+    }
+}
+
+//主函数
+int main (){ 
+    scanf("%s",data);
+    n=strlen(data);
+    printf("%d",sum_num(0,n,n));
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结（关键思想）：
++ 上述代码左边字符为什么使用 `get_num(head,i)*pow(2,tail-i-1)`，而不是继续进行递归，而右边继续进行递归，主要是因为：
++ 第一步：361 分解为 3 和 61 时，61 总共有 2^1=2 种划分，即单独的{61}以及{6,1}，和左边在一起求和时，即：3+61 以及 3+6+1，3 出现了 61 的划分次数 2，即所乘的 `pow (2,tail-i-1)` 。
++ 第二步：361分解为36,1时，因为在划分为3,61情况时，已经出现过3,6,1这种情况，为了避免重复出现3,6,1的情况，将36不在进行划分（因为其对应的所有划分情况在上一步已经出现过了），即直接使用 `get_num(head,i)`！
 
 #### 一种递归式的非零自然数全分解方法
 
