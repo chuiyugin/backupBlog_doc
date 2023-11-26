@@ -23,4 +23,6 @@ if [ $? -ne 0 ]; then
 else
     echo -e "\033[32m恭喜你！已为你上传至hexo博客！ \033[0m"
 fi
-sleep 10000
+echo 按任意键继续
+read -n 1
+echo 继续运行
