@@ -3940,7 +3940,211 @@ int main()
 4
 ```
 #### priority_queue 内元素优先级的设置
++ 如何定义优先队列内元素的优先级是运用好优先队列的关键，下面分别介绍基本数据类型（如 `int`、`double`、`char`）与结构体类型的优先级设置方法。
+##### 基本数据类型的优先级设置
++ 此处的基本类型指的是 `int`、`double`、`char` 等可以直接使用的数据类型，优先队列对他们的优先级设置一般是数字大的优先级越高，因此队首元素就是优先队列内元素最大那个（如果是 `char` 型，则是字典序最大的）。对基本数据类型来说，下面两种优先队列的定义是**等价**的，以 `int` 为例：
+```cpp
+priority_queue<int> q;
+priority_queue<int , vector<int>,less<int> > q;
+```
++ 不难发现，第二种定义方式 `<>` 内多出了两个参数：
+1. 一个是 `vector<int>`，该参数填写的是来承载底层数据结构堆 (`heap`)的容器，如果第一个参数是 `double` 型或 `char` 型，则此处只需要填写 `vector<double>` 或者 `vector<char>`；
+2. 另一个是 `less<int>`，该参数是对第一个参数的比较类，`less<int>` 表示**数字越大优先级越大**，而 `greater<int>` 表示**数字越小优先级越大**。
++ 因此，如果想让优先队列总是把最小的元素放在队首，只需进行如下定义：
+```cpp
+priority_queue<int , vector<int>,greater<int> > q;
+```
++ 示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <queue>
+using namespace std;
 
+//主函数
+int main()
+{
+    priority_queue<int , vector<int>,greater<int> > q;//数字越小优先级越大
+    q.push(1);
+    q.push(2);
+    q.push(4);
+    q.push(3);
+    printf("%d\n",q.top());
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+1
+```
+##### 结构体优先级设置
++ 本节的开头举了一个水果的例子，可以对水果的名称和价格建立一个结构体，示例如下：
+```cpp
+struct fruit{
+	string name;
+	int price;
+};
+```
++ 现在希望按水果的价格高的为优先级高，就需要重载（overload）小于号"<"。重载是指对已有的运算符进行重新定义。
++ 也就是说，可以改变小于号的功能（例如把它重载为大于号的功能）。目前暂时只需要知道其写法即可：
+```cpp
+struct fruit{
+	string name;
+	int price;
+	friend bool operator < (fruit f1,fruit f2)
+	{
+		return f1.price < f2.price;
+	}
+};
+```
++ 可以看到，`fruit` 结构体中增加了一个函数，其中 `friend` 是友元（自行查找资料了解）。
++ 后面的 `bool operator < (fruit f1, fruit f2)` 对 fruit 类型的操作符"<"进行了重载。
++ 重载大于号会编译错误，因为从数学上来说只需要重载小于号，即 `f1>f2` 等价于判断 `f2<f1`，而 `f1==f2` 则等价于判断 `!(f1<f2)&&!(f2<f1)`，函数内部为 `return f1.price < f2.price;`，因此重载后小于号还是小于号的作用。
++ 此时就可以直接定义 `fruit` 类型的优先队列，其内部就是以价格高的水果为优先级高，示例如下：
+```cpp
+priority_queue<fruit> q;
+```
++ 同理，如果想要以价格低的水果优先级高，那么只需要把 `return` 中的小于号改为大于号即可，示例如下：
+```cpp
+struct fruit{
+	string name;
+	int price;
+	friend bool operator < (fruit f1,fruit f2)
+	{
+		return f1.price > f2.price;
+	}
+};
+```
++ 整体代码示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <queue>
+#include <string>
+#include <iostream>
+using namespace std;
+
+//结构体
+struct fruit{
+	string name;
+	int price;
+	friend bool operator < (fruit f1,fruit f2)
+	{
+		return f1.price > f2.price;//大于号表示价格低优先级高
+	}
+}f1,f2,f3;
+
+//主函数
+int main()
+{
+    priority_queue<fruit> q;
+    f1.name="桃子";
+    f1.price=3;
+    f2.name="梨子";
+    f2.price=4;
+    f3.name="苹果";
+    f3.price=1;
+    q.push(f1);
+    q.push(f2);
+    q.push(f3);
+    cout << q.top().name << " " << q.top().price << endl;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+苹果 1
+```
++ 不难发现，此处对小于号的重载与排序函数 `sort` 中的 `cmp` 函数有些相似，它们的参数都是两个变量，函数内部都是 `return` 了 `true` 或者 `false`。
++ 事实上，这两者的作用确实是类似的，只不过效果看上去是“相反”的。
++ 在**排序**中，如果是 `return f1.price > f2.price;`，那么则是按照价格**从高到低**排序。
++ 在**优先队列**中，则是把价格低的放到队首。原因在于，优先队列本身默认的规则就是优先级高的放队首，因此把小于号重载为大于号的功能时只是把这个规则反向了一下。
++ 最后，只需要记住**优先队列的这个函数与 sort 中的 cmp 函数的效果相反的即可**。
++ 把优先队列的比较函数放外面：只需要把 `friend` 去掉，把小于号改成一对小括号，然后把重载的函数写在结构体的外面，同时将其用 `struct` 包装起来，示例如下：
+```cpp
+struct cmp{
+	bool operator() (fruit f1,fruit f2)
+	{
+		return f1.price > f2.price;
+	}
+};
+```
++ 在这种情况下，需要用之前讲解的第二种定义方式来定义优先队列：
+```cpp
+priority_queue<fruit , vector<fruit> , cmp> q;
+```
++ 可以看到，此处只是把 `greater<>` 部分换成了 `cmp`。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <queue>
+#include <string>
+#include <iostream>
+using namespace std;
+
+//结构体
+struct fruit{
+	string name;
+	int price;
+}f1,f2,f3;
+
+struct cmp{
+	bool operator() (fruit f1,fruit f2)
+	{
+		return f1.price > f2.price;
+	}
+};
+
+//主函数
+int main()
+{
+    priority_queue<fruit , vector<fruit> , cmp> q;
+    f1.name="桃子";
+    f1.price=3;
+    f2.name="梨子";
+    f2.price=4;
+    f3.name="苹果";
+    f3.price=1;
+    q.push(f1);
+    q.push(f2);
+    q.push(f3);
+    cout << q.top().name << " " << q.top().price << endl;
+    //q.pop();
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+苹果 1
+```
++ 与此同时，我们应该联想到，即便是**基本数据类型或者其它 STL 容器**（例如 `set`），也可以通过同样的方式来定义优先级。
++ 最后指出，如果结构体内的数据较为庞大（例如出现了**字符串**或者**数组**），建议使用引用来提高效率，此时比较类的参数中需要加上 `"const"` 和 `"&"`，示例如下：
+```cpp
+struct fruit{
+	string name;
+	int price;
+	friend bool operator < (const fruit &f1,const fruit &f2)
+	{
+		return f1.price > f2.price;//大于号表示价格低优先级高
+	}
+};
+```
++ 以及：
+```cpp
+struct cmp{
+	bool operator() (const fruit &f1,const fruit &f2)
+	{
+		return f1.price > f2.price;
+	}
+};
+
+```
+#### priority_queue 的常见用途
++ `priority_queue` 可以解决一些**贪心问题**，也可以对 **Dijkstra 算法**进行优化（因为优先队列的本质是堆）。
++ 需要注意的是，使用 `top()` 函数前，必须用 `empty()` 判断优先队列是否为空，否则可能因为**队列空**而出现错误！
 
 ## 算法初步
 
