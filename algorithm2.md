@@ -4182,7 +4182,116 @@ int main()
 5
 ```
 #### stack 常用函数实例解析
+##### push()
++ `push(x)` 将 `x` 入栈，时间复杂度为 $O(1)$。
+##### top()
++ `top()` 获得栈顶元素，时间复杂度为 $O(1)$。
+##### pop()
++ `pop()` 用以弹出栈顶元素，时间复杂度为 $O(1)$。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+using namespace std;
 
+//主函数
+int main()
+{
+    stack<int> st;
+    for(int i=1;i<=5;i++)
+    {
+        st.push(i);
+    }
+    for(int i=1;i<=3;i++)
+    {
+        st.pop();
+    }
+    printf("%d\n",st.top());//st.top()取栈顶元素
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+2
+```
+##### empty()
++ `empty()` 可以检测 `stack` 内是否为空，返回 `true` 则为空，返回 `false` 则为非空。时间复杂度为 $O(1)$，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+using namespace std;
+
+//主函数
+int main()
+{
+    stack<int> st;
+    if(st.empty()==true)
+    {
+        printf("EMPTY!\n");
+    }
+    else
+    {
+        printf("NOT EMPTY!\n");
+    }
+    for(int i=1;i<=5;i++)
+    {
+        st.push(i);
+    }
+    if(st.empty()==true)
+    {
+        printf("EMPTY!\n");
+    }
+    else
+    {
+        printf("NOT EMPTY!\n");
+    }
+    //printf("%d\n",st.top());//st.top()取栈顶元素
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+EMPTY!
+NOT EMPTY!
+```
+##### size()
++ `size()` 返回 stack 内元素个数，时间复杂度为 $O(1)$，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+using namespace std;
+
+//主函数
+int main()
+{
+    stack<int> st;
+    for(int i=1;i<=5;i++)
+    {
+        st.push(i);
+    }
+    printf("%d\n",st.size());//st.top()取栈顶元素
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+5
+```
+#### stack 的常见用途
++ `stack` 用来模拟实现一些递归，防止程序对**栈内存的限制**而导致程序运行出错。
++ 一般来说，程序的栈内存空间很小，对有些题目来说，如果用普通的函数进行递归，一旦**递归层数过深**（不同机器不同，**约几千至几万层**），则会导致程序运行崩溃。
++ 如果用栈来模拟递归算法的实现，则可以避免这一问题，不过应用较少。
 
 ## 算法初步
 
