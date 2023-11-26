@@ -3818,8 +3818,129 @@ priority_queue<typename> name;
 #### priority_queue 容器内元素访问
 + 和普通队列不一样的是，优先队列没有 `front()` 函数与 `back()` 函数，而只能通过 `top()` 函数来访问**队首**元素（也可以称为**堆顶**元素），也就是优先级最高的元素。示例如下：
 ```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <queue>
+using namespace std;
 
+//主函数
+int main()
+{
+    priority_queue<int> q;
+    q.push(1);
+    q.push(2);
+    q.push(4);
+    q.push(3);
+    printf("%d",q.top());
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
 ```
++ 输出：
+```text
+4
+```
+#### priority_queue 常用函数实例解析
+##### push()
++ `push(x)` 将令 `x` 入队，时间复杂度为 $O(logN)$，其中 N 为当前优先队列中的元素个数。
+##### top()
++ `top()` 可以获得队首元素（即堆顶元素），时间复杂度 $O(1)$。
+##### pop()
++ `pop()` 令队首元素（即堆顶元素）出队，时间复杂度为 $O(logN)$，其中 N 为当前优先队列中的元素个数，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <queue>
+using namespace std;
+
+//主函数
+int main()
+{
+    priority_queue<int> q;
+    q.push(1);
+    q.push(2);
+    q.push(4);
+    q.push(3);
+    printf("%d\n",q.top());
+    q.pop();
+    printf("%d\n",q.top());
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+4
+3
+```
+##### empty()
++ `empty()` 检测优先队列是否为空，返回 `true` 则为空，返回 `false` 则为非空。时间复杂度为 $O(1)$，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <queue>
+using namespace std;
+
+//主函数
+int main()
+{
+    priority_queue<int> q;
+    if(q.empty()==true)
+    {
+        printf("EMPTY!\n");
+    }
+    else
+    {
+        printf("NOT EMPTY!\n");
+    }
+    q.push(1);
+    q.push(2);
+    q.push(4);
+    q.push(3);
+    if(q.empty()==true)
+    {
+        printf("EMPTY!\n");
+    }
+    else
+    {
+        printf("NOT EMPTY!\n");
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+EMPTY!
+NOT EMPTY!
+```
+##### size()
++ `size()` 返回优先队列内元素的个数，时间复杂度为 $O(1)$，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <queue>
+using namespace std;
+
+//主函数
+int main()
+{
+    priority_queue<int> q;
+    q.push(1);
+    q.push(2);
+    q.push(4);
+    q.push(3);
+    printf("%d\n",q.size());
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+4
+```
+#### priority_queue 内元素优先级的设置
+
 
 ## 算法初步
 
