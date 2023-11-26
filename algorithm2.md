@@ -4326,7 +4326,43 @@ make_pair("yugin!",8);
 ```
 + 关于这两种用法见下述例子。
 #### pair 中元素的访问
++  `pair` 中只有两个元素，分别是 `first` 和 `second`，只需要按照正常结构体的方式去访问即可，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+using namespace std;
 
+//主函数
+int main()
+{
+    pair<string , int> p;
+    p.first = "yugin!";
+    p.second = 5;
+    cout << p.first << " " << p.second << endl;
+    p = make_pair("chui yugin!",88);
+    cout << p.first << " " << p.second << endl;
+    p = pair<string , int>("chui yugin yep!",888);
+    cout << p.first << " " << p.second << endl;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+yugin! 5
+chui yugin! 88
+chui yugin yep! 888
+```
+#### pair 常用函数实例解析
+##### 比较操作数
++ 两个 `pair` 类型数据可以直接使用 `==`、`!=`、`<`、`<=`、`>`、`>=` 比较大小，比较规则是先以 `first` 的大小作为标准，只有当 `first` 相等时才去判断 `second` 的大小。示例如下：
+```cpp
+
+```
 
 ## 算法初步
 
