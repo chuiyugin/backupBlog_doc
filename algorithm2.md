@@ -4146,6 +4146,44 @@ struct cmp{
 + `priority_queue` 可以解决一些**贪心问题**，也可以对 **Dijkstra 算法**进行优化（因为优先队列的本质是堆）。
 + 需要注意的是，使用 `top()` 函数前，必须用 `empty()` 判断优先队列是否为空，否则可能因为**队列空**而出现错误！
 
+### stack 的常见用法详解
++ `stack` 翻译为栈，是 STL 中实现的一个后进先出的容器。
+#### stack 的定义
++ 要使用 `stack`，应该先添加头文件 `#include <stack>`，并在头文件下面加上 `using namespace std;`
++ 其定义的写法和其他 STL 容器相同，`typename` 可以是任意基本数据类型或容器：
+```cpp
+stack<typename> name;
+```
+#### stack 容器内元素的访问
++ 由于栈（`stack`）本身就是一种后进先出的数据结构，在 STL 的 `stack` 只能通过 `top()` 来访问栈顶元素。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+using namespace std;
+
+//主函数
+int main()
+{
+    stack<int> st;
+    for(int i=1;i<=5;i++)
+    {
+        st.push(i);
+    }
+    printf("%d\n",st.top());//st.top()取栈顶元素
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+5
+```
+#### stack 常用函数实例解析
+
+
 ## 算法初步
 
 ### 排序
