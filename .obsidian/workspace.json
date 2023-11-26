@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "a1d1fb60a4125a61",
+        "id": "783e32a38e203caa",
         "type": "tabs",
         "children": [
           {
-            "id": "1939e9efb4bd5fab",
+            "id": "fa375fa84e7e01d3",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -180,11 +180,11 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "1939e9efb4bd5fab",
+  "active": "fa375fa84e7e01d3",
   "lastOpenFiles": [
+    "algorithm2.md",
     "algorithm.md",
     "Myexe.md",
-    "algorithm2.md",
     "日记和待办/2023-11-16.md",
     "日记和待办/2023-11-15.md",
     "Assembly_language.md",
