@@ -4426,6 +4426,309 @@ Mr.yugin! 8
 yugin! 88
 ```
 
+### algorithm 头文件下的常用函数
++ 使用 `#include <algorithm>` 头文件，需要在头文件下加一行`using namespace std;`
+#### max()、min()和 abs()
++ `max(x,y)` 和 `min(x,y)` 分别返回 `x` 和 `y` 中的最大值和最小值，且参数必须是两个（可以是浮点数）。
++ 如果想要返回 `x`、`y`、`z` 三个数的最大值, 可以使用 `max(x,max(y,z))` 写法。
++ `abs(x)` 返回 `x` 的绝对值。
++ 注意：`x` 必须是整型，浮点型的绝对值用 `#include <math>` 头文件下的 `fabs` 函数。
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+using namespace std;
+
+//主函数
+int main()
+{
+    int x = 1,y = -2;
+    printf("%d %d\n",max(x,y),min(x,y));
+    printf("%d %d\n",abs(x),abs(y));
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+1 -2
+1 2
+```
+#### swap()
++ `swap(x,y)` 用来交换 `x` 和 `y` 的值，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+using namespace std;
+
+//主函数
+int main()
+{
+    int x = 1,y = -2;
+    swap(x,y);
+    printf("%d %d\n",x,y);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+-2 1
+```
+#### reverse()
++ `reverse(it,it2)` 可以将数组指针在 `[it, it2)` 之间的元素或容器的迭代器在 `[it, it2)` 范围内的元素进行反转。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+using namespace std;
+
+//主函数
+int main()
+{
+    int a[10] = {10,11,12,13,14,15};
+    reverse(a,a+4);//将a[0]~a[3]反转
+    for(int i=0;i<6;i++)
+    {
+        printf("%d ",a[i]);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+13 12 11 10 14 15
+```
++ 如果是对容器中的元素（例如 `string` 字符串）进行反转，结果也一样：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+using namespace std;
+
+//主函数
+int main()
+{
+    string str = "abcdef";
+    reverse(str.begin(),str.begin()+4);//将str[0]~str[3]反转
+    for(int i=0;i<str.length();i++)
+    {
+        printf("%c",str[i]);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+dcbaef
+```
+#### next_permutation()
++ `next_permutation()` 给出一个序列在全排序的下一个序列。
++ 例如当 `n==3` 时的全排列为：
+```text
+123
+132
+213
+231
+312
+321
+```
++ 这样 `231` 的下一个序列就是 `312`，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+using namespace std;
+
+//主函数
+int main()
+{
+    int a[10] = {1,2,3};
+    //a[0]~a[2]之间的序列需要求解next_permutation()
+    do
+    {
+        printf("%d%d%d\n",a[0],a[1],a[2]);
+    }while(next_permutation(a,a+3));
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+123
+132
+213
+231
+312
+321
+```
++ 在上述代码中，使用循环是因为 `next_permutation()` 在已经到达全排列的最后一个时会返回 `false`，这样会方便退出循环。
++ 而使用 `do...while` 语句而不使用 `while` 语句是因为序列 `123` 本身也需要输出，如果使用 `while` 语句会直接跳到下一个序列再输出，这样结果会少一个 `123`。
+#### fill()
++ `fill()` 可以把数组或容器中的某一段区间赋为某个相同的值。
++ 和 `memset` 不同，这里的赋值可以是**数组类型对应范围中的任意值**。示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+using namespace std;
+
+//主函数
+int main()
+{
+    int a[10] = {1,2,3,4,5};
+    fill(a,a+5,888);//将a[0]~a[4]均赋值为888
+    for(int i=0;i<5;i++)
+    {
+        printf("%d ",a[i]);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+888 888 888 888 888
+```
+#### sort()
++ 由于排序题中大部分只需要得到排序的最终结果，而不需要去写完整的排序过程，因此推荐采用 `C++` 中的 `sort()` 函数进行处理。
+
+##### 如何使用 sort ()函数排序
+
++ `sort()` 函数的使用必须加上头文件 `#include <algorithm>` 和 `using namespace std;`，其使用方式如下：
+
+```cpp
+sort(首元素地址(必填),尾元素地址的下一个地址(必填),比较函数(非必填));
+```
+
+##### 如何实现比较函数 cmp
+
+###### 基本数据类型数组的排序
+
++ 若比较函数不填，则默认按照从小到大的顺序排序。
++ 例如：
+
+```cpp
+#include <cstdio>
+#include <string.h>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+//主函数
+int main(){
+    int a[5]={1,2,3,4,5};
+    sort(a,a+5);
+    for(int i=0;i<5;i++)
+    {
+        printf("%d ",a[i]);
+    }
+    return 0;
+}
+```
+
++ 输出：
+
+```
+1 2 3 4 5 
+```
+
++ 如果想要实现从大到小来排序，则需要编写 cmp (比较函数)：
+
+```cpp
+#include <cstdio>
+#include <string.h>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+bool cmp(int a,int b)
+{
+    return a>b;//可以理解为当a>b时，把a放在b前面
+}
+//主函数
+int main(){
+    int a[5]={1,2,3,4,5};
+    sort(a,a+5,cmp);
+    for(int i=0;i<5;i++)
+    {
+        printf("%d ",a[i]);
+    }
+    return 0;
+}
+```
+
++ 输出：
+
+```
+5 4 3 2 1 
+```
+
++ **记忆方法**：
+  + 数据“从小到大”就用 `“<”`，因为 `a<b` 是**左小右大**
+  + 数据“从大到小”就用 `“>”`，因为 `a>b` 是**左大右小**
+
+###### 结构体数组排序
+
++ 一级排序
+
+```cpp
+bool cmp(node a,node b)
+{
+	return a.x>b.x;
+}
+```
+
++ 二级排序
+
+```cpp
+bool cmp(node a,node b)
+{
+	if(a.x!=b.x)
+	{
+		return a.x>b.x;
+	}
+	else
+	{
+		return a.y<b.y;
+	}
+}
+```
+###### 容器排序
++ 在 STL 标准容器中，只有 `vector`、`string`、`deque` 是可以使用 `sort` 的。因为像 `set` 和 `map` 这样的容器是采用**红黑树**实现的，元素本身有序，故不允许 `sort` 排序。
++ 下面以 `vector` 为例：
+
 ## 算法初步
 
 ### 排序
