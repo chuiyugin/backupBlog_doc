@@ -4392,7 +4392,39 @@ p1 <= p3
 p1 < p2
 ```
 #### pair 的常见用途
-+ 
++ 关于 `pair` 有两个比较常见的例子：
+1. 用来代替二元结构体及其构造函数，可以节省编码时间。
+2. 作为 `map` 的键值对来进行插入，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+using namespace std;
+
+//主函数
+int main()
+{
+    map<string,int> mp;
+    mp.insert(make_pair("yugin!",88));
+    mp.insert(pair<string,int>("Mr.yugin!",8));
+    for(map<string,int>::iterator it = mp.begin();it!=mp.end();it++)
+    {
+        cout << it->first << " " << it->second << endl;
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+
+```
++ 输出：
+```text
+Mr.yugin! 8
+yugin! 88
+```
 
 ## 算法初步
 
