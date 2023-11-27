@@ -4728,7 +4728,202 @@ bool cmp(node a,node b)
 ###### 容器排序
 + 在 STL 标准容器中，只有 `vector`、`string`、`deque` 是可以使用 `sort` 的。因为像 `set` 和 `map` 这样的容器是采用**红黑树**实现的，元素本身有序，故不允许 `sort` 排序。
 + 下面以 `vector` 为例：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
 
+//比较函数
+bool cmp(int a,int b)//vector中的元素为int型
+{
+    return a>b;//从大到小
+}
+
+//主函数
+int main()
+{
+    vector<int> vi;
+    vi.push_back(2);
+    vi.push_back(3);
+    vi.push_back(1);
+    sort(vi.begin(),vi.end(),cmp);
+    for(int i=0;i<3;i++)
+    {
+        printf("%d ",vi[i]);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+
+```
++ 输出：
+```text
+3 2 1 
+```
++ 以 `string` 为例：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+//主函数
+int main()
+{
+    string str[3] = {"bbbb","cc","aaa"};
+    sort(str,str+3);//将string型数组按照字典序从小到大排序
+    for(int i=0;i<3;i++)
+    {
+        cout<<str[i]<<endl;
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+
+```
++ 输出：
+```text
+aaa
+bbbb
+cc
+```
++ 在上述例子中，如果需要按照字符串长度从小到大排序，可以见如下示例：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+//比较函数
+bool cmp(string a,string b)//vector中的元素为int型
+{
+    return a.length()<b.length();//从小到大
+}
+
+//主函数
+int main()
+{
+    string str[3] = {"bbbb","cc","aaa"};
+    sort(str,str+3,cmp);//将string型数组按照字典序从小到大排序
+    for(int i=0;i<3;i++)
+    {
+        cout<<str[i]<<endl;
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+cc
+aaa
+bbbb
+```
+#### lower_bound()和 upper_bound()
++ `lower_bound()` 和 `upper_bound()` 需要用在一个有序数组或容器中。
++ `lower_bound(first,last,val)` 用来寻找在数组或容器的 `[first, last)` 范围内第一个值**大于等于** `val` 元素的位置，如果是数组，则返回该位置的**指针**；如果是容器，则返回该位置的迭代器。
++ `upper_bound(first,last,val)` 用来寻找在数组或容器的 `[first, last)` 范围内第一个值**大于** `val` 元素的位置，如果是数组，则返回该位置的**指针**；如果是容器，则返回该位置的迭代器。
++ 显然，如果数组或容器中没有需要寻找的元素，则 `lower_bound()` 和 `upper_bound()` 均返回可以插入该元素的位置的指针或迭代器（即假设存在该元素时，该元素应当在的位置）。
++ `lower_bound()` 和 `upper_bound()` 的复杂度均为 $O(log(last-first))$。
++ 示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+//主函数
+int main()
+{
+    int a[10] = {1,2,2,3,3,3,5,5,5,5};
+    //寻找-1
+    int *lowerPos = lower_bound(a,a+10,-1);
+    int *upperPos = upper_bound(a,a+10,-1);
+    printf("%d %d\n",lowerPos-a,upperPos-a);
+    //寻找1
+    lowerPos = lower_bound(a,a+10,1);
+    upperPos = upper_bound(a,a+10,1);
+    printf("%d %d\n",lowerPos-a,upperPos-a);
+    //寻找3
+    lowerPos = lower_bound(a,a+10,3);
+    upperPos = upper_bound(a,a+10,3);
+    printf("%d %d\n",lowerPos-a,upperPos-a);
+    //寻找4
+    lowerPos = lower_bound(a,a+10,4);
+    upperPos = upper_bound(a,a+10,4);
+    printf("%d %d\n",lowerPos-a,upperPos-a);
+    //寻找6
+    lowerPos = lower_bound(a,a+10,6);
+    upperPos = upper_bound(a,a+10,6);
+    printf("%d %d\n",lowerPos-a,upperPos-a);
+
+    
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+
+```
++ 输出：
+```text
+0 0
+0 1
+3 6
+6 6
+10 10
+```
++ 显然，如果只是想获得欲查元素的下标，就可以不使用临时指针，而**直接令返回值减去数组首地址**即可：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+//主函数
+int main()
+{
+    int a[10] = {1,2,2,3,3,3,5,5,5,5};
+    //寻找3
+    printf("%d %d\n",lower_bound(a,a+10,3)-a,upper_bound(a,a+10,3)-a);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+
+```
++ 输出：
+```text
+3 6
+```
 ## 算法初步
 
 ### 排序
