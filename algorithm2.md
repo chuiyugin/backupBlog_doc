@@ -4361,8 +4361,38 @@ chui yugin yep! 888
 ##### 比较操作数
 + 两个 `pair` 类型数据可以直接使用 `==`、`!=`、`<`、`<=`、`>`、`>=` 比较大小，比较规则是先以 `first` 的大小作为标准，只有当 `first` 相等时才去判断 `second` 的大小。示例如下：
 ```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+using namespace std;
 
+//主函数
+int main()
+{
+    pair<int , int> p1(5,10);
+    pair<int , int> p2(5,15);
+    pair<int , int> p3(10,5);
+    if(p1 < p3)
+        printf("p1 < p3\n");
+    if(p1 <= p3)
+        printf("p1 <= p3\n");
+    if(p1 < p2)
+        printf("p1 < p2\n");
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
 ```
++ 输出：
+```text
+p1 < p3
+p1 <= p3
+p1 < p2
+```
+#### pair 的常见用途
++ 
 
 ## 算法初步
 
