@@ -4623,6 +4623,40 @@ int main()
 ```text
 888 888 888 888 888
 ```
++ 对于二维数组的使用，示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+using namespace std;
+
+//主函数
+int main()
+{
+    int n=3,m=5;
+    int a[n][m];
+    int k;
+    scanf("%d",&k);
+    fill(a[0], a[0] + n * m, k);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            printf("%d", a[i][j]);
+            if (j < m - 1) {
+                printf(" ");
+            } else {
+                printf("\n");
+            }
+        }
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
 #### sort()
 + 由于排序题中大部分只需要得到排序的最终结果，而不需要去写完整的排序过程，因此推荐采用 `C++` 中的 `sort()` 函数进行处理。
 
