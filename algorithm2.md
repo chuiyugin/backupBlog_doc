@@ -6597,3 +6597,74 @@ int main(){
 2. 当月饼库存量高于需求量时，不能先令需求量为 0，然后再计算收益，这会导致该步收益为 0。
 3. 当月饼库存量高于需求量时，记得将循环中断，否则会出错。
 + 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+//月饼结构体
+struct Mooncake
+{
+    double num;//月饼库存量
+    double total_price;//总售价
+    double price;//单价
+};
+
+//比较函数
+bool cmd(Mooncake a,Mooncake b)
+{
+    return a.price > b.price;
+}
+
+//主函数
+int main()
+{
+    vector<Mooncake> vi;
+    int n;
+    double need;
+    double num,total_price;
+    scanf("%d %lf",&n,&need);
+    for(int i=0;i<n;i++)
+    {
+        Mooncake m;
+        scanf("%lf",&num);
+        m.num=num;
+        vi.push_back(m);
+    }
+    for(int i=0;i<n;i++)
+    {
+        scanf("%lf",&total_price);
+        vi[i].total_price = total_price;
+        vi[i].price = total_price/vi[i].num;//计算每个月饼的单价
+    }
+    //完成单价从高到低排序
+    sort(vi.begin(),vi.end(),cmd);
+    //定义计算值
+    double now_need = need;
+    double now_total_price = 0;//总收入
+    for(int i=0;i<n;i++)
+    {
+        if(vi[i].num<=now_need)//如果需求量高于月饼库存量
+        {
+            now_need -= vi[i].num;//则第i种月饼需要全部卖出
+            now_total_price += vi[i].total_price;
+        }
+        else//如果月饼库存量高于需求量
+        {
+            //那么只需要卖出剩余需求量的月饼
+            now_total_price += now_need*vi[i].price;
+            break;
+        }
+    }
+    printf("%.2f\n",now_total_price);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
