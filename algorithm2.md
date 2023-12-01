@@ -6353,7 +6353,9 @@ int main(){
 
 例题：[加号之和](https://sunnywhy.com/sfbj/4/3/145)
 + 思路：以分解 **361** 为例：
+
 ![image.png](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231125141921.png)
+
 + 代码：
 ```cpp
 #include <cstdio>
