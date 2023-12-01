@@ -6668,3 +6668,258 @@ int main()
     return 0;
 }
 ```
+
+例题：[PAT B1023 组个最小数](https://pintia.cn/problem-sets/994805260223102976/exam/problems/994805298269634560?type=7&page=0)
++ **思路：**
++ **策略**是：先从 `1~9` 中选择个数不为 `0` 的最小数输出，然后从 `0~9` 输出数字，每个数字输出次数为其剩余个数。
++ 以样例为例：最高位为个数不为 `0` 的最小的数 `1`，此后 `1` 的剩余个数减 `1`（由 `2` 变为 `1`）。接着按剩余次数（`0` 剩余两个，`1` 剩余一个，`5` 剩余三个，`8` 剩余一个）依次输出所有数。
++ **策略正确性**证明：
++ 首先，由于所有数字必须参与组合，因此最后结果的位数是确定的。然后，由于最高位不能为 `0`，因此从 `[1,9]` 中选择**最小**的数输出（如果存在两个长度相同的数的最高位不同，那么一定是高位小的数更小）。
++ 最后，针对除最高位外的所有位，也是从高位到低位优先选择 `[0,9]` 还存在的最小数输出。
++ **注意点：**
++ 由于第一位不能是 `0`，因此第一个数字必须从 `1~9` 中选择最小的存在的数字，且找到这样的数字之后要及时中断循环。
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+//变量定义
+const int MAX = 10;
+int hashtable[MAX];
+
+//主函数
+int main()
+{
+    for(int i=0;i<MAX;i++)
+    {
+        scanf("%d",&hashtable[i]);
+    }
+    //输出第一位
+    for(int i=1;i<MAX;i++)
+    {
+        if(hashtable[i]!=0)
+        {
+            printf("%d",i);
+            hashtable[i]--;
+            break;
+        }
+    }
+    //输出后面位数
+    for(int i=0;i<MAX;i++)
+    {
+        if(hashtable[i]!=0)
+        {
+            for(int j=0;j<hashtable[i];j++)
+            {
+                printf("%d",i);
+            }
+            hashtable[i]=0;
+        }
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+#### 区间贪心
++ 通过上述例子，能够对贪心有一个大致了解。以下是一个稍微复杂一些的问题：
++ **区间不相交问题：**
++ 给出 `N` 个开区间 `(x, y)`，从中选择尽可能多的开区间，使得这些开区间两两没有交集。
++ 例如对开区间 `(1,3)`、`(2,4)`、`(3,5)`、`(6,7)` 来说，可以选出最多三个区间 `(1,3)`、`(3,5)`、`(6,7)`，它们互相没有交集。
++ 首先考虑最简单的情况，如果开区间 $I_1$ 被开区间 $I_2$ 包含，如下图 4-5a所示，那么显然选择 $I_1$ 是最好的选择，因为如果选择 $I_1$，那么就有更大的空间去容纳其它开区间。
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231201135728.png)
++ 接下来把所有开区间按左端点 `x` 从大到小排列，如果去除掉区间包含的情况，那么一定有 $y_1>y_2>...>y_n$ 成立，如上图 4-5b 所示。
++ 现在考虑应当如何选取区间，通过观察会发现，$I_1$ 右边有一段是一定不会和其他区间重叠的，如果把它去掉，那么 $I_1$ 的左边剩余部分就会被 $I_2$ 包含，由图 4-5a 的情况可知，应当选择 $I_1$。
++ 因此对这种情况，**总是先选择左端点最大的区间。**
+
+例题：[区间不相交问题](https://sunnywhy.com/sfbj/4/4/152)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+//变量定义
+struct Inteval
+{
+    int x,y;//开区间左右端点
+};
+
+//比较函数
+bool cmp(Inteval a,Inteval b)
+{
+    if(a.x!=b.x)
+        return a.x > b.x;//先按左端点从大到小排序
+    else
+        return a.y < b.y;//左端点相同时按右端点从小到大排序
+}
+
+//主函数
+int main()
+{
+    int n;
+    vector<Inteval> vi;
+    scanf("%d",&n);
+    for(int i=0;i<n;i++)
+    {
+        Inteval in;
+        scanf("%d %d",&in.x,&in.y);
+        vi.push_back(in);
+    }
+    sort(vi.begin(),vi.end(),cmp);//把区间排序
+    //ans记录不相交区间个数，lastX记录上一个被选中区间的左端点
+    int ans = 1,lastX = vi[0].x;
+    for(int i=1;i<n;i++)//关键：从一开始循环,因为第一个自身天然算进去了
+    {
+        if(vi[i].y <= lastX)//如果该区间右端点lastX左边
+        {
+            lastX = vi[i].x;
+            ans++;
+        }
+    }
+    printf("%d\n",ans);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ **总结：**
++ 值得注意的是，总是先选择**右端点最小**的区间的策略也是可行的，可以模仿上面思路推导，并写出相应代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+//变量定义
+struct Inteval
+{
+    int x,y;//开区间左右端点
+};
+
+//比较函数
+bool cmp(Inteval a,Inteval b)
+{
+    if(a.y!=b.y)
+        return a.y < b.y;//先按右端点从小到大排序
+    else
+        return a.x > b.x;//右端点相同时按左端点从大到小排序
+}
+
+//主函数
+int main()
+{
+    int n;
+    vector<Inteval> vi;
+    scanf("%d",&n);
+    for(int i=0;i<n;i++)
+    {
+        Inteval in;
+        scanf("%d %d",&in.x,&in.y);
+        vi.push_back(in);
+    }
+    sort(vi.begin(),vi.end(),cmp);//把区间排序
+    
+    //ans记录不相交区间个数，lastY记录上一个被选中区间的右端点
+    int ans = 1,lastY = vi[0].y;
+    for(int i=1;i<n;i++)//关键：从一开始循环,因为第一个自身天然算进去了
+    {
+        if(vi[i].x >= lastY)//如果该区间左端点lastY右边
+        {
+            lastY = vi[i].y;
+            ans++;
+        }
+    }
+    printf("%d\n",ans);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 与上述问题相类似的是**区间选点问题：**
++ 给出 `N` 个闭区间 `[x, y]`，求至少需要确定多少个点，才能使每个闭区间中都至少存在一个点。
++ 例如对于**闭区间**`[1,4]`、`[2,6]`、`[5,7]` 来说，需要两个点（例如 `3`、`5`）才能保证每个闭区间内都至少有一个点。
++ 事实上，这个问题和区间不相交的策略是一致的。
++ 首先，回到图 4-5 a，如果闭区间 $I_1$ 被闭区间 $I_2$ 包含，那么在 $I_1$ 中取点可以保证这个点一定在 $I_2$ 内。
++ 接着，把所有区间按左端点从大到小排序，去除掉区间包含的情况，就可以到图 4-5 b。
++ 显然，由于每个闭区间中都需要存在一个点，因此对左端点最大的区间 $I_1$ 来说，取哪个点可以让它尽可能多地覆盖其他区间？
++ 很显然，只要取左端点即可，这样这个点就能覆盖到尽可能多的区间。
++ 因此**区间选点问题**代码只需要把**区间不相交问题**代码中的条件 `vi[i].y <= lastX` 改为 `vi[i].y < lastX` 即可！
+例题：[区间选点问题](https://sunnywhy.com/sfbj/4/4/153)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+//变量定义
+struct Inteval
+{
+    int x,y;//开区间左右端点
+};
+
+//比较函数
+bool cmp(Inteval a,Inteval b)
+{
+    if(a.x!=b.x)
+        return a.x > b.x;//先按左端点从大到小排序
+    else
+        return a.y < b.y;//左端点相同时按右端点从小到大排序
+}
+
+//主函数
+int main()
+{
+    int n;
+    vector<Inteval> vi;
+    scanf("%d",&n);
+    for(int i=0;i<n;i++)
+    {
+        Inteval in;
+        scanf("%d %d",&in.x,&in.y);
+        vi.push_back(in);
+    }
+    sort(vi.begin(),vi.end(),cmp);//把区间排序
+    //ans记录不相交区间个数，lastX记录上一个被选中区间的左端点
+    int ans = 1,lastX = vi[0].x;
+    for(int i=1;i<n;i++)//从一开始循环,因为第一个自身天然算进去了
+    {
+        if(vi[i].y < lastX)//关键：如果该区间右端点lastX左边
+        {
+            lastX = vi[i].x;
+            ans++;
+        }
+    }
+    printf("%d\n",ans);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总的来说，贪心是用来解决一类**最优化问题**，并希望**由局部最优策略来推得全局最优结果**的算法思想。
++ 贪心算法适用的问题一定满足**最优子结构**性质，即一个问题的最优解可以由它的子问题的最优解有效地构造出来。
++ 显然，不是所有问题都适合使用贪心法，但是这并不妨碍**贪心算法**成为一个简洁、实用、高效的算法。
