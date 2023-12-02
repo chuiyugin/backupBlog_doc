@@ -6928,5 +6928,68 @@ int main()
 + 贪心算法适用的问题一定满足**最优子结构**性质，即一个问题的最优解可以由它的子问题的最优解有效地构造出来。
 + 显然，不是所有问题都适合使用贪心法，但是这并不妨碍**贪心算法**成为一个简洁、实用、高效的算法。
 
+#### 贪心算法例题
+例题：[拼接最小数](https://sunnywhy.com/sfbj/4/4/154)
++ **思路：**
++ 给定 `n` 个可能含有前导 `0` 的数字串，将它们按任意顺序拼接，使生成的整数最小。
++ 这道题其实思路很简单，就是对输入的字符串进行排序，然后就是前导 `0`，和全部为 `0` 的情况的特例考虑一下。
++ 但其实事实上会有个小坑点在里面，就是排序不是简单的字符串`a<b`。
++ 因为会有这样的例子：
++ `47`，`470` 和 `470`，如果要输出应该是 `47047047` 这样比 `47470470` 要小！ 
++ 因此排序应该是 `a+b < b+a`；
++ 代码如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+//比较函数
+bool cmp(string a,string b)
+{
+    return a+b < b+a;//注意:关键点
+}
+
+//主函数
+int main()
+{
+    int n;
+    scanf("%d",&n);
+    vector<string> vi;
+    string str;
+    for(int i=0;i<n;i++)
+    {
+        cin >> str;
+        vi.push_back(str);
+    }
+    //排序
+    sort(vi.begin(),vi.end(),cmp);
+    //输出答案
+    string ans = "";
+    for(int i=0;i<n;i++)
+    {
+        ans+=vi[i];
+    }
+    //去除前导0
+    while(ans[0]=='0')
+    {
+        ans.erase(ans.begin());
+    }
+    if(ans.length()==0)
+        printf("0");
+    else
+        cout << ans << endl;
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：在做贪心问题的时候注意看清题意并找出题目中和自己代码中的需要关注的细节，必要时可以举些例子来更清楚地理解。
+
 ### 二分
 #### 二分查找
