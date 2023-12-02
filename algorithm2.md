@@ -7046,7 +7046,48 @@ int main()
 + 需要注意的是，二分查找的过程与序列的下标从 `0` 开始还是从 `1` 开始无关，整个过程是相同的。
 + 根据上述基础，给出在**严格递增序列**中查找给定的数 `x` 的代码：
 ```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
 
+//二分查找函数
+//A[]为严格递增序列，left为二分下界，right为二分上界，x为欲查询数
+//二分区间为左闭右闭[left,right]，传入初值为[0,n-1]
+int binarySearch(int A[],int left,int right,int x)
+{
+    int mid; //mid为left和right的中点
+    while(left <= right) //如果left>right就没办法形成闭区间
+    {
+        mid = (left+right)/2; //取中点
+        if(A[mid]==x) 
+            return mid;//找到x，返回下标
+        else if(A[mid]>x)//中间数大于查询数
+            right = mid -1;//往左子区间查找
+        else
+            left = mid + 1;//往右子区间查找
+    }
+    return -1;//查找失败，返回-1
+}
+
+//主函数
+int main()
+{
+    const int n = 10;
+    int A[n] = {1,3,4,6,7,8,10,11,12,15};
+    printf("%d %d\n",binarySearch(A,0,n-1,6),binarySearch(A,0,n-1,9));
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
 ```
-
-
++ 输出：
+```text
+3 -1
+```
++ 如果是递减序列，只需要把上述代码中 `A[mid]>x` 改为 `A[mid]<x` 即可。
