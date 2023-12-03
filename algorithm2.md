@@ -7142,4 +7142,38 @@ int lower_bound(int A[],int left,int right,int x)
 + 首先，二分下界是 `0` 是显然的，但是二分上界是 `n-1` 还是 `n` 呢？
 + 考虑到欲查询元素有可能比序列中的所有元素都要大，此时应当返回 `n`（假设它存在，它应该在的位置），因此二分上界是 `n`，故二分的初始区间为 `[left,right]=[0,n]`。
 
++ 接下来考虑第二个小问题：**求序列中第一个大于 x 的元素的位置。**
++ 做法是类似的：
++ 假设当前区间 `[left,right]`，那么可以根据 `mid` 位置的元素与欲查询元素 `x` 的大小来判断应当往哪个子区间继续查找：
+1. 如果 `A[mid]>x`，说明第一个大于 `x` 的元素的位置一定在 `mid` 处或 `mid` 的左侧，应往左子区间 `[left,mid]` 继续查询。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231203194559.png)
+2. 如果 `A[mid]≤x`，说明第一个大于 `x` 的元素的位置一定在 `mid` 的右侧，应往右子区间 `[mid+1,right]` 继续查询。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231203195313.png)
++ 于是可以写出寻找**第一个大于** `x` 的函数代码：
+```cpp
+//A[]为递增序列，x为欲查询数，函数返回第一个大于x的元素位置
+//二分区间为左闭右闭[left,right]，传入初值为[0,n]
+int upper_bound(int A[],int left,int right,int x)
+{
+    int mid; //mid为left和right的中点
+    while(left<right)//对[left,right]来说，left==right意味着找到唯一位置
+    {
+        mid = (left+right)/2;//取中点
+        if(A[mid]>x)//中间的数大于x
+        {
+            right = mid;//往左区间[left,mid]查找
+        }
+        else
+        {
+            left = mid + 1;//往右子区间[mid+1,right]查找
+        }
+    }
+    return left;//返回L的位置
+}
+```
++ 不难发现，和 `lower_bound` 函数的代码相比，`upper_bound` 函数只是把代码中的 `A[mid]≥x` 改成了 `A[mid]>x`，其他完全相同。
+
+
 
