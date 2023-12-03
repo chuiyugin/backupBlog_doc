@@ -1,9 +1,12 @@
 {
   "accentColor": "#05c1ff",
-  "baseFontSize": 25,
+  "baseFontSize": 22,
   "theme": "obsidian",
-  "cssTheme": "Minimal",
+  "cssTheme": "Blue Topaz",
   "translucency": false,
   "nativeMenus": false,
-  "monospaceFontFamily": ""
+  "monospaceFontFamily": "",
+  "enabledCssSnippets": [
+    "pic_mid"
+  ]
 }

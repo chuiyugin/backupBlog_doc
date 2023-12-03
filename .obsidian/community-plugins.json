@@ -8,5 +8,7 @@
   "highlightr-plugin",
   "obsidian-checklist-plugin",
   "obsidian-git",
-  "obsidian-style-settings"
+  "obsidian-style-settings",
+  "mousewheel-image-zoom",
+  "editor-width-slider"
 ]

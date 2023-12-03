@@ -7005,42 +7005,42 @@ int main()
 1. 如果 `A[mid]==x`，说明查找成功，退出查询。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202141728.png)
-2. 如果 `A[mid]>x`，说明元素 x 在 `mid` 位置的左边，因此往左子区间 `[left, mid-1]` 继续查找。
+2. 如果 `A[mid]>x`，说明元素 `x` 在 `mid` 位置的左边，因此往左子区间 `[left, mid-1]` 继续查找。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202142141.png)
-3. 如果 `A[mid]<x`，说明元素 x 在 `mid` 位置的右边，因此往右子区间 `[mid+1, right]` 继续查找。
+3. 如果 `A[mid]<x`，说明元素 `x` 在 `mid` 位置的右边，因此往右子区间 `[mid+1, right]` 继续查找。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202142301.png)
 + 二分查找的高效之处在于，每一步都可以去除当前区间的一半元素，因此时间复杂度是 $O(logn)$，这是十分优秀的。
 + 为了更好地解释二分查找地流程，举一个例子来模拟二分查找地过程：
 + 现在需要从序列 `A={3,7,8,11,15,21,33,52,66,88}` 中查询数字 11 和 34 的位置，其中序列下标从 1 到 10。
 + 首先是 `11` 的查询过程，令 `left=1`、`right=10`，表示当前查询的下标范围：
-1. `[left, right]=[1,10]`，因此下标中点 `mid=(left+right)/2=5`。由于 `A[mid]=A[5]=15`，而 `15>11`，说明需要在 `[left, mid-1]` 继续查找，因此令 `right=mid-1=4`。
+1. `[left,right]=[1,10]`，因此下标中点 `mid=(left+right)/2=5`。由于 `A[mid]=A[5]=15`，而 `15>11`，说明需要在 `[left,mid-1]` 继续查找，因此令 `right=mid-1=4`。
 
-![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202143556.png)
-2. `[left, right]=[1,4]`，因此下标中点 `mid=(left+right)/2=2`。由于 `A[mid]=A[2]=7`，而 `7<11`，说明需要在 `[mid+1, right]` 继续查找，因此令 `left=mid+1=3`。 
+![|525](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202143556.png)
+2. `[left,right]=[1,4]`，因此下标中点 `mid=(left+right)/2=2`。由于 `A[mid]=A[2]=7`，而 `7<11`，说明需要在 `[mid+1,right]` 继续查找，因此令 `left=mid+1=3`。 
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202143824.png)
-3. `[left, right]=[3,4]`，因此下标中点 `mid=(left+right)/2=3`。由于 `A[mid]=A[3]=8`，而 `8<11`，说明需要在 `[mid+1, right]` 继续查找，因此令 `left=mid+1=4`。 
+3. `[left,right]=[3,4]`，因此下标中点 `mid=(left+right)/2=3`。由于 `A[mid]=A[3]=8`，而 `8<11`，说明需要在 `[mid+1,right]` 继续查找，因此令 `left=mid+1=4`。 
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202144010.png)
-4. `[left, right]=[4,4]`，因此下标中点 `mid=(left+right)/2=4`。由于 `A[mid]=A[4]=11`，而 `11==11`，说明找到了欲查询的数字，因此结束算法，返回下标 4。
+4. `[left,right]=[4,4]`，因此下标中点 `mid=(left+right)/2=4`。由于 `A[mid]=A[4]=11`，而 `11==11`，说明找到了欲查询的数字，因此结束算法，返回下标 4。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202144206.png)
 + 接下来是 `34` 的查询过程，同样令 `left=1`、`right=10`：
-1. `[left, right]=[1,10]`，因此下标中点 `mid=(left+right)/2=5`。由于 `A[mid]=A[5]=15`，而 `15<34`，说明需要在 `[mid+1, right]` 继续查找，因此令 `left=mid+1=6`。
+1. `[left,right]=[1,10]`，因此下标中点 `mid=(left+right)/2=5`。由于 `A[mid]=A[5]=15`，而 `15<34`，说明需要在 `[mid+1,right]` 继续查找，因此令 `left=mid+1=6`。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202144543.png)
-2. `[left, right]=[6,10]`，因此下标中点 `mid=(left+right)/2=8`。由于 `A[mid]=A[8]=52`，而 `52>34`，说明需要在 `[left, mid-1]` 继续查找，因此令 `right=mid-1=7`。
+2. `[left,right]=[6,10]`，因此下标中点 `mid=(left+right)/2=8`。由于 `A[mid]=A[8]=52`，而 `52>34`，说明需要在 `[left,mid-1]` 继续查找，因此令 `right=mid-1=7`。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202144805.png)
-3. `[left, right]=[6,7]`，因此下标中点 `mid=(left+right)/2=6`。由于 `A[mid]=A[6]=21`，而 `21<34`，说明需要在 `[mid+1, right]` 继续查找，因此令 `left=mid+1=7`。
+3. `[left,right]=[6,7]`，因此下标中点 `mid=(left+right)/2=6`。由于 `A[mid]=A[6]=21`，而 `21<34`，说明需要在 `[mid+1,right]` 继续查找，因此令 `left=mid+1=7`。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202145014.png)
-4. `[left, right]=[7,7]`，因此下标中点 `mid=(left+right)/2=7`。由于 `A[mid]=A[7]=33`，而 `33<34`，说明需要在 `[mid+1, right]` 继续查找，因此令 `left=mid+1=8`。
+4. `[left,right]=[7,7]`，因此下标中点 `mid=(left+right)/2=7`。由于 `A[mid]=A[7]=33`，而 `33<34`，说明需要在 `[mid+1,right]` 继续查找，因此令 `left=mid+1=8`。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202145422.png)
-5. `[left, right]=[8,7]`，由于 `left>right`，因此查找失败，说明序列不存在 `34`。
+5. `[left,right]=[8,7]`，由于 `left>right`，因此查找失败，说明序列不存在 `34`。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202145614.png)
 + 需要注意的是，二分查找的过程与序列的下标从 `0` 开始还是从 `1` 开始无关，整个过程是相同的。
@@ -7109,4 +7109,9 @@ int main()
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231203124543.png)
 + 由此可以写出对应代码：
+```cpp
+
+```
+
+
 
