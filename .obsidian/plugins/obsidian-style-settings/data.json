@@ -14,5 +14,6 @@
   "blue-topaz-theme@@blur-depth": 10,
   "Blue-Topaz-Codebox-Highlight@@code-box-style-option": "codebox-default-style",
   "Blue-Topaz-Codebox-Highlight@@blur-codebox-frosted-glass": 2,
-  "Blue-Topaz-Codebox-Highlight@@code-line-number": false
+  "Blue-Topaz-Codebox-Highlight@@code-line-number": false,
+  "blue-topaz-theme@@file-line-width": 60
 }

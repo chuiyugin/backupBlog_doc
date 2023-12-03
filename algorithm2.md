@@ -7024,7 +7024,7 @@ int main()
 3. `[left,right]=[3,4]`，因此下标中点 `mid=(left+right)/2=3`。由于 `A[mid]=A[3]=8`，而 `8<11`，说明需要在 `[mid+1,right]` 继续查找，因此令 `left=mid+1=4`。 
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202144010.png)
-4. `[left,right]=[4,4]`，因此下标中点 `mid=(left+right)/2=4`。由于 `A[mid]=A[4]=11`，而 `11==11`，说明找到了欲查询的数字，因此结束算法，返回下标 4。
+4. `[left,right]=[4,4]`，因此下标中点 `mid=(left+right)/2=4`。由于`A[mid]=A[4]=11`，而 `11==11`，说明找到了欲查询的数字，因此结束算法，返回下标 4。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231202144206.png)
 + 接下来是 `34` 的查询过程，同样令 `left=1`、`right=10`：
@@ -7081,7 +7081,10 @@ int main()
 {
     const int n = 10;
     int A[n] = {1,3,4,6,7,8,10,11,12,15};
-    printf("%d %d\n",binarySearch(A,0,n-1,6),binarySearch(A,0,n-1,9));
+    int s,t;
+    s=binarySearch(A,0,n-1,6);
+    t=binarySearch(A,0,n-1,9);
+    printf("%d %d\n",s,t);
     system("pause");// 防止运行后自动退出，需头文件stdlib.h
     return 0;
 }
@@ -7108,10 +7111,35 @@ int main()
 2. 如果 `A[mid]<x`，说明第一个大于等于 `x` 的元素位置一定在 `mid` 的右侧，应该往右子区间 `[mid+1,right]` 继续查询，即令 `left=mid+1`。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231203124543.png)
-+ 由此可以写出对应代码：
++ 由此可以写出对应**函数**的代码：
 ```cpp
-
+//A[]为递增序列，x为欲查询数，函数返回第一个大于等于x的元素位置
+//二分区间为左闭右闭[left,right]，传入初值为[0,n]
+int lower_bound(int A[],int left,int right,int x)
+{
+    int mid; //mid为left和right的中点
+    while(left<right)
+    {
+        mid = (left+right)/2;//取中点
+        if(A[mid]>=x)//中间的数大于等于x
+        {
+            right = mid;//往左区间[left,mid]查找
+        }
+        else
+        {
+            left = mid + 1;//往右子区间[mid+1,right]查找
+        }
+    }
+    return left;//返回L(夹出来)的位置
+}
 ```
-
++ 上述代码有几个需要注意的地方：
+1. 循环条件为 `left<right` 而非之前的 `left≤right`，这是由问题本身决定的。
++ 在上一个问题中，需要当元素不存在时返回 `-1`，这样当 `left>right` 时 `[left,right]` 就不再是闭区间，可以以此作为元素不存在的判定原则，因此需要在 `left≤right` 满足时一直执行；
++ 但是如果想要返回第一个大于等于 `x` 的元素的位置，就不需要判断 `x` 本身是否存在，因为就算它不存在，返回的也是“假设它存在，它应该在的位置”，于是 `left==right` 时，`[left,right]` 刚好能夹出唯一的位置，就是需要的结果，因此只需要当 `left<right` 时让循环一直执行即可。
+2. 由于当 `left==right` 时 `while` 循环停止，因此最后的返回值既可以是 `left`，也可以是 `right`。
+3. 二分的初始区间应当能覆盖到所有可能返回的结果。
++ 首先，二分下界是 `0` 是显然的，但是二分上界是 `n-1` 还是 `n` 呢？
++ 考虑到欲查询元素有可能比序列中的所有元素都要大，此时应当返回 `n`（假设它存在，它应该在的位置），因此二分上界是 `n`，故二分的初始区间为 `[left,right]=[0,n]`。
 
 
