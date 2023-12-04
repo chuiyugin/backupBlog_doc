@@ -7452,7 +7452,7 @@ int solve(int K)
             left = mid+1;//往右子区间[mid,right]继续逼近
         }
     }
-    return left;//返回近似值
+    return left;//返回夹出的数值
 }
 
 //主函数
