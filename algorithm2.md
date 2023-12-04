@@ -7239,4 +7239,85 @@ int solve(int A[],int left,int right,int x)
 + 上面是应用于整数情况的二分查询问题，下面介绍二分法的其他应用：如何计算 $\sqrt{2}$ 的近似值。
 + 对 $f(x)=x^2$ 来说，在 $x\in[1,2]$ 范围内，$f(x)$ 是随着 $x$ 增大而增大的，这就给二分法创造了条件，即可以采用如下策略逼近 $\sqrt{2}$ 的值。(注意：由于 $\sqrt{2}$ 是无理数，因此只能获得它的近似值，这里不妨以精确到 $10^{-5}$ 为例)
 + 令浮点型 `left` 和 `right` 的初值分别为 `1` 和 `2`，根据 `left` 和 `right` 的中点 `mid` 处 $f(x)$ 的值与 `2` 的大小来选择子区间进行逼近；
+1. 如果 $f(mid)>2$，说明 $mid>\sqrt{2}$,应当在 `[left,mid]` 的范围内继续逼近，故令 `right==mid`。
 
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231204131127.png)
+2. 如果 $f(mid)<2$，说明 $mid<\sqrt{2}$,应当在 `[mid,right]` 的范围内继续逼近，故令 `left==mid`。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231204131330.png)
++ 上述两个步骤当 $right-left<10^{-5}$ 时结束。
++ 显然当 `left` 与 `right` 的距离小于 $10^{-5}$ 时已经满足精度要求，`mid` 即为所求的近似值。
++ 通过上述思想可以得到如下代码，其中 eps 为精度，1 e-5 即为 $10^{-5}$：
+```cpp
+//常数定义
+const double eps = 1e-5;//精度
+//函数
+double f(double x)
+{
+    return x*x;
+}
+//二分法求解函数
+double calSqrt()
+{
+    double left = 1;
+    double right = 2;//[left,right] = [1,2]
+    double mid;
+    while(right - left < eps)
+    {
+        mid = (left+right)/2;//取left与right的中点
+        if(f(mid)>2) //mid > sqrt(2)
+        {
+            right==mid;//往左子区间[left,mid]继续逼近
+        }
+        else//mid < sqrt(2)
+        {
+            left = mid;//往右子区间[mid,right]继续逼近
+        }
+    }
+    return mid;//返回近似值
+}
+```
++ 事实上，计算 $\sqrt{2}$ 的近似值的问题其实是这样一个问题的特例：
++ 给定一个定义在 `[L,R]` 上的单调函数 $f(x)$，求方程 $f(x)=0$ 的根。
++ 同样，假设精度要求为 $eps=10^{-5}$，函数 $f(x)$ 在 `[L,R]` 上递增，并令 `left` 与 `right` 的初值分别为 `L` 和 `R`，然后就可以根据 `left` 与 `right` 的中点 `mid` 的函数值 $f(mid)$ 与 `0` 的大小关系来判断应该往哪个子区间继续逼近 $f(x)=0$ 的根
+1. 如果 $f(mid)>0$，说明 $f(x)=0$ 的根在 `mid` 左侧, 应当在 `[left,mid]` 的范围内继续逼近，故令 `right==mid`。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231204133657.png)
+2. 如果 $f(mid)<0$，说明 $f(x)=0$ 的根在 `mid` 右侧, 应当在 `[mid,right]` 的范围内继续逼近，故令 `left==mid`。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231204133818.png)
++ 上述的步骤当 $right-left<10^{-5}$ 时达到精度要求时结束算法，返回当前的 `mid` 值即为 $f(x)=0$ 的根。
++ 由此写出对应的二分法代码：
+```cpp
+//常数定义
+const double eps = 1e-5;//精度
+//函数
+double f(double x)
+{
+    return ......;//根据所求函数表达式更改
+}
+//二分法求解函数
+double solve(double L,double R)
+{
+    double left = L;
+    double right = R;//[left,right] = [L,R]
+    double mid;
+    while(right - left < eps)
+    {
+        mid = (left+right)/2;//取left与right的中点
+        if(f(mid)>0) //mid > sqrt(2)
+        {
+            right==mid;//往左子区间[left,mid]继续逼近
+        }
+        else//mid < sqrt(2)
+        {
+            left = mid;//往右子区间[mid,right]继续逼近
+        }
+    }
+    return mid;//返回近似值
+}
+```
++ 显然，计算 $\sqrt{2}$ 的近似值等价于求 $f(x)=x^2-2=0$ 在 `[1,2]` 范围内的根。
++ 另外，如果 $f(x)$ 递减，只需要把代码中的 $f(mid)>0$ 改为 $f(mid)<0$ 即可。
++ 接下看一个**装水问题：**
++ 
