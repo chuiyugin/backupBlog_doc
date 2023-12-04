@@ -7320,4 +7320,83 @@ double solve(double L,double R)
 + 显然，计算 $\sqrt{2}$ 的近似值等价于求 $f(x)=x^2-2=0$ 在 `[1,2]` 范围内的根。
 + 另外，如果 $f(x)$ 递减，只需要把代码中的 $f(mid)>0$ 改为 $f(mid)<0$ 即可。
 + 接下看一个**装水问题：**
-+ 
++ 有一个侧面看去是半圆的储水装置，该半圆的半径为 `R`，要求往里面装入高度为 `h` 的水，使其在侧面看去的面积与半圆面积的比例恰好为 `r`，如图 4-6 所示。现在给定 R 和 r，求高度 h。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231204140915.png)
++ 在这个问题中，需要寻找水面高度 `h` 与面积比例 `r` 之间的关系。
++ 显然的是，随着水面升高，面积比例 `r` 一定是增大的。
++ 如果计算得到的 `r` 比给定数值要大，说明高度过高，范围应缩减至较低的一半；
++ 如果计算得到的 `r` 比给定数值要小，说明高度过低，范围应缩减至较高的一半；
++ 根据上述关系推导出函数表达式 $r=f(h)$，可以参考如下例题：
+
+例题：[装水问题](https://sunnywhy.com/sfbj/4/5/171)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+//常数定义
+const double eps = 1e-6;//精度
+const double PI = acos(-1.0);
+//函数表达式
+double f(double R,double h)
+{
+    double alpha = 2*acos((R-h)/R);//夹角
+    double L = 2*sqrt(R*R-(R-h)*(R-h));//三角形底边长
+    double H = R-h;//三角形的高
+    double S1 = alpha*R*R/2-L*H/2;
+    double S2 = PI*R*R/2;
+    return S1/S2;
+}
+//二分法求解函数
+double solve(double R,double r)
+{
+    double left = 0;
+    double right = R;//[left,right] = [0,R]
+    double mid;
+    while(right - left > eps)
+    {
+        mid = (left+right)/2;//取left与right的中点
+        //printf("%f %f %f\n",mid,f(R,mid),r);
+        if(f(R,mid)>r) 
+        {
+            right = mid;//往左子区间[left,mid]继续逼近
+        }
+        else
+        {
+            left = mid;//往右子区间[mid,right]继续逼近
+        }
+    }
+    return mid;//返回近似值
+}
+
+//主函数
+int main()
+{
+    double R,r;
+    scanf("%lf%lf",&R,&r);
+    printf("%.2f\n",solve(R,r));
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 接下看一个**木棒切割问题：**
++ 给出 `N` 根木棒，长度均已知，现在希望通过切割它们来得到至少 `K` 段长度相等的木棒（长度必须是整数），问这些长度相等的木棒最长能有多长？
++ 例如对三根长度分别为 `10`、`24`、`15` 的木棒来说，假设 `K=7`，即需要至少 `7` 段长度相等的木棒，那么可以得到的最大长度为 `6`。
++ 在这种情况下，第一根木棒可以提供 `10/6=1` 段；
++ 第二根木棒可以提供 `24/6=4` 段；
++ 第三根木棒可以提供 `15/6=2` 段；
++ 因此达到了 `7` 段的要求。
++ 对于这个问题来说，可以注意到一个结论：
++ 如果长度相等的木棒长度 `L` 越长，那么可以得到的木棒段数 `k` 越少。
++ 从这个角度出发吧便可以想到本题的算法，即二分答案（最大长度 `L`），根据对当前长度 `L` 来说能得到的木棒段数 `k` 与 `K` 的大小关系进行二分。
++ 由于这个问题可以写成求解最后一个满足条件 `"k≥K"` 的长度 `L`，因此不妨转换为求解第一个满足条件 `"k<K"` 的长度 `L`，然后减 `1` 即可。
