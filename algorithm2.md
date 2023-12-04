@@ -7402,3 +7402,77 @@ int main()
 + 由于这个问题可以写成求解最后一个满足条件 `"k≥K"` 的长度 `L`，因此不妨转换为求解第一个满足条件 `"k<K"` 的长度 `L`，然后减 `1` 即可。
 
 例题：[木棒切割问题](https://sunnywhy.com/sfbj/4/5/172)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+//变量定义
+vector<int> vi;
+//比较函数
+bool cmp(int a,int b)
+{
+    return a>b;//从大到小排序
+}
+//表达式函数
+int f(int L)
+{
+    int sum=0;
+    for(vector<int>::iterator it=vi.begin();it!=vi.end();it++)
+    {
+        sum+=*it/L;
+    }
+    return sum;
+}
+//二分法求解函数
+int solve(int K)
+{
+    int left = 1;
+    //关键点：取值必须要大于最大值
+    int right = vi[0]+1;//[left,right] = [1,vi[0]+1]
+    int mid=(left+right)/2;//取left与right的中点
+    while(right > left)
+    {
+        mid = (left+right)/2;//取left与right的中点
+        if(f(mid)<K) //如果求解结果比期望的小，需要减小L
+        {
+            right = mid;//往左子区间[left,mid]继续逼近
+        }
+        else
+        {
+            left = mid+1;//往右子区间[mid,right]继续逼近
+        }
+    }
+    return left;//返回近似值
+}
+
+//主函数
+int main()
+{
+    int n,K;//木棒的根数、需要得到的长度相等的木棒根数
+    int num,ans,sum=0;
+    scanf("%d %d",&n,&K);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&num);
+        vi.push_back(num);
+    }
+    //从大到小排序
+    sort(vi.begin(),vi.end(),cmp);
+    ans = solve(K);
+    printf("%d",ans-1);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：这道题目同样需要注意左右区间的取值范围，比如右端点初始值需要大于元素中的最大值，例如 `vi[0]+1`。同时，需要关注 `L` 和 `k` 之间的关系。
++ 显然，木棒切割问题和前面的装水问题都属于**二分答案**的做法，即对题目所求的东西进行二分，来找到一个满足所需条件的解。
