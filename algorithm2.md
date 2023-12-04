@@ -7479,3 +7479,29 @@ int main()
 #### 快速幂
 + 先来看一个问题：
 + 给定三个整数 a、b、m（$a<10^9$ , $b<10^6$, $1<m<10^9$）, 求 $a^b$ %m。
++ 由于可能存在 $a^b$ 数据非常大，可能超出 `int32` 甚至 `int64` 的取值范围。
++ 因此上述问题的最简单解决方法是**循环取余法**，在每次操作时，就对边界进行取余操作，确保结果 `ans`，是在边界内的。
++ **循环取余法**是一种采用数学归纳法发现数学性质并将其应用于计算机程序的重要算法！
++ 把指数操作转换成一次次的乘法，每次相乘就取以此余数，使得数值不超过范围。
++ 代码：
+```cpp
+#include <cstdio>
+#include <stdio.h>
+#include <stdlib.h>
+typedef long long LL;
+
+int main() {
+    LL a=2;
+    LL b=3;
+    LL m=3;
+    LL ans=1;
+    for(int i=0;i<b;i++)
+    {
+        ans = ans*a%m;
+    }
+    printf("%ld",ans);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 代码中使用 `long long` 而不用 `int` 的原因是防止两个 `int` 变量相乘后溢出。
