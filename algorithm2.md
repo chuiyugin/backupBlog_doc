@@ -7594,3 +7594,4 @@ LL binaryPow_2(LL a,LL b,LL m)
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231205145807.png)
 ### 双指针 (two pointers)
 #### 什么是双指针 (two pointers)
++ 双指针 (two pointers) 是算法编程中一种非常重要思想，其思想十分简洁，但却提供了非常高的算法效率。
