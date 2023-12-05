@@ -7588,7 +7588,7 @@ LL binaryPow_2(LL a,LL b,LL m)
     return ans;
 }
 ```
-+ 在实际使用上，递归写法和迭代写法在效率上的差别并不明显。
++ 在实际使用上，**递归写法**和**迭代写法**在效率上的差别并不明显。
 + 当 b 等于 13 时，可以得到图 4-7 的模拟过程：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231205145807.png)
