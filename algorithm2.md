@@ -7237,93 +7237,6 @@ int solve(int A[],int left,int right,int x)
 + 最后指出，在目的是查找“序列中是否存在满足某条件的元素”，那么使用本小节**最开始**的二分查找写法最为合适。
 ##### 二分查找例题
 例题：[旋转数组](https://sunnywhy.com/sfbj/4/5/164)
-+ 代码：
-```cpp
-#include <stdio.h>
-#include <stdlib.h>
-#include <stack>
-#include <string>
-#include <iostream>
-#include <utility>
-#include <map>
-#include <algorithm>
-#include <vector>
-using namespace std;
-
-const int MAX = 100010;
-
-//输出第一个单峰序列最大数的序列下标
-//输入[left,right]=[0,n]
-int feng(int A[],int left,int right)
-{
-    while(left<right)
-    {
-        int mid;
-        mid=left/2+right/2;
-        if(A[mid-1]>A[mid])//一定在左边
-        {
-            right = mid;
-        }
-        else
-        {
-            left = mid+1;
-        }
-    }
-    return left-1;//返回夹到的位置
-}
-
-//二分查找函数
-//A[]为严格递增序列，left为二分下界，right为二分上界，x为欲查询数
-//二分区间为左闭右闭[left,right]，传入初值为[0,n-1]
-int binarySearch(int A[],int left,int right,int x)
-{
-    int mid; //mid为left和right的中点
-    while(left <= right) //如果left>right就没办法形成闭区间
-    {
-        mid = (left+right)/2; //取中点
-        if(A[mid]==x) 
-            return mid;//找到x，返回下标
-        else if(A[mid]>x)//中间数大于查询数
-            right = mid - 1;//往左子区间查找
-        else
-            left = mid + 1;//往右子区间查找
-    }
-    return -1;//查找失败，返回-1
-}
-//解决函数
-int solve(int A[],int left,int right,int x,int n)
-{
-    int my_feng=feng(A,0,n);//找到单峰所在位置
-    int ans_left,ans_right;
-    ans_left=binarySearch(A,left,my_feng,x);//左边递增序列
-    ans_right=binarySearch(A,my_feng,right,x);//右边递增序列
-    if(ans_left==-1&&ans_right==-1)
-        return -1;
-    else if(ans_left!=-1&&ans_right==-1)
-        return ans_left;
-    else
-        return ans_right;
-}
-
-//主函数
-int main()
-{
-    int A[MAX];
-    int x;
-    int n;
-    int ans;
-    scanf("%d %d",&n,&x);
-    for(int i=0;i<n;i++)
-    {
-        scanf("%d",&A[i]);
-    }
-    ans = solve(A,0,n-1,x,n);
-    printf("%d",ans);
-    system("pause");// 防止运行后自动退出，需头文件stdlib.h
-    return 0;
-}
-```
-+ 总结：这道题目主要难点在于找到旋转数组的最大值，随后就可以将其分为左右两边的严格单调递增的序列。
 
 #### 二分法拓展
 + 上面是应用于整数情况的二分查询问题，下面介绍二分法的其他应用：如何计算 $\sqrt{2}$ 的近似值。
@@ -7337,7 +7250,7 @@ int main()
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231204131330.png)
 + 上述两个步骤当 $right-left<10^{-5}$ 时结束。
 + 显然当 `left` 与 `right` 的距离小于 $10^{-5}$ 时已经满足精度要求，`mid` 即为所求的近似值。
-+ 通过上述思想可以得到如下代码，其中 eps 为精度，1 e-5 即为 $10^{-5}$：
++ 通过上述思想可以得到如下代码，其中 eps 为精度，1e-5 即为 $10^{-5}$：
 ```cpp
 //常数定义
 const double eps = 1e-5;//精度
