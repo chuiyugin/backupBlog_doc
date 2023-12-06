@@ -7262,12 +7262,12 @@ double calSqrt()
     double left = 1;
     double right = 2;//[left,right] = [1,2]
     double mid;
-    while(right - left < eps)
+    while(right - left > eps)
     {
         mid = (left+right)/2;//取left与right的中点
         if(f(mid)>2) //mid > sqrt(2)
         {
-            right==mid;//往左子区间[left,mid]继续逼近
+            right = mid;//往左子区间[left,mid]继续逼近
         }
         else//mid < sqrt(2)
         {
@@ -7302,12 +7302,12 @@ double solve(double L,double R)
     double left = L;
     double right = R;//[left,right] = [L,R]
     double mid;
-    while(right - left < eps)
+    while(right - left > eps)
     {
         mid = (left+right)/2;//取left与right的中点
         if(f(mid)>0) //mid > sqrt(2)
         {
-            right==mid;//往左子区间[left,mid]继续逼近
+            right = mid;//往左子区间[left,mid]继续逼近
         }
         else//mid < sqrt(2)
         {
