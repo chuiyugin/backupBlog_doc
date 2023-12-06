@@ -7235,6 +7235,96 @@ int solve(int A[],int left,int right,int x)
 + 上述模板和前面是等价的，只是在做法上稍有区别而已，尽量使用**左闭右闭**的模板，但最好能做到流畅推导两种写法。
 + 可以思考如何判断 `lower_bound` 函数和 `upper_bound` 函数的查询是否成功（注意：上界 `n` 的处理即可）。
 + 最后指出，在目的是查找“序列中是否存在满足某条件的元素”，那么使用本小节**最开始**的二分查找写法最为合适。
+##### 二分查找例题
+例题：[旋转数组](https://sunnywhy.com/sfbj/4/5/164)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+const int MAX = 100010;
+
+//输出第一个单峰序列最大数的序列下标
+//输入[left,right]=[0,n]
+int feng(int A[],int left,int right)
+{
+    while(left<right)
+    {
+        int mid;
+        mid=left/2+right/2;
+        if(A[mid-1]>A[mid])//一定在左边
+        {
+            right = mid;
+        }
+        else
+        {
+            left = mid+1;
+        }
+    }
+    return left-1;//返回夹到的位置
+}
+
+//二分查找函数
+//A[]为严格递增序列，left为二分下界，right为二分上界，x为欲查询数
+//二分区间为左闭右闭[left,right]，传入初值为[0,n-1]
+int binarySearch(int A[],int left,int right,int x)
+{
+    int mid; //mid为left和right的中点
+    while(left <= right) //如果left>right就没办法形成闭区间
+    {
+        mid = (left+right)/2; //取中点
+        if(A[mid]==x) 
+            return mid;//找到x，返回下标
+        else if(A[mid]>x)//中间数大于查询数
+            right = mid - 1;//往左子区间查找
+        else
+            left = mid + 1;//往右子区间查找
+    }
+    return -1;//查找失败，返回-1
+}
+//解决函数
+int solve(int A[],int left,int right,int x,int n)
+{
+    int my_feng=feng(A,0,n);//找到单峰所在位置
+    int ans_left,ans_right;
+    ans_left=binarySearch(A,left,my_feng,x);//左边递增序列
+    ans_right=binarySearch(A,my_feng,right,x);//右边递增序列
+    if(ans_left==-1&&ans_right==-1)
+        return -1;
+    else if(ans_left!=-1&&ans_right==-1)
+        return ans_left;
+    else
+        return ans_right;
+}
+
+//主函数
+int main()
+{
+    int A[MAX];
+    int x;
+    int n;
+    int ans;
+    scanf("%d %d",&n,&x);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&A[i]);
+    }
+    ans = solve(A,0,n-1,x,n);
+    printf("%d",ans);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：这道题目主要难点在于找到旋转数组的最大值，随后就可以将其分为左右两边的严格单调递增的序列。
+
 #### 二分法拓展
 + 上面是应用于整数情况的二分查询问题，下面介绍二分法的其他应用：如何计算 $\sqrt{2}$ 的近似值。
 + 对 $f(x)=x^2$ 来说，在 $x\in[1,2]$ 范围内，$f(x)$ 是随着 $x$ 增大而增大的，这就给二分法创造了条件，即可以采用如下策略逼近 $\sqrt{2}$ 的值。(注意：由于 $\sqrt{2}$ 是无理数，因此只能获得它的近似值，这里不妨以精确到 $10^{-5}$ 为例)
