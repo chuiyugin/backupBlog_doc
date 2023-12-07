@@ -7246,7 +7246,7 @@ int solve(int A[],int left,int right,int x)
 //寻找断点
     while(A[0]>=A[n-1]&&left<right)//保证是选择后的数组且left<right
     {
-        int mid=left/2+right/2;
+        int mid=(left+right)/2;//取中点
         //left和right一定分布在断点的左右两侧
         //mid有可能在断点的左边也有可能在断点的右边
         //通过观察可以判断，A[mid]>A[left]则断点一定在右边
@@ -7313,7 +7313,7 @@ int solve(int A[],int left,int right,int x,int n)
     //寻找断点
     while(A[0]>=A[n-1]&&left<right)
     {
-        int mid=left/2+right/2;
+        int mid=(left+right)/2;//取中点
         //printf("mid=%d\n",mid);
         if(A[mid]>A[left])
         {
@@ -7377,6 +7377,107 @@ int main()
     return 0;
 }
 ```
+
+例题：[旋转数组的中位数](https://sunnywhy.com/sfbj/4/5/168)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+const int MAX = 100010;
+
+//解决函数
+double solve(double A[],int left,int right,int n)
+{
+    //寻找断点
+    while(A[0]>=A[n-1]&&left<right)
+    {
+        int mid=(left+right)/2;
+        //printf("left=%d,right=%d,mid=%d\n",left,right,mid);
+        if(A[mid]>A[left])
+        {
+            left=mid;
+        }
+        else
+        {
+            right=mid;
+        }
+    }
+    int point=left;//存储断点
+    //printf("%d\n",point);
+    //关键在于寻找中位数的位置与断点之间的关系
+    if(point==0)
+    {
+        if(n%2==1)//奇数
+        {
+            return A[n/2];
+        }
+        else
+        {
+            return (A[n/2-1]+A[n/2])/2;
+        }
+    }
+    else
+    {
+        int ans;
+        if(n%2==1)//奇数
+        {
+            int index1;
+            if(point+n/2+1>n-1)
+            {
+                index1=point-n/2;
+            }
+            else
+                index1=point+n/2+1;
+            return A[index1];
+        }
+        else
+        {
+            int index1,index2;
+            if(point+n/2+1>n-1)
+            {
+                index1=point-n/2+1;
+            }
+            else
+                index1=point+n/2+1;
+            if(point+n/2>n-1)
+            {
+                index2=point-n/2;
+            }
+            else
+                index2=point+n/2;
+            return (A[index1]+A[index2])/2;
+        }
+    }
+}
+
+//主函数
+int main()
+{
+    double A[MAX];
+    int x;
+    int n;
+    double ans;
+    scanf("%d",&n);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%lf",&A[i]);
+    }
+    ans = solve(A,0,n-1,n);
+    printf("%.1f",ans);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：这道题目的关键点在于寻找**中位数的位置与断点之间的关系**！
 
 #### 二分法拓展
 + 上面是应用于整数情况的二分查询问题，下面介绍二分法的其他应用：如何计算 $\sqrt{2}$ 的近似值。
