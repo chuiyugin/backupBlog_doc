@@ -7265,7 +7265,118 @@ int solve(int A[],int left,int right,int x)
 + **关键点**：通过上述代码不难发现， `left` 和 `right` 一定分布在断点的左右两侧，而 `mid` 有可能在断点的左边也有可能在断点的右边。
 + 通过观察可以判断 `A[mid]>A[left]` 则断点一定在右边，反之则一定在左边。
 + 循环判断条件 `A[0]>=A[n-1]` 的**分析**：**题目所给的数据并不一定是按照升序或者降序排列的**。例如令数据 `[0,1,2]` 在下标为 `0` 的位置上进行旋转，则旋转后的数组仍为 `[0,1,2]`，这个时候就不需要进行第一步断点的搜寻，而是可以直接按照传统的二分法进行求解。
-+ 
++ 通过 `A[0]>=A[n-1]` 来判断数组是否旋转的原因：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231207132201.png)
++ 接下来是判断目标元素 `x` 在断点的左半边还是右半边，通过 `x>A[0]` 这一个条件即可：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231207132638.png)
++ 最后使用前面的 `lower_bound()` 函数来寻找目标元素 `x` 即可。
++ 完整代码如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+const int MAX = 100010;
+
+//A[]为递增序列，x为欲查询数，函数返回第一个大于等于x的元素位置
+//二分区间为左闭右闭[left,right]，传入初值为[0,n]
+int lower_bound(int A[],int left,int right,int x)
+{
+    int mid; //mid为left和right的中点
+    while(left<right)
+    {
+        mid = (left+right)/2;//取中点
+        if(A[mid]>=x)//中间的数大于等于x
+        {
+            right = mid;//往左区间[left,mid]查找
+        }
+        else
+        {
+            left = mid + 1;//往右子区间[mid+1,right]查找
+        }
+    }
+    return left;//返回L(夹出来)的位置
+}
+
+//解决函数
+int solve(int A[],int left,int right,int x,int n)
+{
+    //寻找断点
+    while(A[0]>=A[n-1]&&left<right)
+    {
+        int mid=left/2+right/2;
+        //printf("mid=%d\n",mid);
+        if(A[mid]>A[left])
+        {
+            left=mid;
+        }
+        else
+        {
+            right=mid;
+        }
+    }
+    int point=left;//存储断点
+    //return left;
+    //printf("point=%d\n",left);
+    //判断目标元素在断点的左半边还是右半边
+    if(x==A[0])
+        return 0;
+    else if(point!=0&&x>A[point])
+        return -1;
+    else if(point==0)
+    {
+        int ans=lower_bound(A,0,n,x);
+        if(A[ans]==x)
+            return ans;
+        else
+            return -1;
+    }
+    else if(x>A[0])//在左边
+    {
+        int ans=lower_bound(A,0,point,x);
+        if(A[ans]==x)
+            return ans;
+        else
+            return -1;
+    }
+    else//否则在右边
+    {
+        int ans=lower_bound(A,point,n-1,x);
+        if(A[ans]==x)
+            return ans;
+        else
+            return -1;
+    }
+}
+
+//主函数
+int main()
+{
+    int A[MAX];
+    int x;
+    int n,num;
+    int ans;
+    scanf("%d %d",&n,&x);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&num);
+        A[i]=num;
+    }
+    ans = solve(A,0,n-1,x,n);
+    printf("%d",ans);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
 
 #### 二分法拓展
 + 上面是应用于整数情况的二分查询问题，下面介绍二分法的其他应用：如何计算 $\sqrt{2}$ 的近似值。
