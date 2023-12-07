@@ -7481,7 +7481,7 @@ int main()
 
 例题：[双序列中位数](https://sunnywhy.com/sfbj/4/5/169)、[寻找两个有序数组的中位数](https://leetcode.cn/problems/median-of-two-sorted-arrays/description/)
 + 方法一：
-+ 类似于暴力解法，使用二分查找法中的 `upper_bound()` 函数寻找合适的位置合并两个数组，最后的到中位数，在 `leetcode` 上执行用时 `32ms`。
++ 类似于暴力解法，使用二分查找法中的 `upper_bound()` 函数寻找合适的位置合并两个数组，最后得到中位数结果，在 `leetcode` 上执行用时 `32ms`。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231207224451.png)
 + 代码：
