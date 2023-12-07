@@ -7479,6 +7479,77 @@ int main()
 ```
 + 总结：这道题目的关键点在于寻找**中位数的位置与断点之间的关系**！
 
+例题：[双序列中位数](https://sunnywhy.com/sfbj/4/5/169)、[寻找两个有序数组的中位数](https://leetcode.cn/problems/median-of-two-sorted-arrays/description/)
++ 方法一：
++ 类似于暴力解法，使用二分查找法中的 `upper_bound()` 函数寻找合适的位置合并两个数组，最后的到中位数，在 `leetcode` 上执行用时 `32ms`。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231207224451.png)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+//A[]为递增序列，x为欲查询数，函数返回第一个大于x的元素位置
+//二分区间为左闭右闭[left,right]，传入初值为[0,n]
+int upper_bound(vector<double>& A,int left,int right,int x)
+{
+    int mid; //mid为left和right的中点
+    while(left<right)//对[left,right]来说,left==right意味着找到唯一位置
+    {
+        mid = (left+right)/2;//取中点
+        if(A[mid]>x)//中间的数大于x
+        {
+            right = mid;//往左区间[left,mid]查找
+        }
+        else
+        {
+            left = mid + 1;//往右子区间[mid+1,right]查找
+        }
+    }
+    return left;//返回夹出来的位置
+}
+
+//主函数
+int main()
+{
+    vector<double> vi;
+    int m,n;
+    double num;
+    int index;
+    scanf("%d %d",&n,&m);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%lf",&num);
+        vi.push_back(num);
+    }
+    for(int i=0;i<m;i++)
+    {
+        scanf("%lf",&num);
+        index = upper_bound(vi,0,vi.size(),num);
+        vector<double>::iterator it = vi.begin();
+        vi.insert(it+index,num);
+    }
+    if(vi.size()%2==1)//奇数
+    {
+        printf("%.1f\n",vi[vi.size()/2]);
+    }
+    else
+    {
+        printf("%.1f\n",(vi[vi.size()/2-1]+vi[vi.size()/2])/2);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
 #### 二分法拓展
 + 上面是应用于整数情况的二分查询问题，下面介绍二分法的其他应用：如何计算 $\sqrt{2}$ 的近似值。
 + 对 $f(x)=x^2$ 来说，在 $x\in[1,2]$ 范围内，$f(x)$ 是随着 $x$ 增大而增大的，这就给二分法创造了条件，即可以采用如下策略逼近 $\sqrt{2}$ 的值。(注意：由于 $\sqrt{2}$ 是无理数，因此只能获得它的近似值，这里不妨以精确到 $10^{-5}$ 为例)
