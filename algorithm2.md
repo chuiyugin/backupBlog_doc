@@ -7550,6 +7550,144 @@ int main()
 }
 ```
 
++ 方法二：划分数组
++ 思路：
++ 中位数定义：在只有一个有序数组的时候，中位数把数组分割成两个部分。
++ 根据定义，需要分数组长度为奇数和偶数讨论：
++ 数组长度为偶数时，中位数有**两个**，其中一个是左边数组的最大值，另一个是右边数组的最小值。如下图所示：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231208130006.png)
++ 数组长度为奇数时，中位数有**一个**，不妨把中位数分到**左边数组**。如下图所示：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231208130204.png)
++ 在两个有序数组的时候，仍然可以把两个数组分割成两部分：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231208130619.png)
++ 我们可以使用一条分割线把两个数组分割成两部分，其中有以下**两个**条件：
+1. 红色分割线左边和右边的元素个数相等，或者左边元素的个数比右边元素个数多 1 个；
+2. 红色分割线**左边**的所有元素的数值**小于等于**红色分割线**右边**的所有元素的数值；
++ 那么中位数就一定只与红色分割线两侧的元素有关，确定这条红色分割线采用**二分查找法**！
++ **第一个条件：**
++ 例如**奇数**情况，分割线左边 `5` 个元素，右边 `4` 个元素：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231208131256.png)
++ 当两个数组的元素个数之和为奇数的时候，有 $size_{left}=size_{right}+1$ 
++ 例如**偶数**情况，分割线左边 `5` 个元素，右边 `5` 个元素：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231208133317.png)
++ 当两个数组的元素个数之和为偶数的时候，有 $size_{left}=size_{right}$ 
++ 假设数组 `1` 的长度为 `m`，假设数组 `2` 的长度为 `n`；
++ 当 `m+n` 为偶数的时候，$size_{left}=\frac{m+n}{2}$，由于整数除法是下取整，因此也可以有如下关系 $size_{left}=\frac{m+n}{2}=\frac{m+n+1}{2}$；
++ 当 `m+n` 为奇数的时候，$size_{left}=\frac{m+n+1}{2}$；
++ 因此，可以把上述两种方法合并，有 $size_{left}=\frac{m+n+1}{2}$；
++ 上述结论的好处是，不用分奇偶数进行讨论，只需要确定其中一个数组的分割线位置，另一个数组的分割线位置就可以通过公式计算出来。
++ **第二个条件：**
++ 红线左边的所有元素数值要**小于等于**红线右边的所有元素数值。由于两个数组都是有序数组，在**同一个数组**内，分割线一定满足左边的所有元素**小于等于**右边的所有元素；在**不同的数组**之间，应该保证**交叉小于等于**的关系，如下图所示：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231208135620.png)
++ 只要不符合交叉小于等于的关系，就需要适当调整分割线的位置。
++ 四种特殊的情况：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231208140155.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231208140239.png)
++ 从上面的分析中，不难发现需要做的是：
+> 在 `[0,m]` 中找到 `i`，使得：
+> 	`nums1[i-1]<=nums2[j]` 且 `nums2[j-1]<=nums1[i]`，其中 $j=\frac{m+n+1}{2}-i$
++ 可以证明上述条件等价于：
+> 在 `[0,m]` 中找到最大的 `i`，使得：
+> 	`nums1[i-1]<=nums2[j]`，其中 $j=\frac{m+n+1}{2}-i$
++ 这是因为：
++ 当 `i` 从 `0~m` 递增时，`nums1[i-1]` 递增，`nums2[j]` 递减，所以一定存在一个最大的 `i` 满足 `nums1[i-1]<=nums2[j]`；
++ 如果 `i` 是最大的, 那么说明 `i+1` 不满足。
++ 将 `i+1` 代入可以得到 `nums1[i]>nums2[j-1]`，也就是 `nums2[j-1]<nums1[i]`，就和进行等价变换前 `i` 的性质一致了（甚至还要更强了）。
++ 因此我们可以对 `i` 在 `[0,m]` 的区间上进行二分搜索，找到最大满足 `nums1[i-1]<=nums2[j]` 的 `i` 的值，就得到了划分的方法。
++ 此时，划分前一部分元素中的最大值，以及划分后一部分元素中的最小值，才可能作为就是这两个数组的中位数。
++ 代码如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+using namespace std;
+
+//解决函数
+double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        //为了使得分割线的两侧在第二个数组的两侧都有元素，做此处处理，避免数组下标越界
+        if(nums1.size()>nums2.size())
+            return findMedianSortedArrays(nums2,nums1);
+        //获取数组长度
+        int m=nums1.size();
+        int n=nums2.size();
+        //分割线左边元素个数需要满足(m+n+1)/2
+        int totalLeft = (m + n + 1)/2;
+        //在nums1的区间[0,m]内寻找恰当的分割线
+        //要使得能够直接找到中位数，需要满足以下条件
+        //nums1[i-1]<=nums2[j]&&nums2[j-1]<=nums1[i];
+        int left = 0;
+        int right = m;
+        while(left<right)
+        {
+            //i,j需要满足i+j= totalLeft = (m + n + 1)/2;
+            //两个数组的分割线左边元素要与右边元素大致相等
+            int i = left + (right - left + 1)/2;//上取整，避免进入死循环
+            int j =  totalLeft - i;
+            if(nums1[i-1]>nums2[j])//分割线在第一个数组太靠右了
+                //下一轮搜索区间[left,i-1]
+                right = i-1;
+            else
+                //下一轮搜索区间[i,right]
+                //当表达式是left=i时，取中位数要上取整，避免进入死循环
+                left = i;
+        }
+        //得到分割线
+        int i = left;
+        int j =  totalLeft - i;
+        //注意下面需要排除没有意义的情况
+        int nums1LeftMax = (i==0 ? INT_MIN : nums1[i-1]);
+        int nums1RightMin = (i==m ? INT_MAX : nums1[i]);
+        int nums2LeftMax = (j==0 ? INT_MIN : nums2[j-1]);
+        int nums2RightMin = (j==n ? INT_MAX : nums2[j]);
+        //分m+n奇偶来输出中位数
+        if((m+n)%2==1)//奇数
+            return (double) max(nums1LeftMax,nums2LeftMax);//返回分割线左边元素的最大值
+        else
+            //返回分割线左边元素的最大值和右边元素最小值的平均值
+            return (double)(((double) max(nums1LeftMax,nums2LeftMax)+(double) min(nums1RightMin,nums2RightMin))/2);
+}
+
+//主函数
+int main()
+{
+    int m,n,num;
+    vector<int> nums1;
+    vector<int> nums2;
+    scanf("%d %d",&m,&n);
+    for(int i=0;i<m;i++)
+    {
+        scanf("%d",&num);
+        nums1.push_back(num);
+    }
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&num);
+        nums2.push_back(num);
+    }
+    double ans;
+    ans = findMedianSortedArrays(nums1,nums2);
+    printf("%.1f",ans);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：注意一下当表达式是 `left=i` 时，取中位数要上取整 `int mid = left + (right - left + 1)/2;`，避免进入死循环！
+
 #### 二分法拓展
 + 上面是应用于整数情况的二分查询问题，下面介绍二分法的其他应用：如何计算 $\sqrt{2}$ 的近似值。
 + 对 $f(x)=x^2$ 来说，在 $x\in[1,2]$ 范围内，$f(x)$ 是随着 $x$ 增大而增大的，这就给二分法创造了条件，即可以采用如下策略逼近 $\sqrt{2}$ 的值。(注意：由于 $\sqrt{2}$ 是无理数，因此只能获得它的近似值，这里不妨以精确到 $10^{-5}$ 为例)
