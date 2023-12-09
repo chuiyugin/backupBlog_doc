@@ -8168,7 +8168,7 @@ int main()
 using namespace std;
 
 const int MAX1 = 100010;
-const int MAX2 = 1000100;
+const int MAX2 = 200010;
 
 //解决函数
 int solve(int A[],int B[],int C[],int n,int m)
@@ -8227,4 +8227,175 @@ int main()
 + 然后将这些组再两两归并，生成 $[\frac{n}{4}]$ 个组，组内再单独排序；
 + 以此类推，直到只剩下一个组为止。归并排序的时间复杂度为 $O(nlogn)$。
 + 下面来看一个例子：将序列`{66,12,33,57,64,27,18}`进行 2-路归并排序。
-1. 第一趟，两两分组，得到四组：
+1. 第一趟，两两分组，得到四组：`{66,12}`、`{33,57}`、`{64,27}`、`{18}`，组内单独排序，得到新序列 `{{12,66},{33,57},{27,64},18}`。
+2. 第二趟，将四个组继续两两分组，得到两组：`{12,66,33,57}`、`{27,64,18}`，组内单独排序，得到新序列 `{{12,33,57,66},{18,27,64}}`。
+3. 第三趟，将两个组继续两两分组，得到一组：`{12,33,57,66,18,27,64}`，组内单独排序，得到新序列 `{12,18,27,33,57,64,66}`，算法结束！
++ 整个过程如下图 4-9 所示：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231209151432.png)
++ 从上面的过程中可以发现，2-路归并排序的核心在于如何将两个有序序列合并为一个有序序列，这一过程在上一小节“序列合并问题”中已经有所探讨。
++ 接下来讨论 2-路归并排序的**递归版本**和**非递归版本**的具体实现。
+1. 递归版本
++ 2-路归并排序的递归写法非常简单，只需要反复将当前区间 `[left,right]` 分为两半，对两个子区间 `[left,mid]` 与 `[mid+1,right]` 分别递归进行归并排序，然后将两个已经有序的子区间合并为有序序列即可, 例题如下：
+
+例题：[归并排序](https://sunnywhy.com/sfbj/4/6/177)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+using namespace std;
+
+const int MAX1 = 100010;
+const int MAXN = 1000;
+
+//合并函数
+//将数组A的[L1,R1]与[L2,R2]区间合并为有序区间(此处L2即为R1+1)
+void merge(int A[],int L1,int R1,int L2,int R2)
+{
+    int i=L1,j=L2;//i指向A[L1],j指向A[L2]
+    int temp[MAXN],index=0;//temp临时存放合并后的数组，index为其下标
+    while(i<=R1&&j<=R2)
+    {
+        if(A[i]<=A[j])
+        {
+            temp[index++]=A[i++];
+        }
+        else
+        {
+            temp[index++]=A[j++];
+        }
+    }
+    while(i<=R1)
+    {
+        temp[index++]=A[i++];
+    }
+    while(j<=R2)
+    {
+        temp[index++]=A[j++];
+    }
+    for(int i=0;i<index;i++)
+    {
+        A[L1+i]=temp[i];//将合并后的序列赋值回数组A
+    }
+}
+
+//将array数组当前区间[left,right]进行归并排序
+void mergeSort(int A[],int left,int right)
+{
+    if(left<right)//只要left小于right
+    {
+        int mid=(left+right)/2;//取中点
+        mergeSort(A,left,mid);//递归，将左子区间[left,mid]归并排序
+        mergeSort(A,mid+1,right);//递归，将右子区间[mid+1,right]归并排序
+        merge(A,left,mid,mid+1,right);//将左子区间和右子区间合并
+    }
+}
+
+//主函数
+int main()
+{
+    int A[MAX1];
+    int n;
+    scanf("%d",&n);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&A[i]);
+    }
+    mergeSort(A,0,n-1);
+    for(int i=0;i<n;i++)
+    {
+        printf("%d",A[i]);
+        if(i<n-1)
+            printf(" ");
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+2. 非递归版本
++ 2-路归并排序的的非递归实现主要考虑这样一点: 每次分组时组内元素个数上限都是 `2` 的幂次。
++ 于是可以得到这样的思路：
++ 令步长 `step` 的初值为 `2`，然后将数组中每 `step` 个元素作为一组，将其内部进行排序（即把左 $\frac{step}{2}$ 个元素与右 $\frac{step}{2}$ 个元素合并，若元素个数不超过 $\frac{step}{2}$，则不操作）
++ 再令 `step` 乘 `2`，重复上面的操作，直到 $\frac{step}{2}$ 超过元素个数 `n`，代码如下：
+```cpp
+//非递归版本归并排序法
+void mergeSort2(int A[],int n)
+{
+    //step为组内元素个数，step/2为左子区间元素个数，注意等号可以不取
+    for(int step=2;step/2<n;step*=2)
+    {
+        //每step个元素一组，组内前step/2和step/2个元素进行合并
+        for(int i=0;i<n;i+=step)//对每一组
+        {
+            int mid = i+step/2-1;//左子区间元素个数为step/2
+            if(mid+1<n)//右子区间如果存在元素就合并
+            {
+                //左子区间为[i,mid],右子区间为[mid+1,min(i+step-1,n-1)]
+                merge(A,i,mid,mid+1,min(i+step-1,n-1));//将左子区间和右子区间合并
+            }
+        }
+    }
+}
+```
++ 如果题目中要求给出归并排序**每一趟结束时的序列**，代码如下：
+```cpp
+//非递归版本归并排序法
+void mergeSort2(int A[],int n)
+{
+    //step为组内元素个数，step/2为左子区间元素个数，注意等号可以不取
+    for(int step=2;step/2<n;step*=2)
+    {
+        //每step个元素一组，组内前step/2和step/2个元素进行合并
+        for(int i=0;i<n;i+=step)//对每一组
+        {
+            int mid = i+step/2-1;//左子区间元素个数为step/2
+            if(mid+1<n)//右子区间如果存在元素就合并
+            {
+                //左子区间为[i,mid],右子区间为[mid+1,min(i+step-1,n-1)]
+                merge(A,i,mid,mid+1,min(i+step-1,n-1));//将左子区间和右子区间合并
+            }
+        }
+        //输出归并排序的某一趟结束的序列
+        for(int i=0;i<n;i++)
+        {
+            printf("%d",A[i]);
+            if(i<n-1)
+                printf(" ");
+        }
+        printf("\n");
+    }
+}
+```
++ 也完全可以使用 `sort()` 函数来代替 `merge()` 函数（只要时间限制允许）：
+```cpp
+//非递归版本归并排序法(sort()函数使用)
+void mergeSort3(int A[],int n)
+{
+    //step为组内元素个数，step/2为左子区间元素个数，注意等号可以不取
+    for(int step=2;step/2<n;step*=2)
+    {
+        //每step个元素一组，组内[i,min(i+step,n)]进行排序
+        for(int i=0;i<n;i+=step)//对每一组
+        {
+            sort(A+i,A+min(i+step,n));
+        }
+        //输出归并排序的某一趟结束的序列
+        for(int i=0;i<n;i++)
+        {
+            printf("%d",A[i]);
+            if(i<n-1)
+                printf(" ");
+        }
+        printf("\n");
+    }
+}
+```
+#### 快速排序
