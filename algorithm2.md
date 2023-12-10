@@ -8108,6 +8108,7 @@ int main()
 int partition(int A[],int left,int right)
 {
     //生成[left,right]内的随机数p
+    srand((unsigned)time(NULL));//随机数种子
     int p = (int)((double)rand()/RAND_MAX*(right-left+1)+left);
     swap(A[p],A[left]);//交换A[p]和A[left]
     int temp = A[left];//将A[left]存至临时变量temp
