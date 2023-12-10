@@ -8197,8 +8197,82 @@ int main()
     return 0;
 }
 ```
+
+#### 双指针 (two pointers)例题
+例题：[集合求差III](https://sunnywhy.com/sfbj/4/6/181)、[集合求差IV](https://sunnywhy.com/sfbj/4/6/182)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+using namespace std;
+
+const int MAX1 = 100010;
+const int MAX2 = 200010;
+
+//解决函数
+int solve(int A[],int B[],int C[],int n,int m)
+{
+    int i=0,j=0,index=0;
+    while(i<n&&j<m)
+    {
+        if(A[i]<B[j])
+            C[index++]=A[i++];
+        else if(A[i]>B[j])
+            j++;
+        else
+        {
+            i++;
+            j++;
+        }
+    }
+    while(i<n)
+            C[index++]=A[i++];
+    return index;//返回序列C的长度
+}
+
+//主函数
+int main()
+{
+    int n,m;
+    int A[MAX1],B[MAX1];
+    int C[MAX2];
+    scanf("%d %d",&n,&m);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&A[i]);
+    }
+    for(int i=0;i<m;i++)
+    {
+        scanf("%d",&B[i]);
+    }
+    int index;//序列C的长度
+    index = solve(A,B,C,n,m);
+    for(int i=0;i<index;i++)
+    {
+        printf("%d",C[i]);
+        if(i<index-1)
+            printf(" ");
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：这两道题目可以共用一套代码，主要思路在于：
++ 如果数组 `A[i]<B[j]` 就把 `A[i]` 加入到 `C` 数组中；
++ 如果 `A[i]>B[j]` 就把指针 `j` 右移；
++ 如果 `A[i]==B[j]` 就把指针 `j` 和 `i` 都右移；
++ 最后把数组 `A` 中剩余的数据全部加入到数组 `C` 中即可!
 ### 其它高效技巧与算法
 + 前面几节介绍了一些最常用的算法思想，下面介绍其它高效技巧与算法。
 #### 打表
 + 打表是一种典型的用空间换时间的技巧，一般指将所有可能用到的结果实现计算出来，这样后面需要用到的时候直接查表获得。
 + 打表常见的用法有如下几种：
+1. 在程序中**一次性**计算出所有需要用到的结果，之后通过查询直接取这些结果。
