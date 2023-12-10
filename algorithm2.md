@@ -8008,7 +8008,7 @@ using namespace std;
 //主函数
 int main()
 {
-    srand((unsigned)time(NULL));
+    srand((unsigned)time(NULL));//随机数种子
     for(int i=0;i<10;i++)
     {
         printf("%d ",rand());
@@ -8041,7 +8041,7 @@ using namespace std;
 int main()
 {
     int a,b;
-    srand((unsigned)time(NULL));
+    srand((unsigned)time(NULL));//随机数种子
     //[0,1]
     a=0,b=1;
     for(int i=0;i<10;i++)
@@ -8085,7 +8085,7 @@ using namespace std;
 int main()
 {
     int a,b;
-    srand((unsigned)time(NULL));
+    srand((unsigned)time(NULL));//随机数种子
     //[10000,60000]
     a=10000,b=60000;
     for(int i=0;i<10;i++)
@@ -8139,11 +8139,14 @@ int partition(int A[],int left,int right)
 #include <climits>
 #include <time.h>
 using namespace std;
+
 const int MAX = 1010;
+
 //对区间[left,right]进行划分
 int partition(int A[],int left,int right)
 {
     //生成[left,right]内的随机数p
+    srand((unsigned)time(NULL));//随机数种子
     int p = (int)((double)rand()/RAND_MAX*(right-left+1)+left);
     swap(A[p],A[left]);//交换A[p]和A[left]
     int temp = A[left];//将A[left]存至临时变量temp
@@ -8159,6 +8162,7 @@ int partition(int A[],int left,int right)
     A[left] = temp;//把temp放到left与right相遇的地方
     return left;//返回相遇的坐标
 }
+
 //快速排序，left与right初值为序列首尾下标(例如1和n)
 void quickSort(int A[],int left,int right)
 {
@@ -8170,6 +8174,7 @@ void quickSort(int A[],int left,int right)
         quickSort(A,pos+1,right);//对右子区间递归进行快速排序
     }
 }
+
 //主函数
 int main()
 {
