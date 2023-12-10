@@ -9,31 +9,22 @@ date: 2023-11-5 20:00:00
 excerpt: 算法笔记的学习与分享总结!
 ---
 # 算法笔记
-
 ## C/C++快速入门
-
 ### 头文件
-
 * 当我们忘记函数包含在哪个头文件下时或者头文件包含较多时，可以使用这个万能头文件来代替。但这个头文件也有缺点，最明显的是使用后**编译时间太长**。另外，由于 `include＜bits/stdc++.h＞`不是C++的标准头文件，所以会**有少部分编译器不支持**。因此建议使用**标准头文件**！
 
 ### 主函数
-
 * 主函数是一个程序的入口位置，整个程序从主函数开始执行，而且一个程序最多只能有一个主函数。
 
 ### 基本数据类型
-
 #### 变量的定义 
-
 * 变量是在程序运行过程中**其值可以改变的量**，需要在**定义**之后才可以使用。
 
 #### 变量的类型
-
 ##### 基本数据类型
-
 * 基本数据类型分为**整型、浮点型、字符型和布尔型**。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310102009603.png)
-
 * 注意在计算机系统中不管正数与负数的表示和存储都是以**补码**的形式。
 * **原码**的表示为：第一位表示符号（0为正，1为负），其余位表示数值。
 * **反码**的表示方法分为正数和负数两种：
@@ -47,29 +38,23 @@ excerpt: 算法笔记的学习与分享总结!
 * 对于整型`int`而言，一个整数占**32bit**，即**4个Byte**，一般绝对值在$10^9$范围以内的整数都可以定义为**int型**。
 
 ##### 长整型(long long)
-
 + 对于长整型`long long`而言，一个整数占**64bit**，即**8个Byte**，如果需要的整数取值范围超过**2147483647**(超过$10^{10}$)就需要使用**长整型**。
 
 ##### 浮点型
-
 * `%f`是**单精度浮点型**(`float`)和**双精度浮点型**(`double`)的输出格式
 * 对于浮点型而言，一般不需要使用`float`，碰到浮点型都应该使用`double`来进行存储。
 
 ##### 字符型
-
 ###### 字符变量和字符常量
-
 ```cpp
 char c;
 char c = 'e';
 ```
-
 + 从上面的程序中可以看出来，第一段的`c`被成为**字符变量**，对于带单引号的`‘e’`则被称为**字符常量**，而且必须是**单个字符**。
 + **小写字母**比**大写字母**的**ASCII码值**大**32**。
 + `%c`是`char`型的输出格式。
 
 ###### 转义字符
-
 - **ASCII码**中有一部分是**控制字符**，是**不可显示**的。
 
 + 比较常用的转义字符：
@@ -79,9 +64,7 @@ char c = 'e';
 > \0 表示空字符NULL，其ASCII码为0，要注意 \0 不是空格
 
 ###### 字符串常量
-
 字符串常量可以作为初值赋给字符串数组，并且使用`%s`的格式输出。
-
 ```cpp
 #include <cstdio>
 using namespace std;
@@ -91,89 +74,60 @@ int main(){
     return 0;
 }
 ```
-
 输出结果：
-
 ```
 this is the char test
 ```
-
 ##### 布尔型
-
 布尔型变量只能是**true(真、非零)**和**false(假、零)**。
-
 #### 强制类型转换
-
 强制类型转换的格式如下：
-
 > (新类型名)变量名
 
 #### 符号常量和const常量
-
 * 符号常量通俗而言就是替换，也称为“宏定义”。
 
 ```cpp
 #define 标识符 常量
 #define pi 3.14
 ```
-
 * 另一种定义常量的办法是const常量。
 
 ```cpp
 const 数据类型 变量名 = 常量;
 const double pi = 3.14;
 ```
-
 > 这两种写法都被称为常量，一旦确定其值后将无法改变。
 
 #### 运算符
-
 ##### 算术运算符
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310122043030.png)
-
 ##### 关系运算符
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310122044294.png)
-
 ##### 逻辑运算符
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310122045903.png)
-
 ##### 条件运算符
-
 ```cpp
 A : B ? C
 ```
-
 + 如果A为真，执行并返回B的结果；如果A为假，那么执行并返回C的结果。
 
 ##### 位运算符
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310122048285.png)
-
 ### 顺序结构
-
 #### 使用scanf和printf输入/输出
-
 ##### scanf格式符
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310131437646.png)
-
 + 注意上表中最后一行，数组名称本身就代表了这个数组第一个元素的地址，所以不需要加取地址运算符。因此在`scanf`中，除了`char`数组整个输入的情况不加`&`之外，其他变量类型都需要加`&`。
 
 + 注意字符数组使用`%s`读入的时候以**空格**和**换行**为读入结束的标志。
 
 ##### printf格式符
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310131513505.png)
-
 + 对于`double`类型的变量，其在`printf`中的输出格式变成了`%f`，而在`scanf`中却是`%lf`。
 
 ##### 三种实用的输出格式
-
 ###### %md
-
 + `%md`可以使不足**m**位的`int`型变量以**m**位进行右对齐输出，其中高位用**空格**补齐，如果变量本身超过**m**位，则保持原样。
 
 ```cpp
@@ -187,16 +141,13 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
   123
 12345678
 ```
-
 ###### %0md
-
 + `%0md`只是在`%md`中间多加了**0**。和`%md`的唯一不同在于当变量不足**m**位时，将在前面补足够数量的**0**而不是空格。
 
 ```cpp
@@ -210,27 +161,22 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 00123
 12345678
 ```
-
 ###### %.mf
-
 + %.mf可以让浮点数保留m位小数输出，精度是“四舍六入五成双”，具体而言为：
   + 5前为奇数，舍5入1；
   + 5前为偶数，舍5不进（0是偶数）。
 
 #### 使用getchar()和putchar()输入/输出字符
-
 + `getchar()`用来输入单个字符，`putchar()`用来输出单个字符。
 + `getchar()`可以识别并读入换行符。
 
 #### typedef
-
 + `typedef`能够给复杂的数据类型起一个别名，这样在使用过程中就可以使用别名来替换原来的写法。
 
 ```cpp
@@ -243,69 +189,47 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 123456789123454321
 ```
-
 ### 选择结构
-
 #### if语句
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310171623893.png)
-
 #### if语句的嵌套
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310171624875.png)
-
 #### switch语句
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310171624551.png)
-
 ### 循环结构
-
 #### while语句
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310171628441.png)
-
 * 在while语句中，只要条件A成立就一直执行省略号里面的内容。
 
 #### do...while语句
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310171630802.png)
-
 * do...while语句会先执行省略号中的内容一次，然后才判断**条件A**是否**成立**，如果**条件A**成立，就继续反复执行省略号中的内容，直到某一次条件A**不再成立**，则退出循环。
 
 #### for语句
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310171634133.png)
-
 + for语句的具体格式如下：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310171634463.png)
-
 #### break和continue语句
-
 + `break`语句不仅可以强制退出`switch`语句，而且break同样可以退出循环语句，即可以在需要的条件下直接退出循环。
 + `continue`语句的作用和`break`语句的作用有点相似，它可以在需要的地方临时结束循环的**当前轮回**，然后进入**下一轮回**。
 
 ### 数组
-
 #### 一维数组
-
 + **数组**就是把**相同数据类型**的变量组合在一起而产生的**数据集合**，**数组**就是从某个地址开始**连续若干个位置**形成的元素集合。（*数组的地址是连续存放的*）
 + 一维数组的定义格式如下：
 
 ```
 数据类型 数组名[数组大小]；
 ```
-
 + 数组大小必须是**整数常量**，不可以是变量。
 
 #### 冒泡排序
-
 + 冒泡的本质是在于**交换**，即每次通过交换的方式把**当前剩余元素**的**最大值**移动到一端，而**当剩余元素**减少为**0**时，排序结束。
 
 ```cpp
@@ -336,23 +260,18 @@ int main(){
     return 0;
 }
 ```
-
 #### 二维数组
-
 + 二维数组是一位数组的扩展：
 
 ```cpp
 数据类型 数组名[第一维大小][第二维大小];
 ```
-
 + `int a[5][6]`数组的直观理解：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310182107408.png)
-
 + **特别提醒：**如果数组的大小较大，大概在$10^6$的级别，则**需要定义在主函数外面**，否则会使得程序异常退出，原因是函数内部申请的局部变量来自**系统栈**，所允许申请的**空间较小**；而函数外部申请的全局变量来自**静态存储区**，允许申请的**空间较大**。
 
 #### memset——对数组中每个元素赋相同的初值
-
 + **需要注意的是**：`memset`使用的是按**字节**赋值，即对**每个字节**赋相同的值，这样的话，在`int`型数组中每个数据的**四个字节**都会被分配为**相同的值**，因此为了避免出错，只建议对非`char`型的数组赋值为**0**和**-1**；
 + 使用`memset`对数组赋值时需要用`#include<string.h>`头文件；
 
@@ -361,11 +280,8 @@ int main(){
 ```cpp
 memset(数组名，赋的数值，sizeof(数组名));
 ```
-
 #### 字符数组
-
 ##### 字符数组的初始化
-
 + 和普通数组一样，字符数组也可以采用循环的方法初始化；
 + 除此之外，字符数组也可以通过**直接赋值字符串**来进行初始化（**仅限于初始化**，程序的其他位置不允许这样直接赋值整个字符串）
 
@@ -381,17 +297,13 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 YUGIN!
 ```
-
 ##### 字符数组的输入输出
-
 ###### scanf输入，printf输出
-
 + `scanf`和`printf`对字符类型有`%c`和`%s`两种格式，其中`%c`用来输入**单个字符**，`%s`用来输入**一个字符串**并存在**字符数组**中。
 + `%c`格式能够识别**空格**和**换行符**并将其输入，`%s`通过**空格**或**换行符**来识别**一个字符串的结束**。
 
@@ -407,16 +319,13 @@ int main(){
     return 0;
 }
 ```
-
 + 输入输出：
 
 ```
 输入：test test test
 输出：test
 ```
-
 ###### getchar输入，putchar输出
-
 + `getchar`和`putchar`分别用来输入和输出**单个字符**；
 + 输入和输出示例：
 
@@ -432,9 +341,7 @@ int main(){
     return 0;
 }
 ```
-
 ###### gets输入，puts输出
-
 + `gets`用来输入**一行字符串**（即**一个一维数组**，只有遇到`\n`时结束）
 + `puts`用来输出一行字符串（即一个一维数组，只有遇到`\n`时结束）
 
@@ -457,7 +364,6 @@ int main(){
     return 0;
 }
 ```
-
 + 输入输出示例：
 
 ```
@@ -470,65 +376,51 @@ this is
 yugin's
 blog
 ```
-
 ##### 字符数组的存放方式
-
 + 由于**字符数组**是由若干个`char`类型的元素组成，因此**字符数组**的每一位都是一个`char`字符。
 + 在**一维数组**（或是**二维数组的第二维**）的末尾都有一个**空字符**`\0`，用于表示存放的**字符串的结尾**。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310221521845.png)
-
 + 特别注意：**空字符**`\0`的**ASCII**码为**0**，即空字符`NULL`，会占用一个**字符位**，因此在初始化的时候**数组长度**至少比**字符串长度**多一个长度。
 + 如果不是使用`scanf`函数的`%s`格式或`gets`函数输入字符串（例如使用`getchar`），则需要手动在字符数组最后加入`\0`，否则输出字符串会因为无法识别字符串末尾而输出**乱码**。
 
 #### string.h头文件
-
 + `string.h`头文件包含了许多用于字符数组的函数。
 
 ##### strlen()函数
-
 + `strlen()`函数可以得到字符数组中第一个`\0`前的字符的个数并返回，其格式如下：
 
 ```cpp
 len = strlen(字符数组)；
 ```
-
 ##### strcmp()函数
-
 + strcmp函数返回两个字符串大小的比较结果，比较原则是字典序，其格式如下：
 
 ```cpp
 cmp = strcmp(字符数组1，字符数组2);
 ```
-
 + 字典序的解释：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310221535589.png)
-
 ##### strcpy()函数
-
 + `strcpy()`函数可以把一个字符串复制给另一个字符串，其格式如下：
 
 ```cpp
 strcpy(字符数组1,字符数组2);
 puts(字符数组1);
 ```
-
 + 注意：是把**字符数组2**复制给**字符数组1**，包括**结束符**`\0`；
 
 ##### strcat()函数
-
 + `strcat()`可以把一个字符串接到另一个字符串后面，其格式如下：
 
 ```cpp
 strcpy(字符数组1,字符数组2);
 puts(字符数组1);
 ```
-
 + 注意：是把**字符数组2**接到**字符数组1**后面；
 
 ##### sscanf()和sprintf()
-
 + `sscanf()`和`sprintf()`是处理字符串问题的利器！
 
 + `sscanf()`和`sprintf()`的使用格式如下：
@@ -537,7 +429,6 @@ puts(字符数组1);
 sscanf(str,"%d",&n);
 sprintf(str,"%d",n);
 ```
-
 + 上面`sscanf()`写法的作用是把字符数组`str`的中的内容以`"%d"`的格式写到`n`中（**从左到右**）。
 
 ```cpp
@@ -552,13 +443,11 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 123
 ```
-
 + 上面`sprintf()`写法的作用是把`n`以`"%d"`的格式写到`str`字符数组中（**从右到左**）。
 
 ```cpp
@@ -573,13 +462,11 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 123433
 ```
-
 + 上面的仅仅是简单的应用，实际上`sscanf()`和`sprintf()`可以进行更加复杂的字符串处理：
 
 ```cpp
@@ -597,39 +484,30 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 I520yugin!,2002.0805
 ```
-
 + 最后指出，`sscanf()`和`sprintf()`也可以支持正则表达式，则许多字符串问题将迎刃而解。
 
 ### 函数
-
 + 函数是一个实现一定功能的语句的集合，并在需要时可以反复调用而不必每次都重新写一遍。
 + 函数的基本语法格式：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310221718986.png)
-
 #### 全局变量
-
 + 全局变量是指在定义之后的所有程序段内都有效的变量（即定义在所有函数之前）
 
 #### 局部变量
-
 + 与全局变量相对，局部变量定义在函数内部，且只在函数内部生效，函数结束时局部变量便销毁。
 
 #### 再谈main()函数
-
 + 主函数对一个程序而言只有一个，且无论主函数写在哪个位置，整个程序一定是从主函数的第一个语句开始执行，然后在需要时再调用其他函数。
 + `main()`函数的结构：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310221723044.png)
-
 #### 以数组作为函数的参数
-
 + 函数的参数可以是数组，且数组作为参数时，参数中数组的第一维不需要填写长度（如果是二维数组，则**第二维需要填写长度**）
 + 数组作为参数时，在函数中对数组元素的修改就**等同于对原素组进行修改**（与普通的局部变量不同）
 
@@ -655,7 +533,6 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
@@ -663,15 +540,12 @@ int main(){
 3
 5
 ```
-
 + 注意：虽然数组可以作为参数，但是却不允许作为返回类型出现。
 
 #### 函数的嵌套调用
-
 + 函数的嵌套调用是指在一个函数中调用另一个函数，调用方式和`main()`函数调用其他函数一样。
 
 #### 函数递归调用
-
 + 函数递归调用是指一个函数调用该函数本身；
 
 + 类似下面计算n的阶乘的代码：
@@ -693,24 +567,19 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 6
 ```
-
 ### 指针
-
 #### 什么是指针
-
 + 在C语言中，**指针**就是**内存地址**，**指针变量**是指用来**存放内存地址的变量**。
 + 在C/C++语言中，**指针**一般被认为是**指针变量**，指针变量的内容存储的是**其指向的对象的首地址**，指向的对象可以是**变量**（指针变量也是变量），**数组**，**函数**等**占据存储空间的实体**。
 + 只要在变量前面加上`&`，就表示变量的地址。
 + 指针是一个`unsigned`类型的函数。
 
 #### 指针变量
-
 + 指针变量是用来存放指针（或者可以理解为地址）。
 + 在某种数据类型后加`*`来表示这是一个指针变量，定义如下：
 
@@ -719,14 +588,12 @@ int *p;
 double *p;
 char *p;
 ```
-
 + 给指针变量赋值的方式一般是把变量的地址取出来，然后赋给对应类型的指针变量：
 
 ```cpp
 int a;
 int *p = &a;
 ```
-
 + 如果`p`是指针（即`p`保存的是某个数据类型的地址），则`*p`就是这个地址所存放的元素：
 
 ```cpp
@@ -742,13 +609,11 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 233
 ```
-
 + 指针变量也可以进行加减法，其中**减法**的结果是两个地址偏移的距离。
 + 例如，对于`int*`类型的指针变量`p`而言，`p+1`是指`p`所指的int型变量的下一个`int`型变量地址，这个所谓的“下一个”是跨越了一整个`int`型（即**4Byte**）。
 + 指针变量也支持自增和自减的操作，示例如下：
@@ -769,7 +634,6 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
@@ -777,9 +641,7 @@ int main(){
 113245368
 113245368
 ```
-
 #### 指针与数组
-
 + **数组名称**作为**首地址**使用，因此`a == &a[0]`和`a+i == &a[i]`成立。
 
 ```cpp
@@ -798,7 +660,6 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
@@ -806,11 +667,9 @@ int main(){
 1241512708
 5
 ```
-
 + `&a[0]`和`&a[5]`之间相差5个`int`（**4个Byte**），因此输出5。
 
 #### 使用指针变量作为函数参数
-
 + 指针类型也可以作为**函数参数**的类型，这时视为把**变量的地址**传入函数。如果在函数中对这个地址中的元素进行改变，原先的数据就会确实地被改变。
 + 使用指针编写交换数据地函数：
 
@@ -835,17 +694,13 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 a=2 b=1
 ```
-
 #### 引用
-
 ##### 引用的含义
-
 + 引用是**C++**中一个强有力的语法，引用不产生**副本**，而是给原变量起了个**别名**。
 + 因此**对引用变量操作就是对原变量操作**。
 + 引用使用方法只需要在参数类型后面变量名前面加`&`就行，例子如下：
@@ -867,17 +722,14 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 b=5
 ```
-
 + 注意要把**引用**的`&`和取**地址运算符**`&`区分开来，引用并不是取地址的意思。
 
 ##### 指针的引用
-
 + 通过引用和函数来更改变量指针的地址：
 
 ```cpp
@@ -902,19 +754,15 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 a=2 b=1
 ```
-
 + 需要强调的是，**引用**是产生**变量的别名**，因此**常量不可使用引用**，上述代码不可写成`my_swap(&a,&b);`，必须用**指针变量**进行传入。
 
 ### 结构体(struct)的使用
-
 #### 结构体的定义
-
 + 定义一个结构体的基本格式如下：
 
 ```cpp
@@ -922,7 +770,6 @@ struct Name{
   //一些基本的数据结构或者自定义的数据类型
 };
 ```
-
 + 结构体可以这样定义：
 
 ```cpp
@@ -933,7 +780,6 @@ struct studentInfo{
 	char major[20];
 }Alice,Bob,stu[1000];
 ```
-
 + 其中`studentInfo`是这个结构体的名字，内部定义了相关的数据。**大括号外**定义了**结构体变量**和**结构体数组**。
 
 + 结构体同样能够像基本数据类型那样定义：
@@ -942,7 +788,6 @@ struct studentInfo{
 studentInfo Alice;
 studentInfo stu[1000];
 ```
-
 + 值得注意的是，结构体里面能够定义除了自己本身之外的任何数据类型。
 
 ```cpp
@@ -951,11 +796,9 @@ struct node{
 	node* next;//可以定义node*型指针变量
 };
 ```
-
 + 虽然不能定义自己本身，但是可以定义自身类型的指针变量。
 
 #### 访问结构体内的元素
-
 + 访问结构体内的元素有两种方法：`"."`和`"->"`操作。
 + 如果把`studentInfo`定义成如下：
 
@@ -966,7 +809,6 @@ struct studentInfo{
 	studentInfo* next;
 }stu,*p;
 ```
-
 + 这样`studentInfo`中多了一个指针`next`用来指向下一个学生的地址，且结构体变量中定义了**普通变量**`stu`和**指针变量**`p`。
 
 + 因此访问`stu`中的变量的写法如下：
@@ -976,7 +818,6 @@ stu.id
 stu.gender
 stu.next
 ```
-
 + 访问指针变量`p`中的元素的写法如下：
 
 ```cpp
@@ -984,7 +825,6 @@ stu.next
 (*p).gender
 (*p).next
 ```
-
 + 还有一种访问结构体指针变量内元素更加简洁的写法：
 
 ```cpp
@@ -992,9 +832,7 @@ p->id
 p->gender
 p->next
 ```
-
 #### 结构体的初始化
-
 + 结构体的初始化推荐使用**构造函数**的方法。
 + 构造函数的特点是**函数名与结构体名一致**而且**不需要写返回函数**。
 + 其中自己定义构造函数的格式如下：
@@ -1011,13 +849,11 @@ struct studentInfo{
 	}
 };
 ```
-
 + 根据上述代码，即可直接对结构体的变量进行赋值：
 
 ```cpp
 studentInfo stu = studentInfo(20020805,'M');
 ```
-
 + 需要注意，如果**自己重新定义了构造函数**，则不能不经初始化就定义结构体变量，如下定义能够适应更多不同的场合：
 
 ```cpp
@@ -1039,70 +875,54 @@ struct studentInfo{
 	}
 };
 ```
-
 ### 补充
-
 #### cin和cout
-
 + cin和cout是C++的输入输出函数，需要添加头文件`#include <iostream>`和`using namespace std;`才能使用。
 
 ##### cin
-
 + `cin`采用输入运算符`">>"`来进行输入，例如
 
 ```cpp
 cin >> n >> db >> c >> str;
 ```
-
 + 如果想读入一整行，则需要`getline`函数：
 
 ```cpp
 char str[100];
 cin.getline(str,100);
 ```
-
 + 如果是`string`容器，则需要使用以下方式输入：
 
 ```cpp
 char str[100];
 getline(cin,str);
 ```
-
 ##### cout
-
 + `cout`采用输出运算符`"<<"`来进行输出，例如
 
 ```cpp
 cout << n << db << c << '\n' << str << endl;
 ```
-
 + `endl`和`'\n'`都是表示换行的意思。
 + 由于`cin`和`cout`在输入和输出大量数据时表现糟糕，因此不建议使用。
 
 #### 浮点数的比较
-
 + 由于计算机中采用有限二进制编码，存储并不总是准确，因此需要需要引入极小数`eps`来对这种误差进行纠正。
 + 圆周率`pi`的表达式可以使用`acos(-1.0)`来进行表示。
 
 ```cpp
 const double esp = 1e-8;
 const double pi = acos(-1.0);
-
 #define Equ(a,b) (fabs(a-b)<eps)
 ```
-
 ### 黑盒测试
-
 #### 单点测试
-
 + 对于单点测试而言，单点测试只需要按照正常逻辑执行一遍程序即可，是“一次性”的写法，即程序只需要一组数据能够完整执行即可。
 
 #### 多点测试
-
 + 对于多点测试，要求程序能够一次运行所有数据，并要求所有输出的结果都必须正确。
 
 ##### while...EOF型
-
 + 当题目没有说明有多少数据读入时，就可以利用`scanf`返回值是否为`EOF`来判断输入是否结束。
 
 ```cpp
@@ -1110,7 +930,6 @@ while(scanf("%d",&n) != EOF){
 	...
 }
 ```
-
 + 如果读入的是字符串，其对应写法如下：
 
 ```cpp
@@ -1121,23 +940,18 @@ while(gets(str) != NULL){
 	...
 }
 ```
-
 ## 入门模拟
-
 ### 再谈字符串输入输出
-
 + 在比较早的`C/C++`版本中，经常可以看到推荐使用`gets`函数来进行整行字符串的输入，就像下面这样的简单写法即可输入一整行：
 
 ```cpp
 gets(str);
 ```
-
 + 但是当输入的字符串长度超过数组长度上限`MAX_LEN`时，`gets`函数会把超出的部分也一并读进来，并且会覆盖数组之外的内存空间，这就导致了一定的安全风险，因此`C++11`标准将`gets`函数废弃了，然后在`C++14`时将该函数移除，如果现在想要整行输入的话，推荐使用`cin.getline`函数（见下文）。
 
 ```cpp
 cin.getline(str, MAX_LEN);
 ```
-
 + 例如下面一道例题：
 
 ```cpp
@@ -1160,11 +974,8 @@ int main(){
     return 0;
 }
 ```
-
 ### 再谈sscanf()和sprintf()
-
 #### 关于sscanf()
-
 + `sscanf`是C语言标准库中的一个函数，用于从字符串中读取格式化输入。在C++中也可以使用`sscanf`函数，但更常用的是使用C++标准库中的`stringstream`类来进行字符串解析。
 
 + `sscanf`函数的原型如下：
@@ -1172,13 +983,11 @@ int main(){
 ```cpp
 int sscanf(const char* str, const char* format, ...);
 ```
-
 + 其中，`str`是要解析的字符串，`format`是格式化字符串，用于指定解析的规则，`...`是可变参数列表，用于接收解析出来的数据。
 
 + 与之相似的函数还有`scanf`和`fscanf`。其中，`scanf`从标准输入（通常是键盘）读取数据，而`fscanf`从文件中读取数据。
 
 在使用`sscanf`函数时，需要注意以下几点：
-
 - `format`字符串中可以包含格式说明符，如 `%d`, `%f`, `%s`, `%c`, `%x`, `%o`, `%u`, `%e`, `%g`, `%p`, `%n`, 等等。
 - `format`字符串中可以包含空格、制表符、换行符等空白字符，用于跳过输入字符串中的空白字符。
 - `format`字符串中可以包含方括号 `[]`，用于指定一个字符集合。例如，`%[a-z]` 表示匹配小写字母。
@@ -1186,34 +995,27 @@ int sscanf(const char* str, const char* format, ...);
 - `sscanf()` 函数**返回成功匹配并赋值的个数**。如果返回值小于参数个数，则表示解析失败。
 
 基于最后一条性质可以实现下述例题：
-
 + 题目描述：
 
 ```
 给定一个字符串，它可能是以下三种格式中的一种：
-
 A is greater than B
 A is equal to B plus C
 No Information
 其中前两种情况中的A、B、C均为正整数，而第三种情况中没有数字。请确认字符串代表的信息是否从算术上成立，如果成立，那么输出Yes；否则输出No；如果是第三种情况，那么输出三个问号（即???）。
-
 注：
-
 1、请将字符串整行读入后使用sscanf函数进行处理
 ```
-
 + 输入描述：
 
 ```
 一行满足题意的字符串，其中A、B、C为不超过100的正整数。
 ```
-
 + 输出描述：
 
 ```
 根据题意输出Yes、No或???。
 ```
-
 + 样例：
 
 ```
@@ -1233,7 +1035,6 @@ No Information
 输出:
 ???
 ```
-
 + 实现代码：
 
 ```cpp
@@ -1276,11 +1077,9 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：利用`sscanf()` 函数返回成功匹配并赋值的个数，从而能够很好地解决问题。
 
 #### 关于sprintf()
-
 + `sprintf`是C语言标准库中的一个函数，用于将格式化的数据写入字符串中。在C++中也可以使用`sprintf`函数，但更常用的是使用C++标准库中的`ostringstream`类来进行字符串解析。
 
 + `sprintf`函数的原型如下：
@@ -1288,20 +1087,17 @@ int main(){
 ```c
 int sprintf(char *str, const char *format, ...);
 ```
-
 + 其中，`str`是要写入的字符串，`format`是格式化字符串，用于指定写入的规则，`...`是可变参数列表，用于接收要写入的数据。
 
 + 与之相似的函数还有`printf`和`fprintf`。其中，`printf`将输出写入标准输出（通常是屏幕），而`fprintf`将输出写入文件。
 
 在使用`sprintf`函数时，需要注意以下几点：
-
 - `format`字符串中可以包含格式说明符，如 `%d`, `%f`, `%s`, `%c`, `%x`, `%o`, `%u`, `%e`, `%g`, `%p`, `%n`, 等等。
 - `format`字符串中可以包含空格、制表符、换行符等空白字符，用于控制输出格式。
 - `format`字符串中可以包含方括号 `[]`，用于指定一个字符集合。例如，`%[a-z]` 表示匹配小写字母。
 - `sprintf()` **函数返回成功写入的字符数。**如果返回值小于0，则表示写入失败。
 
 例题：[sprintf函数](https://sunnywhy.com/sfbj/2/5/37)
-
 + 代码：
 
 ```cpp
@@ -1320,14 +1116,12 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：
 
 + 注意代码中的`ssprintf()`函数注释**将需要的字符串写入到字符串数组**中；
 + 注意代码最后的输出字符串数组需要采用`printf()`函数进行输出。
 
 ### 再谈结构体与函数数组传参
-
 + 例题：[结构体与构造函数II](https://sunnywhy.com/sfbj/2/8/43)
 + 代码：
 
@@ -1358,12 +1152,10 @@ int main() {
     return 0;
 }
 ```
-
 + 总结：注意上述代码中的函数数组传参，以及字符串数组赋值；
 + 注意如何利用`scanf()`函数读入字符串。
 
 ### 再谈cin和cout
-
 + 例题：[cin与cout](https://sunnywhy.com/sfbj/2/9/45)
 + 代码：
 
@@ -1387,7 +1179,6 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：
 + `#include <iomanip>`是数据格式控制函数的头文件；
 + 在使用`cout`函数输出的时候`fixed()`函数与`setprecision(int n)`并用，可以控制小数点后面有**n位**。注意：`setprecision()`函数是控制有效数字的位数，而`fixed()`函数与`setprecision(int n )`函数结合使用是保留小数点后的位数，小数点的保留采用四舍五入！
@@ -1396,25 +1187,20 @@ int main(){
 ```cpp
 cout << setprecision(3) << 0.12345 << endl;
 cout << setprecision(3) << 1.23456 << endl;
-
 输出：
 0.123
 1.23
 ```
-
 + 当要保留对应位数的小数(**四舍五入**)的时候，就需要采用`fixed()`函数，效果如下：
 
 ```cpp
 cout << fixed << setprecision(3) << 0.12345 << endl;
 cout << fixed << setprecision(3) << 1.23456 << endl;
-
 输出：
 0.123
 1.235
 ```
-
 ### 再谈浮点精度比较
-
 + 例题：[浮点精度比较](https://sunnywhy.com/sfbj/2/9/46)
 + 代码：
 
@@ -1445,11 +1231,9 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：一般为了避免计算机精度误差造成浮点数大小比较不准，采用浮点数常量大小为`const double eps = 1e-8;`的数据来进行区分。
 
 ### 再谈if语句
-
 + `if(a==b==0)`和i`f(a==0&&b==0)`的区别：
 + 这两个表达式的区别在于它们的运算顺序不同。
   + `if(a==b==0)`的运算顺序是先比较a和b是否相等(`a==b`)，然后再将**结果**与0比较。如果a和b都为0，但是`true`不等于0，所以表达式`a==b==0`为`false`。而当a和b**不相等**时，表达式`a==b==0`为`true`。
@@ -1457,11 +1241,9 @@ int main(){
   + 因此，这两个表达式的含义是不同的。需要特别注意！
 
 ### 简单模拟
-
 + 简单模拟的题目不涉及算法，一般完全根据题目描述来进行代码编写，考察的是**代码能力**！
 
 例题：[2的幂](https://sunnywhy.com/sfbj/3/1/61)
-
 + 代码：
 
 ```cpp
@@ -1483,11 +1265,9 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：该题的**数据大小**远大于**C++**中的`long long`类型，因此不能直接进行计算，需要根据题目提示的公式**进行简化**，从而正确计算得到结果！
 
 例题：[B1032 挖掘机技术哪家强](https://pintia.cn/problem-sets/994805260223102976/exam/problems/994805289432236032?type=7&page=0)
-
 + 代码：
 
 ```cpp
@@ -1517,17 +1297,14 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：这道题目要**细心**，注意在代码中计算最大成绩的时候**初始值**要设置为`-1`，否则无法通过最大成绩就是为**0**的测试点。
 
 ### 查找元素
-
 + 查找元素类题目：给定一些元素，然后查找某个满足某条件的元素。
 + 一般而言，如果需要在一个比较小范围的数据集中查找，那么直接遍历每一个数据即可。
 + 如果需要查找的范围比较大，可以采用**二分查找**等算法来进行更快速的查找。
 
 例题：[寻找元素对](https://sunnywhy.com/sfbj/3/2/64)
-
 + 代码：
 
 ```cpp
@@ -1559,15 +1336,12 @@ int main(){
     return 0;
 }
 ```
-
 ### 图形输出
-
 + 所谓图形，其实是由若干字符组成，因此只需要弄清楚规则就能编写代码，有以下两种方法：
   + 通过规律直接进行输出；
   + 定义一个二维字符数组，通过规律填充字符数组，最后再输出整个二维数组。
 
 例题：[画X](https://sunnywhy.com/sfbj/3/3/67)
-
 + 代码：
 
 ```cpp
@@ -1621,15 +1395,12 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：这类型题目主要在于找到图案的规律，若图案比较复杂可以放在二维字符数组中进行输出，注意一下二维字符数组的初始化可以采用`memset(list,' ',sizeof(list));`函数！
 
 ### 日期处理
-
 + 日期处理问题主要考虑平年和闰年的关系(由此产生的二月天数之间的差别)、大月和小月的问题，细节比较繁杂！
 
 例题：[周几](https://sunnywhy.com/sfbj/3/4/73)
-
 + 代码：
 
 ```cpp
@@ -1749,7 +1520,6 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：虽然本题我采用了日期减法作为函数进行运算，但是和日期加法的想法相似，主要思想如下：
 
   + 直接给日期加上指定的天数并不是很容易的事情，所以我们可以换个思路，**每次只加1天**，**一直加到指定的天数为止**。这样我们就把问题转换为计算加1天之后的新日期，而这个问题就相对简单许多。
@@ -1803,14 +1573,11 @@ int main(){
       return 0;
   }
   ```
-
   + 最后，这道例题的思考方式如下：**首先确认一个基准日期**->**(2021-05-02是周日，用0表示)**->**计算输入的日期在基准日期之前或者之后**->**计算相差多少天**->**最后计算输入的日期是周几**！
   + 通过上述步骤，该题迎刃而解！
 
 ### 进制转换
-
 对于一个p进制数需要转换为q进制数，一般需要分为以下两步：
-
 + p进制数x转十进制数y：
   ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202310311125587.png)
 
@@ -1830,7 +1597,6 @@ int main(){
         return y;
     }
  ```
-
 + 十进制数y转q进制数z的函数(除基取余法)：
 
     + 采用"除基取余法"，意思是每次将带转换的数除q，将得到的余数作为低位存储，而商继续除q并进行上面的操作，最后当商为0时，将所有位从高到低输出就可以得到z！
@@ -1856,9 +1622,7 @@ int ten_q(int y,int q,int z_list[])
     return num;
 }
 ```
-
 例题：[K进制转十进制](https://sunnywhy.com/sfbj/3/5/77)
-
 + 代码：
 
 ```cpp
@@ -1911,15 +1675,12 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：这道例题无法直接使用上述两个函数，因此需要根据题意重新构造，但是难度不大，需要处理十进制以上的数据。
 
 ### 字符串处理
-
 + 字符串处理类题目可能实现逻辑比较麻烦，而且需要考虑许多细节和边界情况，因此是一种很好体现代码能力的题型。
 
 例题：[单词倒序](https://sunnywhy.com/sfbj/3/6/79)
-
 ```cpp
 #include <cstdio>
 #include <string.h>
@@ -1966,11 +1727,9 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：细心分析，按照逻辑编写代码，问题即可迎刃而解。
 
 例题：[公共前缀](https://sunnywhy.com/sfbj/3/6/83)
-
 + 代码：
 
 ```cpp
@@ -2019,7 +1778,6 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：注意一下本题中在需要使用循环输入的时候要采用`getchar();`函数吸收一下换行符，否则换行符会输入至字符数组中！
 
 ## C++标准模板库(STL)介绍
@@ -2091,7 +1849,6 @@ int main()
     //vi.begin()为取vi的首元素地址，而it指向这个地址
     vector<int>::iterator it = vi.begin();
     for(int i=0;i<5;i++)
-
     {
         printf("%d ",*(it+i));//输出vi[i]
     }
@@ -2171,7 +1928,6 @@ int main()
     //vi.begin()为取vi的首元素地址，而it指向这个地址
     vector<int>::iterator it = vi.begin();
     for(int i=0;i<vi.size();i++)
-
     {
         printf("%d ",*(it+i));//输出vi[i]
     }
@@ -2367,7 +2123,6 @@ using namespace std;
 vector<vector<int> > result;
 vector<int> temp;
 int n;
-
 //递归输出子集1函数
 void F(int index)
 {
@@ -2385,7 +2140,6 @@ void F(int index)
         F(index+1);
     }
 }
-
 //比较函数，从小到大排序
 bool cmp(vector<int> &a,vector<int> &b)//引用的写法
 {
@@ -2394,7 +2148,6 @@ bool cmp(vector<int> &a,vector<int> &b)//引用的写法
     else
         return a<b;
 }
-
 //主函数
 int main(){
     scanf("%d",&n);
@@ -2430,7 +2183,6 @@ vector<vector<int> > result;
 vector<int> temp;
 int num[15];
 int n;
-
 //递归输出子集1函数
 void F(int index)
 {
@@ -2448,7 +2200,6 @@ void F(int index)
         F(index+1);
     }
 }
-
 //比较函数，从小到大排序
 bool cmp(vector<int> &a,vector<int> &b)//引用的写法
 {
@@ -2457,7 +2208,6 @@ bool cmp(vector<int> &a,vector<int> &b)//引用的写法
     else
         return a<b;
 }
-
 //主函数
 int main(){
     scanf("%d",&n);
@@ -2520,7 +2270,6 @@ int n;
 bool hashTable[MAX] = {false};
 string str,temp;
 vector<string> result;
-
 //递归输出单词排序数
 void F(int index)
 {
@@ -2542,7 +2291,6 @@ void F(int index)
         }
     }
 }
-
 //主函数
 int main(){
     cin>>str;
@@ -2679,7 +2427,6 @@ int main()
     return 0;
 }
 ```
-
 ##### erase()
 + `erase()` 有两种用法：
 1. 删除单个元素；
@@ -2802,7 +2549,6 @@ int main()
 ```
 5
 ```
-
 ##### clear()
 + `clear()` 用来清空 set 内的所有元素，时间复杂度为 $O(N)$，其中 `N` 为 `set` 内的元素个数。示例如下：
 ```cpp
@@ -2830,7 +2576,6 @@ int main()
 ```
 0
 ```
-
 #### set 的常见用途
 1. `set` 最主要的作用是**自动去重并按照升序排序**，因此碰到需要去重但是却不方便直接开数组的情况，可以尝试用 `set` 解决。
 2. `set` 中元素是唯一的，如果需要处理**不唯一**的情况，则需要使用 `multiset`。
@@ -2846,7 +2591,6 @@ int main()
 string str;
 string str = "yugin chui!";
 ```
-
 #### string 中内容的访问
 1. 通过下标访问
 - 一般而言，可以直接像字符数组那样去访问 `string`：
@@ -3300,7 +3044,6 @@ Surely you will not turn around.
 #include <iostream>
 using namespace std;
 int n;
-
 //处理函数
 string my_deal(string s,int& e)
 {
@@ -3346,7 +3089,6 @@ string my_deal(string s,int& e)
     }
     return res;
 }
-
 //主函数
 int main()
 {
@@ -3655,7 +3397,6 @@ int main()
 ```text
 0
 ```
-
 ### queue 的常见用法详解
 + `queue` 翻译为队列，在 STL 中则是实现了一个**先进先出**的容器。
 #### queue 的定义
@@ -3671,7 +3412,6 @@ queue<typename> name;
 #include <stdlib.h>
 #include <queue>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -3701,7 +3441,6 @@ int main()
 #include <stdlib.h>
 #include <queue>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -3730,7 +3469,6 @@ int main()
 #include <stdlib.h>
 #include <queue>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -3771,7 +3509,6 @@ NOT EMPTY!
 #include <stdlib.h>
 #include <queue>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -3822,7 +3559,6 @@ priority_queue<typename> name;
 #include <stdlib.h>
 #include <queue>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -3852,7 +3588,6 @@ int main()
 #include <stdlib.h>
 #include <queue>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -3880,7 +3615,6 @@ int main()
 #include <stdlib.h>
 #include <queue>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -3921,7 +3655,6 @@ NOT EMPTY!
 #include <stdlib.h>
 #include <queue>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -3960,7 +3693,6 @@ priority_queue<int , vector<int>,greater<int> > q;
 #include <stdlib.h>
 #include <queue>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4024,7 +3756,6 @@ struct fruit{
 #include <string>
 #include <iostream>
 using namespace std;
-
 //结构体
 struct fruit{
 	string name;
@@ -4034,7 +3765,6 @@ struct fruit{
 		return f1.price > f2.price;//大于号表示价格低优先级高
 	}
 }f1,f2,f3;
-
 //主函数
 int main()
 {
@@ -4083,20 +3813,17 @@ priority_queue<fruit , vector<fruit> , cmp> q;
 #include <string>
 #include <iostream>
 using namespace std;
-
 //结构体
 struct fruit{
 	string name;
 	int price;
 }f1,f2,f3;
-
 struct cmp{
 	bool operator() (fruit f1,fruit f2)
 	{
 		return f1.price > f2.price;
 	}
 };
-
 //主函数
 int main()
 {
@@ -4140,7 +3867,6 @@ struct cmp{
 		return f1.price > f2.price;
 	}
 };
-
 ```
 #### priority_queue 的常见用途
 + `priority_queue` 可以解决一些**贪心问题**，也可以对 **Dijkstra 算法**进行优化（因为优先队列的本质是堆）。
@@ -4163,7 +3889,6 @@ stack<typename> name;
 #include <string>
 #include <iostream>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4195,7 +3920,6 @@ int main()
 #include <string>
 #include <iostream>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4226,7 +3950,6 @@ int main()
 #include <string>
 #include <iostream>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4270,7 +3993,6 @@ NOT EMPTY!
 #include <string>
 #include <iostream>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4335,7 +4057,6 @@ make_pair("yugin!",8);
 #include <iostream>
 #include <utility>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4368,7 +4089,6 @@ chui yugin yep! 888
 #include <iostream>
 #include <utility>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4404,7 +4124,6 @@ p1 < p2
 #include <utility>
 #include <map>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4418,14 +4137,12 @@ int main()
     system("pause");// 防止运行后自动退出，需头文件stdlib.h
     return 0;
 }
-
 ```
 + 输出：
 ```text
 Mr.yugin! 8
 yugin! 88
 ```
-
 ### algorithm 头文件下的常用函数
 + 使用 `#include <algorithm>` 头文件，需要在头文件下加一行`using namespace std;`
 #### max()、min()和 abs()
@@ -4443,7 +4160,6 @@ yugin! 88
 #include <map>
 #include <algorithm>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4471,7 +4187,6 @@ int main()
 #include <map>
 #include <algorithm>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4498,7 +4213,6 @@ int main()
 #include <map>
 #include <algorithm>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4527,7 +4241,6 @@ int main()
 #include <map>
 #include <algorithm>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4567,7 +4280,6 @@ dcbaef
 #include <map>
 #include <algorithm>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4605,7 +4317,6 @@ int main()
 #include <map>
 #include <algorithm>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4634,7 +4345,6 @@ int main()
 #include <map>
 #include <algorithm>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4661,17 +4371,13 @@ int main()
 + 由于排序题中大部分只需要得到排序的最终结果，而不需要去写完整的排序过程，因此推荐采用 `C++` 中的 `sort()` 函数进行处理。
 
 ##### 如何使用 sort ()函数排序
-
 + `sort()` 函数的使用必须加上头文件 `#include <algorithm>` 和 `using namespace std;`，其使用方式如下：
 
 ```cpp
 sort(首元素地址(必填),尾元素地址的下一个地址(必填),比较函数(非必填));
 ```
-
 ##### 如何实现比较函数 cmp
-
 ###### 基本数据类型数组的排序
-
 + 若比较函数不填，则默认按照从小到大的顺序排序。
 + 例如：
 
@@ -4692,13 +4398,11 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 1 2 3 4 5 
 ```
-
 + 如果想要实现从大到小来排序，则需要编写 cmp (比较函数)：
 
 ```cpp
@@ -4722,19 +4426,16 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 5 4 3 2 1 
 ```
-
 + **记忆方法**：
   + 数据“从小到大”就用 `“<”`，因为 `a<b` 是**左小右大**
   + 数据“从大到小”就用 `“>”`，因为 `a>b` 是**左大右小**
 
 ###### 结构体数组排序
-
 + 一级排序
 
 ```cpp
@@ -4743,7 +4444,6 @@ bool cmp(node a,node b)
 	return a.x>b.x;
 }
 ```
-
 + 二级排序
 
 ```cpp
@@ -4773,13 +4473,11 @@ bool cmp(node a,node b)
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 //比较函数
 bool cmp(int a,int b)//vector中的元素为int型
 {
     return a>b;//从大到小
 }
-
 //主函数
 int main()
 {
@@ -4795,7 +4493,6 @@ int main()
     system("pause");// 防止运行后自动退出，需头文件stdlib.h
     return 0;
 }
-
 ```
 + 输出：
 ```text
@@ -4813,7 +4510,6 @@ int main()
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4826,7 +4522,6 @@ int main()
     system("pause");// 防止运行后自动退出，需头文件stdlib.h
     return 0;
 }
-
 ```
 + 输出：
 ```text
@@ -4846,13 +4541,11 @@ cc
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 //比较函数
 bool cmp(string a,string b)//vector中的元素为int型
 {
     return a.length()<b.length();//从小到大
 }
-
 //主函数
 int main()
 {
@@ -4890,7 +4583,6 @@ bbbb
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4915,12 +4607,9 @@ int main()
     lowerPos = lower_bound(a,a+10,6);
     upperPos = upper_bound(a,a+10,6);
     printf("%d %d\n",lowerPos-a,upperPos-a);
-
-    
     system("pause");// 防止运行后自动退出，需头文件stdlib.h
     return 0;
 }
-
 ```
 + 输出：
 ```text
@@ -4942,7 +4631,6 @@ int main()
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 //主函数
 int main()
 {
@@ -4952,22 +4640,18 @@ int main()
     system("pause");// 防止运行后自动退出，需头文件stdlib.h
     return 0;
 }
-
 ```
 + 输出：
 ```text
 3 6
 ```
 ## 算法初步
-
 ### 排序
-
 + 本章先介绍**两种**基础的排序算法：**选择排序**与**插入排序**。
 #### 选择排序
 + **简单选择排序**：对于一个序列`A`中的元素`A[1]-A[n]`，令`i`从`1`到`n`枚举，进行`n`趟操作，每趟从待排序部分`[i,n]`中选择最小元素，令其与待排序部分的第一个元素`A[i]`进行交换，这样元素`A[i]`就会与当前有序区间`[1,i-1]`形成新的有序区间`[1,i]`。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311011059055.png)
-
 + 总共需要进行n趟操作(1<=i<=n)，每趟操作选出待排序部分`[i,n]`中的最小元素，令其与`A[i]`交换。总复杂度为$O(n^2)$
 
 + 实现代码：
@@ -5000,7 +4684,6 @@ void select_sort(int list[],int num)
 + 思想如下图所示：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311011319809.png)
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311011319528.png)
 + 实现代码：
 ```cpp
@@ -5021,23 +4704,17 @@ void insert_sort(int list[],int num)
     }
 }
 ```
-
 #### 排序题与sort函数的应用
-
 + 由于排序题中大部分只需要得到排序的最终结果，而不需要去写完整的排序过程，因此推荐采用`C++`中的`sort()`函数进行处理。
 
 ##### 如何使用sort()函数排序
-
 + `sort()`函数的使用必须加上头文件`#include <algorithm>`和`using namespace std;`，其使用方式如下：
 
 ```cpp
 sort(首元素地址(必填),尾元素地址的下一个地址(必填),比较函数(非必填));
 ```
-
 ##### 如何实现比较函数cmp
-
 ###### 基本数据类型数组的排序
-
 + 若比较函数不填，则默认按照从小到大的顺序排序。
 + 例如：
 
@@ -5058,13 +4735,11 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 1 2 3 4 5 
 ```
-
 + 如果想要实现从大到小来排序，则需要编写cmp(比较函数)：
 
 ```cpp
@@ -5088,19 +4763,16 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 5 4 3 2 1 
 ```
-
 + **记忆方法**：
   + 数据“从小到大”就用`“<”`，因为`a<b`是**左小右大**
   + 数据“从大到小”就用`“>”`，因为`a>b`是**左大右小**
 
 ###### 结构体数组排序
-
 + 一级排序
 
 ```cpp
@@ -5109,7 +4781,6 @@ bool cmp(node a,node b)
 	return a.x>b.x;
 }
 ```
-
 + 二级排序
 
 ```cpp
@@ -5125,9 +4796,7 @@ bool cmp(node a,node b)
 	}
 }
 ```
-
 例题：[考场排名](https://sunnywhy.com/sfbj/4/1/97)
-
 + 代码：
 
 ```cpp
@@ -5144,19 +4813,15 @@ struct stu{
     int kaochang;
     int paiming;
 };
-
 //比较函数
 bool cmp1(stu a,stu b)
 {
     return a.score>b.score;
 }
-
 bool cmp2(stu a,stu b)
 {
         return strcmp(a.name,b.name)<0;
-
 }
-
 //主函数
 int main(){
     int n,num_kaochang,sum=0,num[15];
@@ -5195,11 +4860,9 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：注意一下**字符串数组的比较函数**的写法，以及这道题目局部（考场）排名的大小需要减去`sum`值。
 
 例题：[A1025 PAT Ranking](https://pintia.cn/problem-sets/994805342720868352/exam/problems/994805474338127872?type=7&page=0)
-
 + 代码：
 
 ```cpp
@@ -5217,13 +4880,11 @@ struct stu{
     int paiming;
     int final_rank;
 };
-
 //比较函数
 bool cmp1(stu a,stu b)
 {
     return a.score>b.score;
 }
-
 bool cmp2(stu a,stu b)
 {
     if(a.final_rank==b.final_rank)
@@ -5234,7 +4895,6 @@ bool cmp2(stu a,stu b)
     {
         return a.final_rank<b.final_rank;
     }
-
 }
 //主函数
 int main(){
@@ -5292,13 +4952,10 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：可以在**结构体数组**中把对应要输出的内容提前定义，这样在运算赋值之后就可以直接输出。
 
 ### 散列
-
 #### 散列的定义和整数散列
-
 + 散列(Hash)，简单而言，就是将**元素**通过一个**函数**转换为**整数**，使得该整数可以尽量**唯一地**代表这个元素。
 + 其中把这个转换函数称为**散列函数H**，也就是说，如果元素在转换前为`Key`，那么转换后为一个整数`H(Key)`。
 
@@ -5309,7 +4966,6 @@ int main(){
 + 散列表的特点是能够使用空间来换取时间
 
 #### 字符串Hash初步
-
 + **字符串Hash**是指将一个字符串`Str`映射成一个整数，使得该整数可以尽可能唯一地代表字符串`Str`。
 + 为了讨论问题方便，先假设字符串均有大写字母`'A'-'Z'`组成，在此基础上，不妨把大写字母`'A'-'Z'`看成`0-25`。
 + 由此便可以将字符串映射为整数(注意：转换成整数最大为 $26^{1en}-1$ 其中 `len` 为字符串长度)
@@ -5326,7 +4982,6 @@ int HashFunc(char Str[],int len)//Hash函数，将字符串Str转换为整数
 	return id;
 }
 ```
-
 + 如果字符串中出现了小写字母，那么可以把大写字母`'A'-'Z'`看成`0-25`，把小写字母`'a'-'z'`看成`26-51`，其余相同。
 
 + 代码：
@@ -5349,11 +5004,9 @@ int HashFunc(char Str[],int len)//Hash函数，将字符串Str转换为整数
 	return id;
 }
 ```
-
 + 再增加不同的字符代码编写方式**同理**；
 
 例题：[字符串出现次数](https://sunnywhy.com/sfbj/4/2/105)
-
 + 代码：
 
 ```cpp
@@ -5375,7 +5028,6 @@ int HashFunc(char s[],int len)
     }
     return id;
 }
-
 //主函数
 int main(){
     int n,m;
@@ -5398,11 +5050,9 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：该题直接给出字符串散列的处理方法！重点掌握字符串转整数函数的编写和应用。
 
 例题：[2-SUM-hash](https://sunnywhy.com/sfbj/4/2/104)
-
 + 代码：
 
 ```cpp
@@ -5434,13 +5084,10 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：这道题目的巧妙之处在于通过用求和值`k`减去`a`后的值`b`是否还在**哈希表**中来判断是否满足条件。这样巧妙利用了**空间换时间**的思想，只用一次循环即可完成！最后注意最终结果需要再`÷2`！
 
 ### 递归
-
 分治
-
 + 分治->"分而治之"
 + 分治法将原问题划分成若干个**规模较小**而**结构**与原问题**相同**或者**相似**的子问题，然后分别解决这些子问题，最后**合并**子问题的解，即可得到原问题的解。
   + 分解：将原问题划分成若干个**规模较小**而**结构**与原问题**相同**或者**相似**的子问题；
@@ -5450,7 +5097,6 @@ int main(){
 + 分治法作为一种算法思想，既可以使用**递归**的手段去实现，也可以通过**非递归**的手段去实现。
 
 递归
-
 + 递归在于**反复调用自身函数**，但是每次把**问题范围缩小**，直到范围缩小到可以直接得到边界数据的结果，然后再在返回的路上求出对应的解。
 + 递归很适合用来实现分治思想；
 + 递归的逻辑中一般有两个重要概念：
@@ -5477,17 +5123,14 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 6
 ```
-
 + 其实现过程如下：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311041745796.png)
-
 + 例题->递归求解斐波那契数列的第n项：
 
 ```cpp
@@ -5510,21 +5153,17 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 5
 ```
-
 + 其实现过程如下：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311041755805.png)
-
 + 例题->**全排列问题**：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311041758963.png)
-
 + **思路**：
 + 从递归的角度考虑，把问题描述成："输出**1 - n**这**n**个整数的全排列"，那么它就可以分解成若干个子问题：
   + 输出以1开头的全排列：`(1,2,3)`、`(1,3,2)`;
@@ -5582,7 +5221,6 @@ void Full_permutation(int index)
         }
     }
 }
-
 //主函数
 int main(){
     n=3;
@@ -5590,7 +5228,6 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
@@ -5601,11 +5238,9 @@ int main(){
 312
 321
 ```
-
 + 例题->**n皇后问题**：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311051551338.png)
-
 + 思路：
 
 + 根据题意很容易想到**每行**和**每列**只能放置一个皇后，只需要将**n列**或者**n行**皇后的位置写出即可代表一种情况。
@@ -5620,14 +5255,12 @@ int main(){
 #include <algorithm>
 #include <cmath>
 using namespace std;
-
 //n皇后函数变量定义
 const  int MAXN = 20;
 int n;//输出index-n的全排列
 int p[MAXN];
 bool HashTable[MAXN]={false};
 int my_count = 0;//记录合法的皇后排列个数
-
 //n皇后问题递归函数
 void n_queens(int index)
 {
@@ -5666,7 +5299,6 @@ void n_queens(int index)
         }
     }
 }
-
 //主函数
 int main(){
     n=8;
@@ -5675,13 +5307,11 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 92
 ```
-
 + 总结：
 + 上述方法在序列完成时再判断该序列是否合法，未使用任何优化方法，称为**暴力法**。
 + 事实上，可以发现当已经放置了一部分皇后以后（对应生成了排列的一部分），如果后续皇后无论怎么放置都冲突的话，即可中止递归了。
@@ -5701,7 +5331,6 @@ int n;//输出index-n的全排列
 int p[MAXN];
 bool HashTable[MAXN]={false};
 int my_count = 0;//记录合法的皇后排列个数
-
 //n皇后问题递归函数
 void n_queens(int index)
 {
@@ -5737,7 +5366,6 @@ void n_queens(int index)
         }
     }
 }
-
 //主函数
 int main(){
     n=8;
@@ -5746,19 +5374,15 @@ int main(){
     return 0;
 }
 ```
-
 + 输出：
 
 ```
 92
 ```
-
 例题：[反转字符串](https://sunnywhy.com/sfbj/4/3/113)
-
 + 方法一：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311051954513.png)
-
 + 方法一代码：
 
 ```cpp
@@ -5778,11 +5402,9 @@ void rev_1(char* str)
     *(str+len-1)=temp;
 }
 ```
-
 + 方法二：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311051958349.png)
-
 + 方法二代码：
 
 ```cpp
@@ -5799,7 +5421,6 @@ void rev_2(char* str,int left,int right)
     }
 }
 ```
-
 + 总代码：
 
 ```cpp
@@ -5827,7 +5448,6 @@ void rev_1(char* str)
     }
     *(str+len-1)=temp;
 }
-
 //递归求字符串逆函数2
 void rev_2(char* str,int left,int right)
 {
@@ -5840,7 +5460,6 @@ void rev_2(char* str,int left,int right)
         rev_2(str,left+1,right-1);
     }
 }
-
 //主函数
 int main(){
     scanf("%s",str);
@@ -5850,11 +5469,9 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：上述介绍的两种方法可以多深入体会。
 
 例题：[上楼](https://sunnywhy.com/sfbj/4/3/118)
-
 + 代码：
 
 ```cpp
@@ -5864,7 +5481,6 @@ int main(){
 #include <algorithm>
 #include <cmath>
 using namespace std;
-
 //递归判断上楼梯方式数
 int F(int n)
 {
@@ -5873,7 +5489,6 @@ int F(int n)
     else
         return F(n-1)+F(n-2);//最后只有加一级或者两级，方案是固定的，所以只需要求出还需要一级到达的总方式数和还需要两级到达的总方式数即可
 }
-
 //主函数
 int main(){
     int n;
@@ -5883,11 +5498,9 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：最后要到达最高级只有加**一级**或者**两级**，方案是固定的，所以只需要求出还需要一级到达的总方式数和还需要两级到达的总方式数即可。
 
 例题：[汉诺塔](https://sunnywhy.com/sfbj/4/3/119)
-
 + 代码：
 
 ```cpp
@@ -5912,7 +5525,6 @@ void hanoi(int n,char from,char to,char mid)
         hanoi(n-1,mid,to,from);//最后把剩下n-1级的汉诺塔移动到目标位置
     }
 }
-
 //主函数
 int main(){
     int n;
@@ -5922,16 +5534,13 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：要想移动`n`级汉诺塔需要先移动`n-1`级汉诺塔到另一边，然后把最后最大的一块移动到目的位置，最后把剩下`n-1`级的汉诺塔移动到目标位置，从而形成递归。
 
 例题：[棋盘覆盖问题](https://sunnywhy.com/sfbj/4/3/120)
-
 + 说明：这道题目是一道典型的二维**分治问题**。
 + 思路：要想采用**分治**的方法并且使用**递归**来进行求解，就需要划分成相同方案的子问题，划分的思路如下：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311071535777.png)
-
 + 以此类推，在划分到只剩下2×2大小的方块后就很容易地采用骨牌进行填充。
 + 代码如下：
 
@@ -5944,7 +5553,6 @@ int main(){
 using namespace std;
 const int MAXN = 256*256;
 int my_index = 0;
-
 //建立坐标结构体
 struct point
 {
@@ -5960,7 +5568,6 @@ struct point
 };
 //定义存储的点数组
 point arr[MAXN];
-
 //递归获取棋盘覆盖函数
 /*
 x,y是左下角方格坐标，代表原点
@@ -6016,7 +5623,6 @@ void chees_cover(int x,int y,int cx,int cy,int size)
         chees_cover(x+h,y,x+h,y+h-1,h);
     }
 }
-
 //定义排序比较函数
 int cmd(point px,point py)
 {
@@ -6029,7 +5635,6 @@ int cmd(point px,point py)
         return px.x < py.x;
     }
 }
-
 //主函数
 int main(){
     int k,cx,cy,size;
@@ -6045,9 +5650,7 @@ int main(){
     return 0;
 }
 ```
-
 例题：[谢尔宾斯基地毯](https://sunnywhy.com/sfbj/4/3/123)
-
 + 代码：
 
 ```cpp
@@ -6059,7 +5662,6 @@ int main(){
 using namespace std;
 const int MAXN = 3*3*3*3*3*3*3;
 char arr[MAXN][MAXN];
-
 //定义谢尔宾斯基地毯递归函数
 void cover(int n,int x,int y)
 {
@@ -6087,7 +5689,6 @@ void cover(int n,int x,int y)
         cover(n-1,x+2*unit,y+2*unit);
     }
 }
-
 //主函数
 int main(){
     int n,my_unit;
@@ -6119,7 +5720,6 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：这种题目主要找准递归的**起始位置**，根据**起始位置**即可输出完整图形。
 
 例题：[有限制的选数II](https://sunnywhy.com/sfbj/4/3/141)
@@ -6136,7 +5736,6 @@ using namespace std;
 const int MAX = 15;
 int n,k,ans=0;
 int num[MAX];
-
 //递归函数求解有限制的选数
 void F(int index,int sum)
 {
@@ -6153,7 +5752,6 @@ void F(int index,int sum)
         F(index+1,sum+i*num[index]);//根据加上了本身的数据再继续往后递归
     }
 }
-
 //主函数
 int main(){
     scanf("%d %d",&n,&k);
@@ -6185,7 +5783,6 @@ const int MAXN = 150;
 int n,k,ans=0,m;
 int num[MAX],p[MAX];
 int hashTable[MAXN] = {0};
-
 //递归函数求解有限制的选数
 void F(int index,int sum)
 {
@@ -6202,7 +5799,6 @@ void F(int index,int sum)
         F(index+1,sum+i*p[index]);
     }
 }
-
 //主函数
 int main(){
     scanf("%d %d",&n,&k);
@@ -6256,7 +5852,6 @@ const int MAXN = 10000110;
 int n,k;
 int num[MAX],value[MAXN];
 int max_value = -1;
-
 //递归函数求解有限制的选数
 void F(int index,int sum,int temp_value)
 {
@@ -6274,7 +5869,6 @@ void F(int index,int sum,int temp_value)
     }
     F(index+1,sum,temp_value);
 }
-
 //主函数
 int main(){
     scanf("%d %d",&n,&k);
@@ -6311,11 +5905,9 @@ int main(){
 #include <vector>
 #include <set>
 using namespace std;
-
 //变量
 int n;
 set<string> st;
-
 //递归函数生成括号对
 void F(int pos,int left,int right,string cur_str)
 {
@@ -6336,7 +5928,6 @@ void F(int pos,int left,int right,string cur_str)
         F(pos+1,left,right+1,cur_str+')');
     }
 }
-
 //主函数
 int main(){
     scanf("%d",&n);
@@ -6355,7 +5946,6 @@ int main(){
 + 思路：以分解 **361** 为例：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231125141921.png)
-
 + 代码：
 ```cpp
 #include <cstdio>
@@ -6367,12 +5957,10 @@ int main(){
 #include <vector>
 #include <set>
 using namespace std;
-
 //变量
 const int MAXN = 9;//字符串的最大长度
 char data[MAXN];//存储数字
 int n;
-
 //函数
 //head:开始字符的下标
 //tail:结尾字符的下一个位置
@@ -6383,7 +5971,6 @@ int get_num(int head,int tail){
     }
     return sum;
 }
-
 int sum_num(int head,int tail,int len){
     if(head+1==tail){
         return get_num(head,tail);
@@ -6398,7 +5985,6 @@ int sum_num(int head,int tail,int len){
         return sum;
     }
 }
-
 //主函数
 int main (){ 
     scanf("%s",data);
@@ -6414,12 +6000,10 @@ int main (){
 + 第二步：361分解为36,1时，因为在划分为3,61情况时，已经出现过3,6,1这种情况，为了避免重复出现3,6,1的情况，将36不在进行划分（因为其对应的所有划分情况在上一步已经出现过了），即直接使用 `get_num(head,i)`！
 
 #### 一种递归式的非零自然数全分解方法
-
 + 在开始讲之前，首先介绍一下这个方法针对的问题背景：一个非零自然数(1,2,3,……)既不重复也不遗漏地任意分解为非零自然数(如：3=1+1+1=1+2)，在本篇暂且称为非零自然数的全分解。
 + 在非零自然数的全分解中，总共有多少种分解方法，并列出所有分解方法，在本篇暂且称为非零自然数的全分解问题。
 
 ##### 基本概念
-
 1. **分解末项**
    + 一个分解中的最后一项称为分解末项。如“3=1+2”中分解末项为“2”，再如“3=1+1+1”中分解末项为“1”。
 2. **分解基数B**
@@ -6427,18 +6011,15 @@ int main (){
   + 我们也可以把“5=1+4”到“5=1+2+2”的过程理解为一个将分解末项“4”按分解基数B=2的分解。实际上这种理解更为重要，因为在本方法中，我们本质上也是针对分解末项的分解。
 
 ##### 分解规则
-
 1. 关于分解基数
      + **分解基数单调不减**。如：“7=2+5=2+1+4”为一个错误的分解过程，因为第一级分解基数为2，第二级分解基数为1，违反分解基数单调不减原则。所以，“7=2+5=2+2+3”才是一个正确的分解过程。
 2. 关于分解末项
      + **分解末项应不小于分解基数**。如：“5=1+1+3”为一个正确的分解，“5=1+3+1”为一个错误的分解。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202311102020016.jpeg)
-
 + 根据前述的两条分解规则，对7的全分解过程如上图所示，可以看到总共有14种分解方法。实际上，7的全分解就是这14种分解方法。
 
 例题：[自然数分解之方案数](https://sunnywhy.com/sfbj/4/3/125)
-
 + 代码：
 
 ```cpp
@@ -6448,7 +6029,6 @@ int main (){
 #include <algorithm>
 #include <cmath>
 using namespace std;
-
 //递归求解自然数分解方案数量函数
 int func(int pre,int now)
 {
@@ -6463,7 +6043,6 @@ int func(int pre,int now)
     }
     return temp;
 }
-
 //主函数
 int main(){
     int n,num;
@@ -6473,13 +6052,11 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：
   + **递归边界**是：当我们需要拆分的数为1时，表示无法拆分，因此返回0。
   + 总而言之，`func(pre,now)`所返回的整数表示该组合后续能够拆分的总数。
 
 例题：[自然数分解之最大积](https://sunnywhy.com/sfbj/4/3/124)
-
 + 代码：
 
 ```cpp
@@ -6489,7 +6066,6 @@ int main(){
 #include <algorithm>
 #include <cmath>
 using namespace std;
-
 //递归求解自然数分解之最大积
 int func(int pre,int now)
 {
@@ -6503,7 +6079,6 @@ int func(int pre,int now)
     }
     return max(my_max,pre*my_max);
 }
-
 //主函数
 int main(){
     int n,num;
@@ -6513,13 +6088,10 @@ int main(){
     return 0;
 }
 ```
-
 + 总结：这题与**自然数分解之方案数**较为相似，只需要把递归函数 `temp` 的计数改为计算乘积最大值即可。
 
 #### 动态规划
-
 例题：[数塔](https://sunnywhy.com/sfbj/4/3/116)
-
 + 思路：数塔问题是经典的动态规划问题，通过归纳可以得到一个信息：
 
   + 如果要求出`dp[i][j]`,那么一定要求出其两个子问题：
@@ -6531,7 +6103,6 @@ int main(){
   ```cpp
   dp[i][j]=max(dp(i+1,j),dp(i+1,j+1))+f[i][j];
   ```
-
   + 把`dp[i][j]`称为问题的**状态**，而把上面的式子称为**状态转移方程**。
 
 + 例题代码：
@@ -6610,7 +6181,6 @@ int main(){
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 //月饼结构体
 struct Mooncake
 {
@@ -6618,13 +6188,11 @@ struct Mooncake
     double total_price;//总售价
     double price;//单价
 };
-
 //比较函数
 bool cmd(Mooncake a,Mooncake b)
 {
     return a.price > b.price;
 }
-
 //主函数
 int main()
 {
@@ -6670,7 +6238,6 @@ int main()
     return 0;
 }
 ```
-
 例题：[PAT B1023 组个最小数](https://pintia.cn/problem-sets/994805260223102976/exam/problems/994805298269634560?type=7&page=0)
 + **思路：**
 + **策略**是：先从 `1~9` 中选择个数不为 `0` 的最小数输出，然后从 `0~9` 输出数字，每个数字输出次数为其剩余个数。
@@ -6692,11 +6259,9 @@ int main()
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 //变量定义
 const int MAX = 10;
 int hashtable[MAX];
-
 //主函数
 int main()
 {
@@ -6738,7 +6303,6 @@ int main()
 + 首先考虑最简单的情况，如果开区间 $I_1$ 被开区间 $I_2$ 包含，如下图 4-5 a 所示，那么显然选择 $I_1$ 是最好的选择，因为如果选择 $I_1$，那么就有更大的空间去容纳其它开区间。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231201135728.png)
-
 + 接下来把所有开区间按左端点 `x` 从大到小排列，如果去除掉区间包含的情况，那么一定有 $y_1>y_2>...>y_n$ 成立，如上图 4-5b 所示。
 + 现在考虑应当如何选取区间，通过观察会发现，$I_1$ 右边有一段是一定不会和其他区间重叠的，如果把它去掉，那么 $I_1$ 的左边剩余部分就会被 $I_2$ 包含，由图 4-5a 的情况可知，应当选择 $I_1$。
 + 因此对这种情况，**总是先选择左端点最大的区间。**
@@ -6756,13 +6320,11 @@ int main()
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 //变量定义
 struct Inteval
 {
     int x,y;//开区间左右端点
 };
-
 //比较函数
 bool cmp(Inteval a,Inteval b)
 {
@@ -6771,7 +6333,6 @@ bool cmp(Inteval a,Inteval b)
     else
         return a.y < b.y;//左端点相同时按右端点从小到大排序
 }
-
 //主函数
 int main()
 {
@@ -6813,13 +6374,11 @@ int main()
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 //变量定义
 struct Inteval
 {
     int x,y;//开区间左右端点
 };
-
 //比较函数
 bool cmp(Inteval a,Inteval b)
 {
@@ -6828,7 +6387,6 @@ bool cmp(Inteval a,Inteval b)
     else
         return a.x > b.x;//右端点相同时按左端点从大到小排序
 }
-
 //主函数
 int main()
 {
@@ -6842,7 +6400,6 @@ int main()
         vi.push_back(in);
     }
     sort(vi.begin(),vi.end(),cmp);//把区间排序
-    
     //ans记录不相交区间个数，lastY记录上一个被选中区间的右端点
     int ans = 1,lastY = vi[0].y;
     for(int i=1;i<n;i++)//关键：从一开始循环,因为第一个自身天然算进去了
@@ -6881,13 +6438,11 @@ int main()
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 //变量定义
 struct Inteval
 {
     int x,y;//开区间左右端点
 };
-
 //比较函数
 bool cmp(Inteval a,Inteval b)
 {
@@ -6896,7 +6451,6 @@ bool cmp(Inteval a,Inteval b)
     else
         return a.y < b.y;//左端点相同时按右端点从小到大排序
 }
-
 //主函数
 int main()
 {
@@ -6950,13 +6504,11 @@ int main()
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 //比较函数
 bool cmp(string a,string b)
 {
     return a+b < b+a;//注意:关键点
 }
-
 //主函数
 int main()
 {
@@ -7057,7 +6609,6 @@ int main()
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 //二分查找函数
 //A[]为严格递增序列，left为二分下界，right为二分上界，x为欲查询数
 //二分区间为左闭右闭[left,right]，传入初值为[0,n-1]
@@ -7076,7 +6627,6 @@ int binarySearch(int A[],int left,int right,int x)
     }
     return -1;//查找失败，返回-1
 }
-
 //主函数
 int main()
 {
@@ -7284,9 +6834,7 @@ int solve(int A[],int left,int right,int x)
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 const int MAX = 100010;
-
 //A[]为递增序列，x为欲查询数，函数返回第一个大于等于x的元素位置
 //二分区间为左闭右闭[left,right]，传入初值为[0,n]
 int lower_bound(int A[],int left,int right,int x)
@@ -7306,7 +6854,6 @@ int lower_bound(int A[],int left,int right,int x)
     }
     return left;//返回L(夹出来)的位置
 }
-
 //解决函数
 int solve(int A[],int left,int right,int x,int n)
 {
@@ -7357,7 +6904,6 @@ int solve(int A[],int left,int right,int x,int n)
             return -1;
     }
 }
-
 //主函数
 int main()
 {
@@ -7377,7 +6923,6 @@ int main()
     return 0;
 }
 ```
-
 例题：[旋转数组的中位数](https://sunnywhy.com/sfbj/4/5/168)
 + 代码：
 ```cpp
@@ -7391,9 +6936,7 @@ int main()
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 const int MAX = 100010;
-
 //解决函数
 double solve(double A[],int left,int right,int n)
 {
@@ -7458,7 +7001,6 @@ double solve(double A[],int left,int right,int n)
         }
     }
 }
-
 //主函数
 int main()
 {
@@ -7496,7 +7038,6 @@ int main()
 #include <algorithm>
 #include <vector>
 using namespace std;
-
 //A[]为递增序列，x为欲查询数，函数返回第一个大于x的元素位置
 //二分区间为左闭右闭[left,right]，传入初值为[0,n]
 int upper_bound(vector<double>& A,int left,int right,int x)
@@ -7516,7 +7057,6 @@ int upper_bound(vector<double>& A,int left,int right,int x)
     }
     return left;//返回夹出来的位置
 }
-
 //主函数
 int main()
 {
@@ -7549,7 +7089,6 @@ int main()
     return 0;
 }
 ```
-
 + 方法二：划分数组
 + 思路：
 + 中位数定义：在只有一个有序数组的时候，中位数把数组分割成两个部分。
@@ -7589,7 +7128,6 @@ int main()
 + 四种特殊的情况：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231208140155.png)
-
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231208140239.png)
 + 从上面的分析中，不难发现需要做的是：
 > 在 `[0,m]` 中找到 `i`，使得：
@@ -7606,7 +7144,6 @@ int main()
 + 该算法执行效率为 $O(log(min(m,n))$，达到最优效率：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231208143822.png)
-
 + 代码如下：
 ```cpp
 #include <stdio.h>
@@ -7620,7 +7157,6 @@ int main()
 #include <vector>
 #include <climits>
 using namespace std;
-
 //解决函数
 double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
         //为了使得分割线的两侧在第二个数组的两侧都有元素，做此处处理，避免数组下标越界
@@ -7665,7 +7201,6 @@ double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
             //返回分割线左边元素的最大值和右边元素最小值的平均值
             return (double)(((double) max(nums1LeftMax,nums2LeftMax)+(double) min(nums1RightMin,nums2RightMin))/2);
 }
-
 //主函数
 int main()
 {
@@ -7800,7 +7335,6 @@ double solve(double L,double R)
 #include <vector>
 #include <cmath>
 using namespace std;
-
 //常数定义
 const double eps = 1e-5;//精度
 const double PI = acos(-1.0);
@@ -7835,7 +7369,6 @@ double solve(double R,double r)
     }
     return mid;//返回近似值
 }
-
 //主函数
 int main()
 {
@@ -7872,7 +7405,6 @@ int main()
 #include <vector>
 #include <cmath>
 using namespace std;
-
 //变量定义
 vector<int> vi;
 //比较函数
@@ -7911,7 +7443,6 @@ int solve(int K)
     }
     return left;//返回夹出的数值
 }
-
 //主函数
 int main()
 {
@@ -7946,7 +7477,6 @@ int main()
 #include <stdio.h>
 #include <stdlib.h>
 typedef long long LL;
-
 //循环取余法函数
 LL pow(LL a,LL b,LL m)
 {
@@ -7957,7 +7487,6 @@ LL pow(LL a,LL b,LL m)
     }
     return ans;
 }
-
 int main() {
     LL a=2;
     LL b=3;
@@ -8097,9 +7626,7 @@ for(int i=0;i<n;i++)
 #include <vector>
 #include <climits>
 using namespace std;
-
 const int MAX = 100010;
-
 //解决函数
 int solve(int A[],int n,int k)
 {
@@ -8124,7 +7651,6 @@ int solve(int A[],int n,int k)
     }
     return num;
 }
-
 //主函数
 int main()
 {
@@ -8166,10 +7692,8 @@ int main()
 #include <vector>
 #include <climits>
 using namespace std;
-
 const int MAX1 = 100010;
 const int MAX2 = 200010;
-
 //解决函数
 int solve(int A[],int B[],int C[],int n,int m)
 {
@@ -8191,7 +7715,6 @@ int solve(int A[],int B[],int C[],int n,int m)
     }
     return index;//返回序列C的长度
 }
-
 //主函数
 int main()
 {
@@ -8252,10 +7775,8 @@ int main()
 #include <vector>
 #include <climits>
 using namespace std;
-
 const int MAX1 = 100010;
 const int MAXN = 1000;
-
 //合并函数
 //将数组A的[L1,R1]与[L2,R2]区间合并为有序区间(此处L2即为R1+1)
 void merge(int A[],int L1,int R1,int L2,int R2)
@@ -8286,7 +7807,6 @@ void merge(int A[],int L1,int R1,int L2,int R2)
         A[L1+i]=temp[i];//将合并后的序列赋值回数组A
     }
 }
-
 //将array数组当前区间[left,right]进行归并排序
 void mergeSort(int A[],int left,int right)
 {
@@ -8298,7 +7818,6 @@ void mergeSort(int A[],int left,int right)
         merge(A,left,mid,mid+1,right);//将左子区间和右子区间合并
     }
 }
-
 //主函数
 int main()
 {
@@ -8399,3 +7918,281 @@ void mergeSort3(int A[],int n)
 }
 ```
 #### 快速排序
++ 快速排序是排序算法中平均时间复杂度为 $O(nlogn)$ 的一种算法，其实现需要先解决这样一个问题：
++ 对一个序列 `A[1]`、`A[2]`、……、`A[n]`，调整序列中元素的位置，使得 `A[1]`（原序列的 `A[1]`，下同）的**左侧**所有元素都不超过 `A[1]`、**右侧**所有元素都大于 `A[1]`。
++ 例如对序列 `{5,3,9,6,4,1}` 来说，可以调整序列中元素的位置，形成序列 `{3,1,4,5,9,6}`，这样就让 `A[1]=5` 左侧的所有元素都不超过它、右侧所有元素都大于它，如下图 4-10 所示：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231210133312.png)
++ 对这个问题来说可能会有多种方案，下面给出速度最快的做法，思想是双指针 (two pointers)：
++ ① 先将 `A[1]` 存至某个临时变量 `temp`，并令两个下标 `left`、`right` 分别指向序列首尾（如令 `left=1`、`right=n`）。
++ ② 只要 `right` 指向的元素 `A[right]` 大于 `temp`，就将 `right` 不断左移；当某个时候 `A[right]≤temp` 时，将元素 `A[right]` 挪到 `left` 指向的元素 `A[left]` 处。
++ ③ 只要 `left` 指向的元素 `A[left]` 不超过 `temp`，就将 left 不断右移；当某个时候 `A[left]>temp` 时，将元素 `A[left]` 挪到 `right` 指向的元素 `A[right]` 处。
++ ④ 重复②和③，直到 `left` 与 `right` 相遇，把 `temp`（也即原 `A[1]`）放到相遇的地方。
++ 为了使上面的过程更清晰，下面举一个例子：
++ 现有序列 `A[1~11]={35,18,16,72,24,65,12,88,46,28,55}`，调整元素位置，使得元素 `A[1]=35` 的左侧所有元素均不超过 `35`、右侧所有元素均大于 `35`。
++ ① 将 `A[1]=35` 存到临时变量 `temp`，并令下标 `left`，`right` 指向序列首尾（`left=1`、`right=11`）
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231210141853.png)
++ ② 只要 `A[right]>35` 时, 就把 `right` 不断左移。该操作当 `right==10` 时满足 `A[right]=28<35` , `right` 停止左移。之后把 `A[right]` 移至 `A[left]` 处。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231210142601.png)
++ ③ 只要 `A[left]≤35` 时, 就把 `left` 不断右移。该操作当 `left==4` 时满足 `A[left]=72>35`，`left` 停止右移，之后把 `A[left]` 移至 `A[right]` 处。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231210142953.png)
++ ④ 只要 `A[right]>35` 时, 就把 `right` 不断左移。该操作当 `right==7` 时满足 `A[right]=12<35` , `right` 停止左移。之后把 `A[right]` 移至 `A[left]` 处。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231210143218.png)
++ ⑤ 只要 `A[left]≤35` 时, 就把 `left` 不断右移。该操作当 `left==6` 时满足 `A[left]=65>35`，`left` 停止右移，之后把 `A[left]` 移至 `A[right]` 处。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231210143332.png)
++ ⑥ 只要 `A[right]>35` 时, 就把 `right` 不断左移。该操作的过程中 `left` 与 `right` 在 `A[6]` 处相遇，将 `temp=35` 放到 `A[6]` 处，算法结束！
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231210143550.png)
++ 因此可以很容易写出这部分代码，其中用以划分区间的元素 `A[left]` 被称为主元：
+```cpp
+//对区间[left,right]进行划分
+int partition(int A[],int left,int right)
+{
+    int temp = A[left];//将A[left]存至临时变量temp
+    while(left<right)//只要left与right不相遇
+    {
+        while(left<right&&A[right]>temp)
+            right--;//反复左移right
+        A[left] = A[right];//将A[right]挪到A[left]
+        while(left<right&&A[left]<=temp)
+            left++;//反复右移left
+        A[right] = A[left];//将A[left]挪到A[right]
+    }
+    A[left] = temp;//把temp放到left与right相遇的地方
+    return left;//返回相遇的坐标
+}
+```
++ 接下来就可以正式实现快速排序算法，其思路如下：
+1. 调整序列中的元素，使当前序列最左端的元素在调整后满足**左侧**所有元素均不超过该元素、**右侧**所有元素均大于该元素。
+2. 对该元素的左侧和右侧分别递归进行**步骤 1**的调整，直到当前调整区间的长度不超过 `1`。
++ 快速排序的递归实现如下：
+```cpp
+//快速排序，left与right初值为序列首尾下标(例如1和n)
+void quickSort(int A[],int left,int right)
+{
+    if(left<right)//当前区间长度不超过1
+    {
+        //将[left,right]按照A[left]一分为二
+        int pos = partition(A,left,right);
+        quickSort(A,left,pos-1);//对左子区间递归进行快速排序
+        quickSort(A,pos+1,right);//对右子区间递归进行快速排序
+    }
+}
+```
++ 快速排序算法当序列中元素的**排列比较随机**时效率最高，但是当序列中元素接近有序时，会达到最坏时间复杂度 $O(n^2)$。产生这种情况的主要原因在于**主元**没有把当前区间划分为**两个长度接近**的子区间。
++ 那么如何解决这个问题？
++ 其中一个办法是随机选择主元，也就是对 `A[left……right]` 来说，不总用 `A[left]` 作为主元，而是从 `A[left]`、`A[left+1]`、……、`A[right]` 中随机选择一个数据作为主元。
++ 这样虽然算法的最坏时间复杂度仍然是 $O(n^2)$（例如，总是选择了 `A[left]` 作为主元），但是对任意输入数据的期望时间复杂度都能达到 $O(nlogn)$，也就是说，不存在一组特定的数据能使这个算法出现最坏的情况（证明参考《算法导论》）！
++ 接下来讨论如何生成随机数：
++ 在 C 语言中有可以产生随机数据的函数，需要添加 `#include <stdlib.h>` 头文件与 `#include <time.h>` 头文件。
++ 首先在 `main` 函数开头加上 `srand((unsigned)time(NULL));`，这个语句将生成随机数种子（`srand` 用于初始化随机种子）。
++ 然后在需要使用随机数的地方使用 `rand()` 函数，代码如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <time.h>
+using namespace std;
+//主函数
+int main()
+{
+    srand((unsigned)time(NULL));
+    for(int i=0;i<10;i++)
+    {
+        printf("%d ",rand());
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+14678 12133 31822 15298 12428 1961 13586 23306 19257 20059
+```
++ 显然输出结果肯定是实时变化的，上面的结果只是一个举例。
++ 同时，我们应该还须知道，`rand()` 函数只能输出 `[0, RAND_MAX]` 范围内的整数（`RAND_MAX` 是 `#include <stdlib.h>` 头文件，在不同系统环境中，该常数的值有所不同，此处使用的是 `32767`），因此如果想要输出给定范围 `[a,b]` 内随机数，需要使用 `rand()%(b-a+1)+a`。
++ 显然 `rand()%(b-a+1)` 的范围是 `[0, b-a]`,再加上 a 之后就是 `[a,b]`。例如下面的代码生成 `[0,1]` 与 `[3,7]` 范围内的随机数：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <time.h>
+using namespace std;
+//主函数
+int main()
+{
+    int a,b;
+    srand((unsigned)time(NULL));
+    //[0,1]
+    a=0,b=1;
+    for(int i=0;i<10;i++)
+    {
+        printf("%d ",rand()%(b-a+1)+a);
+    }
+    printf("\n");
+    //[3,7]
+    a=3,b=7;
+    for(int i=0;i<10;i++)
+    {
+        printf("%d ",rand()%(b-a+1)+a);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+1 0 0 0 0 0 1 1 0 1
+4 5 4 5 6 6 3 5 3 6
+```
++ 不难发现，这种做法只对相差不超过 `RAND_MAX` 的区间的随机数有效，如果需要生成更大的数（例如 `[a,b]`，`b` 大于 `RAND_MAX=32767` ）就不行了。
++ 想要生成大范围的随机数有很多方法，例如可以多次生成 `rand()` 随机数，然后用位运算拼接起来（或者直接将 `rand()` 随机数相乘）；也可以随机选每一个数位的值 (0~9)，然后拼接成一个大整数；
++ 当然，也可以采用另一种思路：
++ 先用 `rand()` 函数生成一个 `[0, RAND_MAX]` 范围内的随机数，然后用这个随机数除以 `RAND_MAX`，这样就会得到一个 `[0,1]` 范围内的浮点数。我们只需要用这个浮点数乘以范围长度 `(b-a+1)`,再加上 `a` 即可，即 `(int)((double)rand()/RAND_MAX*(b-a+1)+a)`，相当于这个浮点数就是 `[a,b]` 范围内的比例位置，代码示例如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <time.h>
+using namespace std;
+//主函数
+int main()
+{
+    int a,b;
+    srand((unsigned)time(NULL));
+    //[10000,60000]
+    a=10000,b=60000;
+    for(int i=0;i<10;i++)
+    {
+        printf("%d ",(int)((double)rand()/RAND_MAX*(b-a+1)+a));
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+42205 55224 53408 43784 52908 54687 27203 55163 22528 28393
+```
++ 在此基础上继续讨论快排的写法：
++ 由于现在需要在 `A[left……right]` 中随机选取一个主元，因此不妨生成一个范围在 `[left,right]` 内的随机数 `p`，然后以 `A[p]` 作为主元来进行划分。具体做法是将 `A[p]` 与 `A[left]` 交换
++ 代码如下：
+```cpp
+//对区间[left,right]进行划分
+int partition(int A[],int left,int right)
+{
+    //生成[left,right]内的随机数p
+    int p = (int)((double)rand()/RAND_MAX*(right-left+1)+left);
+    swap(A[p],A[left]);//交换A[p]和A[left]
+    int temp = A[left];//将A[left]存至临时变量temp
+    while(left<right)//只要left与right不相遇
+    {
+        while(left<right&&A[right]>temp)
+            right--;//反复左移right
+        A[left] = A[right];//将A[right]挪到A[left]
+        while(left<right&&A[left]<=temp)
+            left++;//反复右移left
+        A[right] = A[left];//将A[left]挪到A[right]
+    }
+    A[left] = temp;//把temp放到left与right相遇的地方
+    return left;//返回相遇的坐标
+}
+```
+例题：[快速排序](https://sunnywhy.com/sfbj/4/6/178)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <string>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <time.h>
+using namespace std;
+const int MAX = 1010;
+//对区间[left,right]进行划分
+int partition(int A[],int left,int right)
+{
+    //生成[left,right]内的随机数p
+    int p = (int)((double)rand()/RAND_MAX*(right-left+1)+left);
+    swap(A[p],A[left]);//交换A[p]和A[left]
+    int temp = A[left];//将A[left]存至临时变量temp
+    while(left<right)//只要left与right不相遇
+    {
+        while(left<right&&A[right]>temp)
+            right--;//反复左移right
+        A[left] = A[right];//将A[right]挪到A[left]
+        while(left<right&&A[left]<=temp)
+            left++;//反复右移left
+        A[right] = A[left];//将A[left]挪到A[right]
+    }
+    A[left] = temp;//把temp放到left与right相遇的地方
+    return left;//返回相遇的坐标
+}
+//快速排序，left与right初值为序列首尾下标(例如1和n)
+void quickSort(int A[],int left,int right)
+{
+    if(left<right)//当前区间长度不超过1
+    {
+        //将[left,right]按照A[left]一分为二
+        int pos = partition(A,left,right);
+        quickSort(A,left,pos-1);//对左子区间递归进行快速排序
+        quickSort(A,pos+1,right);//对右子区间递归进行快速排序
+    }
+}
+//主函数
+int main()
+{
+    int n,A[MAX];
+    scanf("%d",&n);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&A[i]);
+    }
+    quickSort(A,0,n-1);
+    for(int i=0;i<n;i++)
+    {
+        printf("%d",A[i]);
+        if(i<n-1)
+            printf(" ");
+    }
+    printf("\n");
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+### 其它高效技巧与算法
++ 前面几节介绍了一些最常用的算法思想，下面介绍其它高效技巧与算法。
+#### 打表
++ 打表是一种典型的用空间换时间的技巧，一般指将所有可能用到的结果实现计算出来，这样后面需要用到的时候直接查表获得。
++ 打表常见的用法有如下几种：
