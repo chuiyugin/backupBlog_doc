@@ -8354,4 +8354,65 @@ int main()
 }
 ```
 
+例题：[PAT B1045](https://pintia.cn/problem-sets/994805260223102976/exam/problems/994805278589960192?type=7&page=0)、[PAT A1101](https://pintia.cn/problem-sets/994805342720868352/exam/problems/994805366343188480?type=7&page=0)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+using namespace std;
+
+const int MAX = 100010;
+
+//主函数
+int main()
+{
+    int n;
+    int num[MAX];
+    int num1[MAX]={0};
+    int num2[MAX]={0};
+    int index=0,my_max=INT_MIN,my_min=INT_MAX;
+    scanf("%d",&n);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&num[i]);
+    }
+    for(int i=n-1;i>=0;i--)
+    {
+        my_min = min(num[i],my_min);
+        if(my_min==num[i])
+        {
+            num1[i]=my_min;
+        }
+    }
+    for(int i=0;i<n;i++)
+    {
+        my_max = max(num[i],my_max);
+        if(my_max==num[i]&&num1[i]!=0)
+        {
+            num2[index++]=num[i];
+        }
+    }
+    printf("%d\n",index);
+    for(int i=0;i<index;i++)
+    {
+        printf("%d",num2[i]);
+        if(i<index-1)
+            printf(" ");
+    }
+    printf("\n");
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：本题与上面例题《有几个 PAT》思路较为相似，注意认真体会这两道题目的思想。
+
 #### 随机选择算法
