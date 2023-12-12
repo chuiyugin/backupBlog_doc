@@ -8413,6 +8413,42 @@ int main()
     return 0;
 }
 ```
-+ 总结：本题与上面例题《有几个 PAT》思路较为相似，注意认真体会这两道题目的思想。
++ 总结：本题与上面例题《有几个PAT》思路较为相似，注意认真体会这两道题目的思想。
 
 #### 随机选择算法
++ 本节主要讨论这样一个问题：如何从一个无序的数组中求出第 `K` 大的数（为了简化讨论，假设数组中的数各不相同）。
++ 例如，对数组 `{5,12,7,2,9,3}` 来说，第三大数是 `5`，第五大数是 `9`。
++ 最直接的想法是对数组进行排序，然后直接取出第 `K` 个元素即可。但是这样的做法需要 $O(nlogn)$ 的时间复杂度，虽然看起来很好，但是还有更优的算法。
++ 下面介绍**随机选择算法**，它对任何输入都可以达到 $O(n)$ 的期望时间复杂度。
++ **随机选择算法**的原理类似于**随机快速排序算法**。
++ 当对 `A[left,right]` 执行一次 `randPartition()` 函数之后，主元左侧的元素个数就是确定的，且它们都是小于主元。`randPartition()` 函数代码如下：
+```cpp
+//对区间[left,right]进行划分
+int randPartition(int A[],int left,int right)
+{
+    //生成[left,right]内的随机数p
+    srand((unsigned)time(NULL));//随机数种子
+    int p = (int)((double)rand()/RAND_MAX*(right-left+1)+left);
+    swap(A[p],A[left]);//交换A[p]和A[left]
+    int temp = A[left];//将A[left]存至临时变量temp
+    while(left<right)//只要left与right不相遇
+    {
+        while(left<right&&A[right]>temp)
+            right--;//反复左移right
+        A[left] = A[right];//将A[right]挪到A[left]
+        while(left<right&&A[left]<=temp)
+            left++;//反复右移left
+        A[right] = A[left];//将A[left]挪到A[right]
+    }
+    A[left] = temp;//把temp放到left与right相遇的地方
+    return left;//返回相遇的坐标
+}
+```
++ 假设此时主元是 `A[p]`，那么 `A[p]` 就是 `A[left,right]` 中的第 `p-left+1` 大的数。
++ 不妨令 `M` 表示 `p-left+1`，那么如果 `K==M` 成立，说明第 K 大的数就是主元 `A[p]`；
++ 如果 `K<M` 成立，就说明第 `K` 大的数在主元左侧，即 `A[left……(p-1)]` 中的第 `K` 大，往左侧递归即可；
++ 如果 `K>M` 成立，则说明第 `K` 大的数在主元右侧，即 `A[(p+1)……right]` 中的第 `K-M` 大，往右侧递归即可。
++ 算法以 `left==right` 作为递归边界，返回 `A[left]`，由此可以写出随机选择算法的代码：
+```cpp
+
+```
