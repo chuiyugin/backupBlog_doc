@@ -8450,5 +8450,137 @@ int randPartition(int A[],int left,int right)
 + 如果 `K>M` 成立，则说明第 `K` 大的数在主元右侧，即 `A[(p+1)……right]` 中的第 `K-M` 大，往右侧递归即可。
 + 算法以 `left==right` 作为递归边界，返回 `A[left]`，由此可以写出随机选择算法的代码：
 ```cpp
-
+//随机选择算法，从A[left,right]中返回第K大的数
+int randSelect(int A[],int left,int right,int K)
+{
+    if(left==right)
+        return A[left];//边界
+    int p = randPartition(A,left,right);//划分后主元的位置p
+    int M = p-left+1;//A[p]是A[left,right]中的第M大
+    if(K==M)
+        return A[p];//找到第K大的数
+    else if(K<M)//第K大的数在主元左侧
+        return randSelect(A,left,p-1,K);//往主元左侧找第K大
+    else//第K大的数在主元右侧
+        return randSelect(A,p+1,right,K-M);//往主元右侧找第K-M大
+}
 ```
++ 可以证明，虽然随机选择算法的最坏时间复杂度是 $O(n^2)$，但是其对任意输入的期望时间复杂度却是 $O(n)$，这意味着不存咋一组特定的数据能使这个算法出现最坏的情况，是个相当实用和出色的算法（详细证明参考《算法导论》）。
++ 下面的问题是一个应用：
++ 给定一个由整数组成的集合，集合中的整数各不相同，现在要将它们分为两个子集合，使得这两个子集合的**并集**为原集合、**交集**为空集，同时在两个子集合的元素个数 $n_1$ 与 $n_2$ 之差的绝对值 $|n_1-n_2|$ 尽可能小的前提下，要求它们各自的元素之和 $S_1$ 与 $S_2$ 之差的绝对值 $|S_1-S_2|$ 尽可能大，求这个 $|S_1-S_2|$ 等于多少。
++ 不难发现，如果原集合中元素个数为 `n`，那么当 `n` 是偶数时，由它分出的两个子集合中的元素个数都是 $\frac{n}{2}$；
++ 如果 `n` 是奇数时，由它分出的两个子集合中的元素个数分别是 $\frac{n}{2}$ 和 $\frac{n}{2}+1$。
++ 显然，为了使 $|S_1-S_2|$ 尽可能大，最直接的思路是将原集合的元素从小到大排序，取排序后的前 $\frac{n}{2}$ 个元素作为其中一个子集合，剩下的元素作为另一个子集合即可，时间复杂度为 $O(nlogn)$。
++ 而更优的做法是使用上述**随机选择算法**。根据对问题的分析，上述问题实际上就是求原集合中元素的第 $\frac{n}{2}$ 大，同时根据这个数把集合分为两部分，使得其中一个子集合中的元素都不小于这个数，而另一个子集合中的元素都大于这个数，至于两个子集合内部元素的顺序则不需要关心。
++ 因此只需要使用 `randSelect()` 函数求出 $\frac{n}{2}$ 大的数即可，该函数会自动切分好两个集合，期望时间复杂度为 $O(n)$，代码如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+using namespace std;
+
+const int MAX = 100010;
+
+//对区间[left,right]进行划分
+int randPartition(int A[],int left,int right)
+{
+    //生成[left,right]内的随机数p
+    srand((unsigned)time(NULL));//随机数种子
+    int p = (int)((double)rand()/RAND_MAX*(right-left+1)+left);
+    swap(A[p],A[left]);//交换A[p]和A[left]
+    int temp = A[left];//将A[left]存至临时变量temp
+    while(left<right)//只要left与right不相遇
+    {
+        while(left<right&&A[right]>temp)
+            right--;//反复左移right
+        A[left] = A[right];//将A[right]挪到A[left]
+        while(left<right&&A[left]<=temp)
+            left++;//反复右移left
+        A[right] = A[left];//将A[left]挪到A[right]
+    }
+    A[left] = temp;//把temp放到left与right相遇的地方
+    return left;//返回相遇的坐标
+}
+
+//随机选择算法，从A[left,right]中返回第K大的数
+int randSelect(int A[],int left,int right,int K)
+{
+    if(left==right)
+        return A[left];//边界
+    int p = randPartition(A,left,right);//划分后主元的位置p
+    int M = p-left+1;//A[p]是A[left,right]中的第M大
+    if(K==M)
+        return A[p];//找到第K大的数
+    else if(K<M)//第K大的数在主元左侧
+        return randSelect(A,left,p-1,K);//往主元左侧找第K大
+    else//第K大的数在主元右侧
+        return randSelect(A,p+1,right,K-M);//往主元右侧找第K-M大
+}
+
+//主函数
+int main()
+{
+    int A[MAX],n;
+    //sum和sum1记录所有整数之和与切分后前n/2个元素之和
+    int sum=0,sum1=0;
+    scanf("%d",&n);//整数个数
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&A[i]);//输入整数
+        sum+=A[i];//累计所有整数之和
+    }
+    randSelect(A,0,n-1,n/2);
+    for(int i=0;i<n/2;i++)
+    {
+        sum1+=A[i];//累计较小的子集合中的元素之和
+    }
+    printf("%d\n",(sum-sum1)-sum1);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输入：
+```text
+13
+1 6 33 18 4 0 10 5 12 7 2 9 3
+```
++ 输出：
+```text
+80
+```
++ 由于在这个问题中不需要关系第 $\frac{n}{2}$ 大的数是什么，而只需要实现根据第 $\frac{n}{2}$ 大的数进行切分的功能，因此 `randSelect()` 函数不需要设置返回值。
++ 另外，如果能保证数据分布较为随机，那么代码中的 `randSelect()` 函数也可以替换成普通的 `partition()` 函数，代码如下：
+```cpp
+//对区间[left,right]进行划分
+int partition(int A[],int left,int right)
+{
+    //生成[left,right]内的随机数p
+    srand((unsigned)time(NULL));//随机数种子
+    int p = (int)((double)rand()/RAND_MAX*(right-left+1)+left);
+    swap(A[p],A[left]);//交换A[p]和A[left]
+    int temp = A[left];//将A[left]存至临时变量temp
+    while(left<right)//只要left与right不相遇
+    {
+        while(left<right&&A[right]>temp)
+            right--;//反复左移right
+        A[left] = A[right];//将A[right]挪到A[left]
+        while(left<right&&A[left]<=temp)
+            left++;//反复右移left
+        A[right] = A[left];//将A[left]挪到A[right]
+    }
+    A[left] = temp;//把temp放到left与right相遇的地方
+    return left;//返回相遇的坐标
+}
+```
+## 数学问题
+### 简单数学
++ 在算法设计题目中，经常有一类题目与数学息息相关，这样的问题通常难度不大，也不需要特别的数学知识，只要掌握简单的梳理逻辑即可。
