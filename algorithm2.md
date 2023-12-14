@@ -1240,6 +1240,9 @@ int main(){
   + `if(a==0&&b==0)`的运算顺序是先判断a是否等于0，然后再判断b是否等于0。只有当a和b都等于0时，这个表达式的结果才为`true`；否则，结果为`false`。
   + 因此，这两个表达式的含义是不同的。需要特别注意！
 
+### 再谈数字转换字符串
++ `to_string()` 是 `C++11` 中的标准库函数，它将数字转换为字符串，并可以接受任何数字类型，需要包含 `#include <sstream>` 头文件。
+
 ### 简单模拟
 + 简单模拟的题目不涉及算法，一般完全根据题目描述来进行代码编写，考察的是**代码能力**！
 
@@ -8669,5 +8672,74 @@ int main()
 }
 ```
 
+例题：[西西弗斯串](https://sunnywhy.com/sfbj/5/1/192)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream> // 包含头文件<sstream>来使用std::ostringstream
+using namespace std;
+
+//处理函数
+int solve(string str)
+{
+    int step=0,ou=0,ji=0,total=0;
+    if(str=="123")
+        return 0;
+    else
+    {
+        while(1)
+        {
+            if(str=="123")
+                break;
+            else
+            {
+                for(int i=0;i<str.length();i++)
+                {
+                    if((str[i]-'0')%2==0)//偶数
+                    {
+                        ou++;
+                        total++;
+                    }
+                    else
+                    {
+                        ji++;
+                        total++;
+                    }
+                }
+                str=to_string(ou)+to_string(ji)+to_string(total);
+                ou=0,ji=0,total=0;
+                step++;
+            }
+        }
+        return step;
+    }
+}
+
+//主函数
+int main()
+{
+    string str;
+    cin >> str;
+    int ans;
+    ans = solve(str);
+    printf("%d\n",ans);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：
++ 这道题目主要使用了 `to_string()` 函数，需要包含 `#include <sstream>` 头文件，`to_string()` 是 `C++11`中的标准库函数，它将数字转换为字符串，并可以接受任何数字类型。
 ### 最大公约数与最小公倍数
 #### 最大公约数
