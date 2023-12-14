@@ -8584,3 +8584,90 @@ int partition(int A[],int left,int right)
 ## 数学问题
 ### 简单数学
 + 在算法设计题目中，经常有一类题目与数学息息相关，这样的问题通常难度不大，也不需要特别的数学知识，只要掌握简单的梳理逻辑即可。
++ 下面来看一个例题：
+
+例题：[PAT B1019](https://pintia.cn/problem-sets/994805260223102976/exam/problems/994805302786899968?type=7&page=0)、[PAT A1069](https://pintia.cn/problem-sets/994805342720868352/exam/problems/994805400954585088?type=7&page=0)
++ 思路：
++ **步骤 1**：写出两个函数-> `int` 型整数转换成 `int` 型数组的 `to_array()` 函数（即把每一位都当成数组的一个元素）、`int` 型数组转换成 `int` 型整数的 `to_number()` 函数。
++ **步骤 2**：建立一个 `while` 循环，对每一层循环：
+1. 用 `to_array()` 函数将 `n` 转换为数组并递增排序，再用 `to_number()` 函数将递增排序完的数组转换为整数 `MIN`。
+2. 将数组递减排序，再用 `to_number()` 函数将递减排序完的数组转换为整数 `MAX`。
+3. 令 `n=MAX-MIN` 为下一个数，并输出当前层的信息。
+4. 如果得到的 `n` 为 `0` 或 `6174`，退出循环。
++ **注意点**：
++ 如果某步得到了不足 `4` 位的数，则视为在高位补 `0`，如 `189` 即为 `0189`。
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+using namespace std;
+
+//排序函数,从小到大
+bool cmp_up(int a,int b)
+{
+    return a<b;
+}
+
+//排序函数,从大到小
+bool cmp_down(int a,int b)
+{
+    return a>b;
+}
+
+//整数到数组
+void to_array(int n,int num[])
+{
+    for(int i=0;i<4;i++)
+    {
+        num[i]=n%10;
+        n=n/10;
+    }
+}
+
+//数组到整数
+int to_number(int num[])
+{
+    int ans=0;
+    for(int i=0;i<4;i++)
+    {
+        ans=ans*10+num[i];
+    }
+    return ans;
+}
+
+//主函数
+int main()
+{
+    //MIN和MAX分别表示递增排序和递减排序后得到的最小值和最大值
+    int n,MIN,MAX;
+    scanf("%d",&n);
+    int num[5];
+    while(1)
+    {
+        to_array(n,num);//将n转换为数组
+        sort(num,num+4,cmp_up);
+        MIN = to_number(num);
+        sort(num,num+4,cmp_down);
+        MAX = to_number(num);
+        n = MAX - MIN;
+        printf("%04d - %04d = %04d\n",MAX,MIN,n);
+        if(n==0||n==6174)
+            break;
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+### 最大公约数与最小公倍数
+#### 最大公约数
