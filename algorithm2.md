@@ -8809,7 +8809,7 @@ int gcd(int a,int b)
 #include <sstream>
 using namespace std;
 
-//求解最大公约数函数（递归写法）
+//求解最大公约数函数(递归算法)
 int gcd(int a,int b)
 {
     if(b==0)
@@ -8829,7 +8829,7 @@ int main()
     return 0;
 }
 ```
-+ 总结：简单题，与上述分析相同！
++ 总结：简单题，与上述最大公约数分析相同！
 
 #### 最小公倍数
 + 正整数 `a` 与 `b` 的最小公倍数是指 `a` 与 `b` 的所有公倍数中最小的那个公倍数，例如 `4` 和 `6` 的最小公倍数为 `12`，`3` 和 `9` 的最小公倍数是 `9`。
@@ -8841,3 +8841,57 @@ int main()
 + 要得到并集，由于 `a*b` 会使公因子部分多计算一次，因此需要除掉一次公因子，于是就得到了 `a` 与 `b` 的最小公倍数 `a*b/d`。
 + 由于 `a*b` 在实际计算时有可能溢出，因此更恰当的写法是 `a/d*b`。
 + 由于 `d` 是 `a` 和 `b` 的最大公约数，因此 `a/d` 一定可以整除。
++ 代码如下：
+```cpp
+//最小公倍数求解函数
+int lcm(int a,int b)
+{
+    return a/gcd(a,b)*b;
+}
+```
+例题：[最小公倍数](https://sunnywhy.com/sfbj/5/2/194)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+using namespace std;
+
+//求解最大公约数函数(递归算法)
+int gcd(int a,int b)
+{
+    if(b==0)
+        return a;
+    else
+        return gcd(b,a%b);
+}
+
+//最小公倍数求解函数
+int lcm(int a,int b)
+{
+    return a/gcd(a,b)*b;
+}
+
+//主函数
+int main()
+{
+    int a,b,ans;
+    scanf("%d %d",&a,&b);
+    ans = lcm(a,b);
+    printf("%d\n",ans);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：简单题，与上述最小公倍数分析相同！
