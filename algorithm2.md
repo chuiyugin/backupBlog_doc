@@ -8918,6 +8918,7 @@ struct Fraction //分数
 3. 约分：求出分子**绝对值**与分母**绝对值**的最大公约数 `d`,然后令分子分母同时除以 `d`。
 + 代码如下：
 ```cpp
+//分数化简
 Fraction reduction(Fraction result)
 {
 	if(result.down < 0)//分母为负数，令分子和分母都变为相反数
@@ -8938,3 +8939,83 @@ Fraction reduction(Fraction result)
 	return result;
 }
 ```
+#### 分数的四则运算
+##### 分数的加法
++ 对两个分数 `f1` 和 `f2`，其加法公式为：
+$$result=\frac{f1.up×f2.down+f2.up×f1.down}{f1.down×f2.down}$$
++ 代码如下：
+```cpp
+//分数加法
+Fraction add(Fraction f1,Fraction f2)//分数f1加分数f2
+{
+    Fraction result;
+    result.up = f1.up*f2.down+f2.up*f1.down;//分数和的分子
+    result.down = f1.down*f2.down;//分数和的分母
+    return reduction(result);//返回化简后的结果分数
+}
+```
+##### 分数的减法
++ 对两个分数 `f1` 和 `f2`，其减法公式为：
+$$result=\frac{f1.up×f2.down-f2.up×f1.down}{f1.down×f2.down}$$
++ 代码如下：
+```cpp
+//分数减法
+Fraction minu(Fraction f1,Fraction f2)//分数f1减去分数f2
+{
+    Fraction result;
+    result.up = f1.up*f2.down-f2.up*f1.down;//分数差的分子
+    result.down = f1.down*f2.down;//分数差的分母
+    return reduction(result);//返回化简后的结果分数
+}
+```
+##### 分数的乘法
++ 对两个分数 `f1` 和 `f2`，其乘法公式为：
+$$result=\frac{f1.up×f2.up}{f1.down×f2.down}$$
++ 代码如下：
+```cpp
+//分数乘法
+Fraction multi(Fraction f1,Fraction f2)//分数f1乘分数f2
+{
+    Fraction result;
+    result.up = f1.up*f2.up;//分数积的分子
+    result.down = f1.down*f2.down;//分数积的分母
+    return reduction(result);//返回化简后的结果分数
+}
+```
+##### 分数的除法
++ 对两个分数 `f1` 和 `f2`，其除法公式为：
+$$result=\frac{f1.up×f2.down}{f1.down×f2.up}$$
++ 代码如下：
+```cpp
+//分数除法
+Fraction divide(Fraction f1,Fraction f2)//分数f1除分数f2
+{
+    Fraction result;
+    result.up = f1.up*f2.down;//分数商的分子
+    result.down = f1.down*f2.up;//分数商的分母
+    return reduction(result);//返回化简后的结果分数
+}
+```
++ 除法有额外注意事项。如果读入的除数为 `0`（只需判断 `f2.up` 是否为 `0`），那么应当直接特别判断输出题目**要求**的输出语句（例如输出 `Error`、`Inf` 之类）。只有当除数不为 `0` 时候，才能用上面的函数进行计算。
+#### 分数的输出
++ 分数的输出根据题目的需要和要求进行，但是大体上有以下几个注意点：
+1. 输出分数前，需要先对其进行化简。
+2. 如果分数 `r` 的分母 `down` 为 `1`，说明该分数是整数，一般来说题目会要求直接输出分子，而省略分母的输出。
+3. 如果分数 `r` 的分子 `up` 的绝对值大于分母 `down`，说明该分数是**假分数**，此时应按带分数的形式输出，即整数部分为 $\frac{r.up}{r.down}$，分子部分为 `abs(r.up)%r.down`，分母部分为 `r.down`。
+4. 以上均不满足时说明分数 `r` 是真分数，按原样输出即可。
++ 以下是一个输出示例：
+```cpp
+//分数输出
+void showResult(Fraction r)//输出分数r
+{
+    r = reduction(r);
+    if(r.down == 1)//输出整数
+        printf("%d",r.up);
+    else if(abs(r.up)>r.down)//输出假分数
+        printf("%d %d/%d",r.up/r.down,abs(r.up)%r.down,r.down);
+    else//输出真分数
+        printf("%d/%d",r.up,r.down);
+}
+```
++ **强调**：由于分数的乘法和除法的过程中可能使分子或者分母超过 `int` 型的表示范围，因此一般情况下，分子和分母应当使用 `long long` 型变量来存储。
+### 素数
