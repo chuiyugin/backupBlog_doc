@@ -9031,7 +9031,7 @@ void showResult(Fraction r)//输出分数r
 + 只有 `2,3……,n-1` 都不能整除 `n`，`n` 才能判定为素数，而只要有一个能整除 `n` 的数出现，`n` 就可以判定为非素数。
 + 上述判定方法没有问题，复杂度为 $O(n)$，但在许多情况下，判定素数只是整个算法中的一部分，这时候 $O(n)$ 的复杂度有点大，需要更加快速的判定方法。
 + 注意到如果在 `2~n-1` 中存在 `n` 的约数，不妨设为 `k`，即 `n%k==0`，那么由 `k*(n/k)==n` 可知，`n/k` 也是 `n` 的一个约数，且 `k` 与 `n/k` 中一定满足其中一个小于 `sqrt(n)` 、另一个大于 `sqrt(n)`，其中 `sqrt(n)` 为根号 `n`。
-+ 这启发我们，只需要判定 `n` 能否被 $2,3,……,\lfloor{\sqrt{n}}\rfloor$ 中的一个整除（其中 $\lfloor{x}\rfloor$ 表示对 `x` 向下取整），即可判定 `n` 是否为素数。该算法的复杂度为 $O(sqrt(n))$。
++ 这启发我们，只需要判定 `n` 能否被 $2,3,……,\lfloor{\sqrt{n}}\rfloor$ 中的一个整除（其中 $\lfloor{x}\rfloor$ 表示对 `x` 向下取整），即可判定 `n` 是否为素数。该算法的复杂度为 $O(\sqrt{n})$。
 + 代码如下：
 ```cpp
 //判断是否为素数
@@ -9065,5 +9065,113 @@ bool isPrime(int n)
 }
 ```
 + 这样写会当 `n` 接近 `int` 型变量的范围上界时导致 `i*i` 溢出（当然 `n` 在 $10^9$ 以内都会是安全的），解决的办法是将 `i` 定义为 `long long` 型，这样就不会溢出了。
-+ 但是更加推荐使用开根号的写法，会更加安全。~~测试~~
++ 但是更加推荐使用开根号的写法，会更加安全。
 #### 素数表的获取
++ 通过上面的学习，我们不难判断单独一个数是否为素数，那么可以直接由此得出打印 `1~n` 范围内的素数表的方法，即从 `1~n` 进行枚举，判断每个数是否为素数，如果是素数则加入素数表。
++ 这种方法枚举部分的复杂度是 $O(n)$，而判断素数的复杂度是 $O(\sqrt{n})$，因此，总复杂度是 $O(n\sqrt{n})$。
++ 这个复杂度对 `n` 不超过 $10^5$ 的大小是没有问题的，大部分涉及素数表的题目都不会超过这个范围，代码如下：
+```cpp
+const int MAXN = 101;//表长
+int prime[MAXN],pNum = 0;//prime数组存放所有素数，pNum为素数个数
+bool p[MAXN] = {0};//p[i] == true表示i是素数
+void Find_Prime()
+{
+	for(int i=1;i<MAXN;i++)
+	{
+		if(isPrime(i)==true)
+		{
+			prime[pNum++] = i;//是素数则把i存入prime数组
+			p[i] = true;
+		}
+	}
+}
+```
++ 下面是完整的求解 100 以内的所有素数代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+using namespace std;
+
+const int MAXN = 101;//表长
+int prime[MAXN],pNum = 0;//prime数组存放所有素数，pNum为素数个数
+bool p[MAXN] = {0};//p[i] == true表示i是素数
+
+//判断是否为素数
+bool isPrime(int n)
+{
+    if(n<=1)
+        return false;//特判
+    int sqr = (int)sqrt(1.0*n);//根号n
+    for(int i=2;i<=sqr;i++)
+    {
+        if(n%i==0)
+            return false;
+    }
+    return true;
+}
+
+//寻找素数表
+void Find_Prime()
+{
+	for(int i=1;i<MAXN;i++)
+	{
+		if(isPrime(i)==true)
+		{
+			prime[pNum++] = i;//是素数则把i存入prime数组
+			p[i] = true;
+		}
+	}
+}
+
+//主函数
+int main()
+{
+    Find_Prime();
+    for(int i=0;i<pNum;i++)
+    {
+        printf("%d ",prime[i]);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
+```
++ 上面的算法对于 `n` 在 $10^5$ 以内都是可以承受的，但是如果出现需要更大范围的素数表，$O(n\sqrt{n})$ 的算法将力不从心。
++ 下面将介绍一种更加高效的算法，它的时间复杂度为 $O(nloglogn)$。
++ “**筛法**”是众多筛法中最简单且最容易理解的一种，即 `Eratosthenes` 筛法。更优的欧拉筛法可以达到 $O(n)$ 的时间复杂度，此处不予赘述。
++ 素数筛法的关键就在一个“筛”字。算法从小到达枚举所有数，对每一个素数，筛去它的所有倍数，剩下的就是素数。
++ 下面看一个例子，求 `1~15` 中的所有素数：
++ ① `2` 是素数（唯一需要事先确定），因此筛去所有 `2` 的倍数，即 `4、6、8、10、12、14`。
+<center>2 3 <del>4</del> 5 <del>6</del> 7 <del>6</del> 9 <del>10</del> 11 <del>12</del> 13 <del>14</del> 15 </center>
++ ②`3` 没有被前面的步骤筛去，因此 `3` 是素数，筛去所有 `3` 的倍数，即 `6、9、12、15`。
+<center>2 3 <del>4</del> 5 <del>6</del> 7 <del>8</del> <del>9</del> <del>10</del> 11 <del>12</del> 13 <del>14</del> <del>15</del> </center>
++ ③ `4` 已经在①中被筛去，因此 `4` 不是素数。
++ ④ `5` 没有被前面的步骤筛去，因此 `5` 是素数，筛去所有 `5` 的倍数，即 `10、15`。
+<center>2 3 <del>4</del> 5 <del>6</del> 7 <del>8</del> <del>9</del> <del>10</del> 11 <del>12</del> 13 <del>14</del> <del>15</del> </center>
++ ⑤ `6` 已经在①中被筛去，因此 `6` 不是素数。
++ ⑥ `7` 没有被前面的步骤筛去，因此 `7` 是素数，筛去所有 `7` 的倍数，即 `14`。
+<center>2 3 <del>4</del> 5 <del>6</del> 7 <del>8</del> <del>9</del> <del>10</del> 11 <del>12</del> 13 <del>14</del> <del>15</del> </center>
++ ⑦ `8` 已经在①中被筛去，因此 `8` 不是素数。
++ ⑧ `9` 已经在②中被筛去，因此 `9` 不是素数。
++ ⑨ `10` 已经在①中被筛去，因此 `10` 不是素数。
++ ⑩ `11` 没有被前面的步骤筛去，因此 `11` 是素数，筛去所有 `11` 的倍数，但是 `15` 以内没有。
++ ⑪ `12` 已经在①中被筛去，因此 `12` 不是素数。
++ ⑫ `13` 没有被前面的步骤筛去，因此 `13` 是素数，筛去所有 `13` 的倍数，但是 `15` 以内没有。
++ ⑬ `14` 已经在⑥中被筛去，因此 `14` 不是素数。
++ ⑭ `15` 已经在②中被筛去，因此 `15` 不是素数。
++ 至此，1~15 内的所有素数已经全部得到，即 `2、3、5、7、11、13`。
