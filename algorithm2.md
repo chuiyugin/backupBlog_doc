@@ -9149,7 +9149,7 @@ int main()
 ```
 + 输出：
 ```text
-2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
+2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97 
 ```
 + 上面的算法对于 `n` 在 $10^5$ 以内都是可以承受的，但是如果出现需要更大范围的素数表，$O(n\sqrt{n})$ 的算法将力不从心。
 + 下面将介绍一种更加高效的算法，它的时间复杂度为 $O(nloglogn)$。
@@ -9180,4 +9180,196 @@ int main()
 ⑬ `14` 已经在⑥中被筛去，因此 `14` 不是素数。
 ⑭ `15` 已经在②中被筛去，因此 `15` 不是素数。
 + 至此，1~15 内的所有素数已经全部得到，即 `2、3、5、7、11、13`。
-+ 由上面的例子可以发现，当从小到大到达某数 `a` 时，如果 a 没有被前面步骤的数筛去
++ 由上面的例子可以发现，当从小到大到达某数 `a` 时，如果 `a` 没有被前面步骤的数筛去，那么 `a` 一定是素数。
++ 这是因为，如果 `a` 不是素数，那么 `a` 一定有小于 `a` 的素因子，这样在之前的步骤中 `a` 一定会被筛掉，所以，如果当枚举到 `a` 时还没有被筛掉，那么 `a` 一定是素数。
++ 至于“筛”这个动作的实现，可以使用一个 `bool` 型数组 `p` 来标记。
++ 如果 a 被筛掉，那么 `p[a]==true;`。否则，`p[a]==false;`。
++ 在程序开始时可以初始化 `p` 数组全为 `false`。
++ 素数筛法的代码如下：
+```cpp
+//寻找素数表(素数筛法)
+void Find_Prime_2()
+{
+	for(int i=2;i<MAXN;i++)//从2开始，i<MAXN结束
+	{
+		if(p[i] == false)//如果i是素数
+        {
+            prime[pNum++] = i;//把素数i存到prime数组中
+            for(int j=i+i;j<MAXN;j+=i)
+            {
+                //筛去所有i的倍数，循环条件不能写成j<=MAXN
+                p[j] = true;
+            }
+        }
+	}
+}
+```
++ 可以证明筛法的复杂度为 $O(\sum _{i=1}^{n}n/i)=O(nloglogn)$。
++ 下面是**两种方法函数**完整求解 `100` 以内所有素数的代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+using namespace std;
+
+const int MAXN = 101;//表长
+int prime[MAXN],pNum = 0;//prime数组存放所有素数，pNum为素数个数
+bool p[MAXN] = {false};//p[i] == true表示i是素数
+
+//判断是否为素数
+bool isPrime(int n)
+{
+    if(n<=1)
+        return false;//特判
+    int sqr = (int)sqrt(1.0*n);//根号n
+    for(int i=2;i<=sqr;i++)
+    {
+        if(n%i==0)
+            return false;
+    }
+    return true;
+}
+
+//寻找素数表(普通法)
+void Find_Prime()
+{
+	for(int i=1;i<MAXN;i++)
+	{
+		if(isPrime(i)==true)
+		{
+			prime[pNum++] = i;//是素数则把i存入prime数组
+			p[i] = true;
+		}
+	}
+}
+
+//寻找素数表(素数筛法)
+void Find_Prime_2()
+{
+	for(int i=2;i<MAXN;i++)//从2开始，i<MAXN结束
+	{
+		if(p[i] == false)//如果i是素数
+        {
+            prime[pNum++] = i;//把素数i存到prime数组中
+            for(int j=i+i;j<MAXN;j+=i)
+            {
+                //筛去所有i的倍数，循环条件不能写成j<=MAXN
+                p[j] = true;
+            }
+        }
+	}
+}
+
+//主函数
+int main()
+{
+    Find_Prime_2();
+    for(int i=0;i<pNum;i++)
+    {
+        printf("%d ",prime[i]);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 输出：
+```text
+2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97 
+```
+
+例题：[PAT B1013](https://pintia.cn/problem-sets/994805260223102976/exam/problems/994805309963354112?type=7&page=0)
++ **思路**：把素数表打至第 `N` 个素数，然后按格式输出即可。
++ **注意点**：
+1. 用筛法或者非筛法都可以解决问题，在算法只需要添加一句控制素数个数的语句：
+```cpp
+if(num>=n)
+	break;
+```
++ 这是由于题目只要求输出第 `m~n` 个素数，因此超过 `n` 个素数之后的就不用保存了。
+2. 小技巧：由于空格在测试时肉眼看不出来，因此如果提交返回“格式错误”，可以把程序中的空格改成其他符号（比如 `#`）来输出，看看是哪里多了空格。
+3. 考虑到不知道第 $10^4$ 个素数有多大，不妨将测试上限 `MAXN` 设置得大一些，反正在素数个数超过 `n` 时会中断，不影响时间复杂度。当然也可以先用程序测试下第 $10^4$ 个素数是多少，然后再用这个数作为上限。
+4. 本题在素数表生成过程中其实可以直接输出，不过看起来会显得比较冗乱，因此还是应先生成完整素数表，然后再按格式要求输出。
+5. `Find_Prime()` 函数 和 `Find_Prime_2()` 函数中要记得 `i<MAXN` 而不是 `i<=MAXN`，否则程序运行会崩溃。
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+using namespace std;
+
+const int MAXN = 900000;//表长
+int prime[MAXN],pNum = 0;//prime数组存放所有素数，pNum为素数个数
+bool p[MAXN] = {false};//p[i] == true表示i是素数
+int m,n;
+
+//寻找素数表(素数筛法)
+void Find_Prime_2()
+{
+	for(int i=2;i<MAXN;i++)//从2开始，i<MAXN结束
+	{
+		if(p[i] == false)//如果i是素数
+        {
+            prime[pNum++] = i;//把素数i存到prime数组中
+            if(pNum>=n)
+                break;
+            else
+            {
+                for(int j=i+i;j<MAXN;j+=i)
+                {
+                    //筛去所有i的倍数，循环条件不能写成j<=MAXN
+                    p[j] = true;
+                }
+            }
+        }
+	}
+}
+
+//主函数
+int main()
+{
+    int num=0;
+    scanf("%d %d",&m,&n);
+    Find_Prime_2();
+    for(int i=m-1;i<n;i++)
+    {
+        printf("%d",prime[i]);
+        num++;
+        if(num%10==0||i==n-1)
+            printf("\n");
+        else
+            printf(" ");
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：
++ 关于素数的题目有几个需要注意的点：
+1. `1` 不是素数
+2. 素数表长至少要比 `n` 大 `1`。
+3. `Find_Prime()` 函数 和 `Find_Prime_2()` 函数中要记得 `i<MAXN` 而不是 `i<=MAXN`，否则程序运行会崩溃。
+4. `main()` 函数中要记得调用 `Find_Prime()` 和 `Find_Prime_2()` 函数，不然不会得到结果。
+
+### 质因子分解
