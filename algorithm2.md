@@ -9032,6 +9032,9 @@ void showResult(Fraction r)//输出分数r
 + 上述判定方法没有问题，复杂度为 $O(n)$，但在许多情况下，判定素数只是整个算法中的一部分，这时候 $O(n)$ 的复杂度有点大，需要更加快速的判定方法。
 + 注意到如果在 `2~n-1` 中存在 `n` 的约数，不妨设为 `k`，即 `n%k==0`，那么由 `k*(n/k)==n` 可知，`n/k` 也是 `n` 的一个约数，且 `k` 与 `n/k` 中一定满足其中一个小于 `sqrt(n)` 、另一个大于 `sqrt(n)`，其中 `sqrt(n)` 为根号 `n`。
 + 这启发我们，只需要判定 `n` 能否被 $2,3,……,\lfloor{\sqrt{n}}\rfloor$ 中的一个整除（其中 $\lfloor{x}\rfloor$ 表示对 `x` 向下取整），即可判定 `n` 是否为素数。该算法的复杂度为 $O(\sqrt{n})$。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231218163946.png)
+
 + 代码如下：
 ```cpp
 //判断是否为素数
@@ -9086,7 +9089,7 @@ void Find_Prime()
 	}
 }
 ```
-+ 下面是完整的求解 100 以内的所有素数代码：
++ 下面是完整的求解 `100` 以内的所有素数代码：
 ```cpp
 #include <stdio.h>
 #include <stdlib.h>
@@ -9300,7 +9303,7 @@ if(num>=n)
 2. 小技巧：由于空格在测试时肉眼看不出来，因此如果提交返回“格式错误”，可以把程序中的空格改成其他符号（比如 `#`）来输出，看看是哪里多了空格。
 3. 考虑到不知道第 $10^4$ 个素数有多大，不妨将测试上限 `MAXN` 设置得大一些，反正在素数个数超过 `n` 时会中断，不影响时间复杂度。当然也可以先用程序测试下第 $10^4$ 个素数是多少，然后再用这个数作为上限。
 4. 本题在素数表生成过程中其实可以直接输出，不过看起来会显得比较冗乱，因此还是应先生成完整素数表，然后再按格式要求输出。
-5. `Find_Prime()` 函数 和 `Find_Prime_2()` 函数中要记得 `i<MAXN` 而不是 `i<=MAXN`，否则程序运行会崩溃。
+5. `Find_Prime()` 函数和 `Find_Prime_2()` 函数中要记得 `i<MAXN` 而不是 `i<=MAXN`，否则程序运行会崩溃。
 + 代码：
 ```cpp
 #include <stdio.h>
@@ -9369,7 +9372,212 @@ int main()
 + 关于素数的题目有几个需要注意的点：
 1. `1` 不是素数
 2. 素数表长至少要比 `n` 大 `1`。
-3. `Find_Prime()` 函数 和 `Find_Prime_2()` 函数中要记得 `i<MAXN` 而不是 `i<=MAXN`，否则程序运行会崩溃。
-4. `main()` 函数中要记得调用 `Find_Prime()` 和 `Find_Prime_2()` 函数，不然不会得到结果。
+3. `Find_Prime()` 函数和 `Find_Prime_2()` 函数中要记得 `i<MAXN` 而不是 `i<=MAXN`，否则程序运行会崩溃。
+4. `main()` 函数中要记得调用 `Find_Prime()` 或 `Find_Prime_2()` 函数，不然不会得到结果。
 
 ### 质因子分解
++ 所谓质因子分解是指将一个正整数 `n` 写成一个或多个质数的乘积的形式，例如 $6=2×3$、$8=2×2×2$、$180=2×2×3×3×5$。
++ 或者我们也可以写成指数的形式，例如 $6=2^1×3^1$、$8=2^3$、$180=2^2×3^2×5^1$。
++ 显然，由于最后都要归结到若干不同质数的乘积，因此不妨先把素数表打印出来。而打印素数表的方法在上节已经阐述，下面我们主要就质因子分解本身进行讲解。
++ 注意：由于 `1` 本身不是素数，因此它没有质因子，下面的讲解是针对大于 `1` 的正整数来说的，而如果有些题目中要求对 `1` 进行处理，那么视题目条件而定来进行特判处理。
++ 由于每个质因子都可以不止出现一次，因此不妨定义结构体 `factor`，用来存放质因子及其个数，如下所示：
+```cpp
+struct factor
+{
+	int x,cnt;//x为质因子，cnt为其个数
+}fac[10];
+```
++ 这里 `fac[]` 数组存放的就是给定的正整数 `n` 的所有质因子，例如对 `180` 来说，`fac[]` 数组如下：
+```cpp
+fac[0].x = 2;
+fac[0].cnt = 2;
+
+fac[1].x = 3;
+fac[1].cnt = 2;
+
+fac[2].x = 5;
+fac[2].cnt = 1;
+```
++ 考虑到 $2×3×5×7×11×13×17×19×23×29$ 就已经超过了 `int` 范围，因此对一个 `int` 型范围的数来说，`fac[]` 数组的大小只需要开到 `10` 就可以了。
++ 前面提到过，对一个正整数来说，如果它存在 `1` 和本身之外的因子，那么一定是在 $\sqrt{n}$ 的左右成对出现。
++ 而这里把这个结论用在“质因子”上面，会得到一个强化结论：
++ 对一个正整数 `n` 来说：
++ 如果它存在 `[2,n]` 范围内的质因子，要么这些质因子**全部小于等于** $\sqrt{n}$；
++ 要么只存在**一个大于** $\sqrt{n}$ 的质因子，而**其余**质因子**全部小于等于** $\sqrt{n}$。
++ 这就给进行质因子分解提供了一个很好的思路：
+1. 枚举 1~ $\sqrt{n}$ 范围内的所有质因子 `p`，判断 `p` 是否为 `n` 的因子。
++ 如果 `p` 是 `n` 的因子，那么给 `fac[]` 数组增加质因子 `p`，并初始化其个数为 `0`。
++ 然后，只要 `p` 还是 `n` 的因子，就让 `n` 不断除以 `p`，每次操作令 `p` 的个数加 `1`，直到 `p` 不再是 `n` 的因子为止。
+```cpp
+if(n%prime[i] == 0)//如果prime[i]是n的因子
+{
+	fac[num].x = prime[i];//记录该因子
+	fac[num].cnt = 0;
+	while(n%prime[i] == 0)//计算出质因子prime[i]的个数
+	{
+		fac[num].cnt++;
+		n/=prime[i];
+	}
+	num++;//不同质因子个数加1
+}
+```
++ 如果 `p` 不是 `n` 的因子，就直接跳过。
+2. 如果在上面步骤结束后 `n` 仍然大于 `1`，说明 `n` 有且仅有一个大于 $\sqrt{n}$ 的质因子（有可能是 `n` 本身），这时需要把这个质因子加入 `fac[]` 数组中，并令其个数为 `1`。
+```cpp
+if(n!=1)//如果无法被根号n以内的质因子除尽
+{
+	fac[num].x = n;//那么一定有一个大于根号n的质因子
+	fac[num++].cnt = 1;
+}
+```
++ 至此，`fac[]` 数组中存放的就是质因子分解的结果，时间复杂度是 $O(\sqrt{n})$。
+
+例题：[PAT A1059](https://pintia.cn/problem-sets/994805342720868352/exam/problems/994805415005503488?type=7&page=0)
++ **题意：**
++ 给出一个 `int` 范围的整数，按照从小到大的顺序输出其分解为质因数的乘法算式。
++ **思路：**
++ 和上面讲解质因子分解的思路是完全相同的，要在前面先把素数表打印出来，然后再进行质因子分解的操作。
++ **注意点：**
++ 题目说的 `int` 范围内的正整数进行质因子分解，因此素数表大概开 $10^5$ 大小就可以了。
++ 注意 `n==1` 的时候需要特判输出 `1=1`，否则不会输出结果。
++ 初学者学习素数和质因子分解比较容易犯的错误：
+1. 在 `main()` 函数开头忘记调用 `Find_Prime()` 函数或 `Find_Prime_2()` 函数；
+2. `Find_Prime()` 函数或 `Find_Prime_2()` 函数中把 `i<MAXN` 误写成 `i<=MAXN`；
+3. 没有处理好大于 $\sqrt{n}$ 部分的质因子；
+4. 在枚举质因子的过程中发生了死循环（死因各异）；
+5. 没有在循环外定义变量来存储 `sqrt(n)`，而在循环条件中直接计算 `sqrt(n)`，这样当循环中使用 `n` 本身进行操作的话会导致答案错误。
++ 代码如下：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+using namespace std;
+
+struct factor
+{
+	int x,cnt;//x为质因子，cnt为其个数
+} fac[10];
+
+const int MAXN = 100010;//表长
+int prime[MAXN],pNum = 0;//prime数组存放所有素数，pNum为素数个数
+bool p[MAXN] = {false};//p[i] == true表示i是素数
+
+//判断是否为素数
+bool isPrime(int n)
+{
+    if(n<=1)
+        return false;//特判
+    int sqr = (int)sqrt(1.0*n);//根号n
+    for(int i=2;i<=sqr;i++)
+    {
+        if(n%i==0)
+            return false;
+    }
+    return true;
+}
+
+//寻找素数表(普通法)
+void Find_Prime()
+{
+	for(int i=1;i<MAXN;i++)
+	{
+		if(isPrime(i)==true)
+		{
+			prime[pNum++] = i;//是素数则把i存入prime数组
+			p[i] = true;
+		}
+	}
+}
+
+//寻找素数表(素数筛法)
+void Find_Prime_2()
+{
+	for(int i=2;i<MAXN;i++)//从2开始，i<MAXN结束
+	{
+		if(p[i] == false)//如果i是素数
+        {
+            prime[pNum++] = i;//把素数i存到prime数组中
+            for(int j=i+i;j<MAXN;j+=i)
+            {
+                //筛去所有i的倍数，循环条件不能写成j<=MAXN
+                p[j] = true;
+            }
+        }
+	}
+}
+
+//主函数
+int main()
+{
+    Find_Prime_2();
+    int n,num=0;//num为n的不同质因子个数
+    scanf("%d",&n);
+    if(n==1)
+        printf("1=1\n");//特判1的情况
+    else
+    {
+        printf("%d=",n);
+        int sqr = (int)sqrt(1.0*n);//n的根号
+        //枚举根号n以内的质因子
+        for(int i=0;i<pNum&&prime[i]<=sqr;i++)
+        {
+            if(n%prime[i] == 0)//如果prime[i]是n的因子
+            {
+	            fac[num].x = prime[i];//记录该因子
+	            fac[num].cnt = 0;
+	            while(n%prime[i] == 0)//计算出质因子prime[i]的个数
+	            {
+		            fac[num].cnt++;
+		            n/=prime[i];
+	            }
+	            num++;//不同质因子个数加1
+            }
+            if(n==1)
+                break;//及时退出循环，节省时间
+        }
+        if(n!=1)//如果无法被根号n以内的质因子除尽
+        {
+	        fac[num].x = n;//那么一定有一个大于根号n的质因子
+	        fac[num++].cnt = 1;
+        }
+        for(int i=0;i<num;i++)
+        {
+            if(i>0)
+                printf("*");
+            printf("%d",fac[i].x);
+            if(fac[i].cnt>1)
+                printf("^%d",fac[i].cnt);
+        }
+        printf("\n");
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 最后指出，如果要求一个正整数 `N` 的因子个数，只需要对其质因子分解，得到各质因子 $p_i$ 的个数分别为 $e_1 、e_2 、…… 、e_k$ ，于是 `N` 的因子个数 $d(n)$ 就是： 
+$$d(n)=(e_1+1)\times(e_2+1)\times...\times(e_k+1)$$
++ 原因是，对每个质因子 $p_i$ 都可以选择其出现 $0$ 次、$1$ 次、…、$e_i$ 次，共 $e_i+1$ 种可能，组合起来就是答案。
++ 而由同样的原理可知，`N` 的所有因子之和 $s(n)$ 为：
+$$\begin{equation}
+	\begin{split}
+	 s(n) &= (1+p_1+p_1^2+...+p_1^{e_1})\times(1+p_2+p_1^2+...+p_2^{e_2})\times...\times(1+p_k+p_k^2+...+p_k^{e_k})\\
+	&=\frac{1-p_{1}^{e_{1}+1}}{1-p_{1}}\times\frac{1-p_{2}^{e_{2}+1}}{1-p_{2}}\times...\times\frac{1-p_{k}^{e_{k}+1}}{1-p_{k}}
+	\end{split}
+\end{equation}
+$$
++ 上述**因数个数定理**与**因数和定理**的简单例子证明如下图所示：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231218182806.png)
+
+### 大整数运算
