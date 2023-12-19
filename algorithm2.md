@@ -9580,4 +9580,66 @@ $$
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231218182806.png)
 
+例题：[生成约数](https://sunnywhy.com/sfbj/5/5/216)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+#include <set>
+using namespace std;
+
+//主函数
+int main()
+{
+    int n;
+    set<int> ans;
+    scanf("%d",&n);
+    for(int i=1;i<=n/i;i++)
+    {
+        if(n%i==0)
+        {
+            ans.insert(i);
+            ans.insert(n/i);
+        }
+    }
+    set<int>::iterator it = ans.begin();
+    for(set<int>::iterator it = ans.begin();it!=ans.end();it++)
+    {
+        if(it!=ans.begin())
+        printf(" ");
+        printf("%d",*it);
+    }
+    printf("\n");
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：
++ 约数一定是成双出现的，如果一个约数是 `i`，那么另一个约数就必然是 `n/i`，我们枚举较小的那一个，也就是满足 `i<=n/i` 的约数，另外一个我们直接用 `n/i` 计算算出来即可。
++ 上述方法称为**式除法**，该方法的时间复杂度为 $O(\sqrt{n})$ ，其核心代码如下：
+```cpp
+int n;
+    set<int> ans;
+    scanf("%d",&n);
+    for(int i=1;i<=n/i;i++)
+    {
+        if(n%i==0)
+        {
+            ans.insert(i);
+            ans.insert(n/i);
+        }
+    }
+```
 ### 大整数运算
