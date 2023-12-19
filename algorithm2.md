@@ -9631,15 +9631,15 @@ int main()
 + 上述方法称为**式除法**，该方法的时间复杂度为 $O(\sqrt{n})$ ，其核心代码如下：
 ```cpp
 int n;
-    set<int> ans;
-    scanf("%d",&n);
-    for(int i=1;i<=n/i;i++)
+set<int> ans;
+scanf("%d",&n);
+for(int i=1;i<=n/i;i++)
+{
+    if(n%i==0)
     {
-        if(n%i==0)
-        {
-            ans.insert(i);
-            ans.insert(n/i);
-        }
+        ans.insert(i);
+        ans.insert(n/i);
     }
+}
 ```
 ### 大整数运算
