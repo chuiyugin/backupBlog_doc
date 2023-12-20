@@ -9643,3 +9643,461 @@ for(int i=1;i<=n/i;i++)
 }
 ```
 ### 大整数运算
++ 对于一道 `A+B` 的题目，如果 `A` 和 `B` 的范围在 `int` 范围内，那么相对比较简单。
++ 但是如果 `A` 和 `B` 是有着 `1000` 个数位的整数，将没有办法用已有的数据类型来表示，这时就只能去模拟**加减乘除**的过程。
++ 大整数又称为**高精度整数**，其含义就是用基本数据类型无法存储其精度的整数。
+#### 大整数的存储
++ 对于大整数的存储，一般使用**数组**即可。
++ 例如定义 `int` 型数组 `d[1000]`，那么这个数组中的每一位就代表了存放的整数的每一位。
++ 如将 `235813` 存储到数组中，则有 `d[0]=3`、`d[1]=1`、`d[2]=8`、`d[3]=5`、`d[4]=3`、`d[5]=2`，即**整数的高位存储在数组的高位，整数的低位存储在数组的低位**。
++ 不反过来存储的原因是，在进行运算的时候都是从整数的低位到高位进行枚举，顺位存储和这种思维相合。
++ 但也会由此产生一个需要注意的问题：
++ 把整数按字符串 `%s` 读入的时候，实际上是逆位存储的，即 `str[0]='2'`、`str[1]='3'`、...、 `str[5]='3'`，因此在读入之后需要在另存为至 `d[]` 数组的时候反转一下。
++ 而为了方便随时获取大整数的长度，一般都会定义一个 `int` 型变量 `len` 来记录其长度，并和 `d` 数组组合成结构体：
+```cpp
+struct bign
+{
+	int d[1000];
+	int len;
+};
+```
++ 上述 `bign` 是 `big number` 的缩写。
++ 显然，在定义结构体变量之后，需要马上初始化结构体。为了减少在实际输入代码的过程中总是忘记初始化的问题，最好使用以前介绍的“构造函数”，即在结构体内部加入以下代码：
+```cpp
+bign()
+{
+	memset(d,0,sizeof(d));
+	len = 0;
+}
+```
++ "构造函数"是用来初始化结构体的函数，函数名和结构体名相同、无返回值，因此非常好写。
++ 因此大整数结构体 `bign` 就变成了这样：
+```cpp
+struct bign
+{
+	int d[1000];
+	int len;
+	bign()
+	{
+		memset(d,0,sizeof(d));
+		len = 0;
+	}
+};
+```
++ 这样在每次定义结构体变量时，都会自动对该变量进行初始化。
++ 而在输入大整数时，一般都是先用字符串读入，然后再把字符串另存至 `bign` 结构体中。由于使用 `char` 数组进行读入时，整数的高位会变成数组的低位，而整数的低位会变成数组的高位，因此为了让整数在 bign 中是顺位存储的，需要让字符串倒着赋给 `d[]` 数组：
+```cpp
+bign change(char str[])//将整数转换为bign
+{
+	bign a;
+	a.len = strlen(str);//bign的长度就是字符串长度
+	for(int i=0;i<a.len;i++)
+	{
+		a.d[i]=str[a.len-i-1]-'0';//逆着赋值
+	}
+	return a;
+}
+```
++ 如果要比较 `bign` 变量的大小，规则也很简单：
++ 先判断两者 `len` 的大小，如果不相等，则以长的为大；如果相等，则从高位到低位进行比较，直到出现某一位不等，就可以判断两个数大小，上述规则的代码如下：
+```cpp
+int compare(bign a,bign b)//比较a和b的大小，a大，相等，a小分别返回1、0、-1
+{
+	if(a.len>b.len)
+		return 1;//a大
+	else if(a.len<b.len)
+		return -1;//a小
+	else
+	{
+		for(int i=a.len-1;i>=0;i--)//从高位往低位比较
+		{
+			if(a.d[i]>b.d[i])
+				return 1;//只要有一位a大，则a大
+			else if(a.d[i]<b.d[i])
+				return -1;//只要有一位a小，则a小
+		}
+		return 0;//两数相等
+	}
+}
+```
+
+例题：[大整数比较](https://sunnywhy.com/sfbj/5/6/217)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+#include <set>
+using namespace std;
+
+//结构体
+struct bign
+{
+	int d[1000];
+	int len;
+	bign()
+	{
+		memset(d,0,sizeof(d));
+		len = 0;
+	}
+};
+
+//整数转换为bign函数
+bign change(char str[])//将整数转换为bign
+{
+	bign a;
+	a.len = strlen(str);//bign的长度就是字符串长度
+	for(int i=0;i<a.len;i++)
+	{
+		a.d[i]=str[a.len-i-1]-'0';//逆着赋值
+	}
+	return a;
+}
+
+//比较函数
+int compare(bign a,bign b)//比较a和b的大小，a大，相等，a小分别返回1、0、-1
+{
+	if(a.len>b.len)
+		return 1;//a大
+	else if(a.len<b.len)
+		return -1;//a小
+	else
+	{
+		for(int i=a.len-1;i>=0;i--)//从高位往低位比较
+		{
+			if(a.d[i]>b.d[i])
+				return 1;//只要有一位a大，则a大
+			else if(a.d[i]<b.d[i])
+				return -1;//只要有一位a小，则a小
+		}
+		return 0;//两数相等
+	}
+}
+
+//主函数
+int main()
+{
+    char str1[1000],str2[1000];
+    int num;
+    scanf("%s%s",str1,str2);
+    bign a = change(str1);
+    bign b = change(str2);
+    num = compare(a,b);
+    if(num==1)
+        printf("a > b");
+    else if(num==-1)
+        printf("a < b");
+    else
+        printf("a = b");
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：该题目与上述介绍的思路一致，属于简单题。
++ 接下来主要介绍四个运算：
+1. 高精度加法
+2. 高精度减法
+3. 高精度与低精度乘法
+4. 高精度与低精度除法
++ 至于高精度与高精度的乘法和除法，有兴趣自行了解。
+#### 大整数的四则运算
+##### 高精度加法
++ 以 `147+65` 为例：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231220151738.png)
+1. `7+5=12`，取个位数 `2` 作为该位的结果，取十位数 `1` 进位。
+2. `4+6` 加上进位 `1` 为 `11`，取个位数 `1` 作为该位的结果，取十位数 `1` 进位。
+3. `1+0`，加上进位 `1` 为 `2`，取个位数 `2` 作为该位的结果，由于十位数为 `0`，因此不进位。
++ 可以因此归纳出对其中一位进行加法的步骤：
++ 将该位上的两个数字和进位相加，得到的结果取个位数作为该位结果，取十位数作为新的进位。
++ 高精度加法的做法与此完全相同，实现代码如下：
+```cpp
+bign add(bign a,bign b)//高精度a+b
+{
+	bign c;
+	int carry = 0;//carry是进位
+	for(int i=0;i<a.len||i<b.len;i++)//以较长的为界限
+	{
+		int temp = a.d[i]+b.d[i]+carry;//两个对应位与进位相加
+		c.d[c.len++]=temp % 10;//个位数为该位结果
+		carry = temp / 10;//十位是新的进位
+	}
+	if(carry!=0)//如果最后进位不为0，则直接赋给结果的最高位
+		c.d[c.len++] = carry;
+	return c;
+}
+```
++ 高精度相加的代码大概只有十行，非常简洁，只要懂得原理，基本上可以很容易理解和记住。
+
+例题：[大整数加法](https://sunnywhy.com/sfbj/5/6/218)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+#include <set>
+using namespace std;
+
+//结构体
+struct bign
+{
+	int d[1000];
+	int len;
+	bign()
+	{
+		memset(d,0,sizeof(d));
+		len = 0;
+	}
+};
+
+//整数转换为bign函数
+bign change(char str[])//将整数转换为bign
+{
+	bign a;
+	a.len = strlen(str);//bign的长度就是字符串长度
+	for(int i=0;i<a.len;i++)
+	{
+		a.d[i]=str[a.len-i-1]-'0';//逆着赋值
+	}
+	return a;
+}
+
+//比较函数
+int compare(bign a,bign b)//比较a和b的大小，a大，相等，a小分别返回1、0、-1
+{
+	if(a.len>b.len)
+		return 1;//a大
+	else if(a.len<b.len)
+		return -1;//a小
+	else
+	{
+		for(int i=a.len-1;i>=0;i--)//从高位往低位比较
+		{
+			if(a.d[i]>b.d[i])
+				return 1;//只要有一位a大，则a大
+			else if(a.d[i]<b.d[i])
+				return -1;//只要有一位a小，则a小
+		}
+		return 0;//两数相等
+	}
+}
+
+//高精度a+b
+bign add(bign a,bign b)//高精度a+b
+{
+	bign c;
+	int carry = 0;//carry是进位
+	for(int i=0;i<a.len||i<b.len;i++)//以较长的为界限
+	{
+		int temp = a.d[i]+b.d[i]+carry;//两个对应位与进位相加
+		c.d[c.len++]=temp % 10;//个位数为该位结果
+		carry = temp / 10;//十位是新的进位
+	}
+	if(carry!=0)//如果最后进位不为0，则直接赋给结果的最高位
+		c.d[c.len++] = carry;
+	return c;
+}
+
+//主函数
+int main()
+{
+    char str1[1000],str2[1000];
+    int num;
+    scanf("%s%s",str1,str2);
+    bign a = change(str1);
+    bign b = change(str2);
+    bign c = add(a,b);
+    for(int i=c.len-1;i>=0;i--)
+        printf("%d",c.d[i]);
+    printf("\n");
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：该题目与上述介绍的思路一致，属于简单题。
+##### 高精度减法
++ 以 `147-65` 为例：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231220195350.png)
+1. `5-7<0`，不够减，因此从高位 `4` 借 `1`，于是 `4` 减 `1` 变成 `3`，该位结果为 `15-7=8`；
+2. `3-6<0`，不够减，因此从高位 `1` 借 `1`，于是 `1` 减 `1` 变成 `0`，该位结果为 `13-6=7`；
+3. 上面和下面均为 `0`，结束计算。
++ 同样可以得到一个很简练的步骤：
++ 对某一步，比较被减位和减位，如果不够减，则令被减位的高位减 `1`、被减位加 `10` 再进行减法；
++ 如果够减，则直接减。
++ 最后一步要注意减法后高位可能有多余的 0，要忽视它们，但也要保证结果至少有一位数。
++ 代码如下：
+```cpp
+bign sub(bign a,bign b)//高精度a-b
+{
+	bign c;
+	for(int i=0;i<a.len||i<b.len;i++)//以较长的为界限
+	{
+		if(a.d[i]<b.d[i])//如果不够减
+		{
+			a.d[i+1]--;//向高位借位
+			a.d[i]+=10;//当前位加10
+		}
+		c.d[c.len++] = a.d[i]-b.d[i];//减法结果为当前位结果
+	}
+	while(c.len-1>=1&&c.d[c.len-1]==0)
+	{
+		c.len--;
+	}
+	return c;
+}
+```
++ 需要指出的是，使用 `sub()` 函数前要比较两个数的大小，如果被减数小于减数，需要交换两个变量，然后输出负号，再使用 `sub()` 函数。
+
+例题：[大整数减法](https://sunnywhy.com/sfbj/5/6/219)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+#include <set>
+using namespace std;
+
+//结构体
+struct bign
+{
+	int d[1000];
+	int len;
+	bign()
+	{
+		memset(d,0,sizeof(d));
+		len = 0;
+	}
+};
+
+//整数转换为bign函数
+bign change(char str[])//将整数转换为bign
+{
+	bign a;
+	a.len = strlen(str);//bign的长度就是字符串长度
+	for(int i=0;i<a.len;i++)
+	{
+		a.d[i]=str[a.len-i-1]-'0';//逆着赋值
+	}
+	return a;
+}
+
+//比较函数
+int compare(bign a,bign b)//比较a和b的大小，a大，相等，a小分别返回1、0、-1
+{
+	if(a.len>b.len)
+		return 1;//a大
+	else if(a.len<b.len)
+		return -1;//a小
+	else
+	{
+		for(int i=a.len-1;i>=0;i--)//从高位往低位比较
+		{
+			if(a.d[i]>b.d[i])
+				return 1;//只要有一位a大，则a大
+			else if(a.d[i]<b.d[i])
+				return -1;//只要有一位a小，则a小
+		}
+		return 0;//两数相等
+	}
+}
+
+//高精度a+b
+bign add(bign a,bign b)//高精度a+b
+{
+	bign c;
+	int carry = 0;//carry是进位
+	for(int i=0;i<a.len||i<b.len;i++)//以较长的为界限
+	{
+		int temp = a.d[i]+b.d[i]+carry;//两个对应位与进位相加
+		c.d[c.len++]=temp % 10;//个位数为该位结果
+		carry = temp / 10;//十位是新的进位
+	}
+	if(carry!=0)//如果最后进位不为0，则直接赋给结果的最高位
+		c.d[c.len++] = carry;
+	return c;
+}
+
+//高精度a-b
+bign sub(bign a,bign b)//高精度a-b
+{
+	bign c;
+	for(int i=0;i<a.len||i<b.len;i++)//以较长的为界限
+	{
+		if(a.d[i]<b.d[i])//如果不够减
+		{
+			a.d[i+1]--;//向高位借位
+			a.d[i]+=10;//当前位加10
+		}
+		c.d[c.len++] = a.d[i]-b.d[i];//减法结果为当前位结果
+	}
+	while(c.len-1>=1&&c.d[c.len-1]==0)
+	{
+		c.len--;
+	}
+	return c;
+}
+
+//主函数
+int main()
+{
+    char str1[1000],str2[1000];
+    int num;
+    scanf("%s%s",str1,str2);
+    bign a = change(str1);
+    bign b = change(str2);
+    num = compare(a,b);
+    if(num==-1)//a比b小
+    {
+        bign temp = a;
+        a = b;
+        b = temp;
+        printf("-");
+    }
+    bign c = sub(a,b);
+    for(int i=c.len-1;i>=0;i--)
+        printf("%d",c.d[i]);
+    printf("\n");
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：该题目与上述介绍的思路一致，属于简单题。
+##### 高精度与低精度乘法
++ 所谓的低精度就是可以用基本数据类型存储的数据，例如 `int` 型。
++ 以 `147×35` 为例，这里把 `147` 视为高精度 `bign` 型，而 `35` 视为 `int` 类型，并且在下面的过程中，始终将 `35` 作为一个整体看待。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231220204112.png)
