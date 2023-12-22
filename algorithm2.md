@@ -10333,7 +10333,8 @@ int main()
 ##### 高精度与高精度乘法
 + 乘法的基本步骤模拟如下图：
 
-![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231222154645.png)
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231222162354.png)
+
  + 不难发现，上述步骤有以下关系：
 $$
 \begin{equation}
