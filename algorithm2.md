@@ -10517,3 +10517,33 @@ int exGcd(int a,int b,int &x,int &y)//x和y使用引用
 ```
 + 由于使用了引用，因此当 `exGcd()` 函数结束时 `x` 和 `y` 就是所求的解。
 + 显然，在得到这样一组解之后，就可以通过下面的式子得到全部解：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231224134635.png)
++ 下面来简单证明：
++ 假设新的解为 $x+s_1$ 、$y-s_2$，即有 $a*(x+s_1)+b*(y-s_2)=gcd$ 成立，通过代入 $ax+by=gcd$ 可以得到 $as_1=bs_2$，于是 $\frac{s_{1}}{s_{2}}=\frac{b}{a}$ 成立。
++ 为了让 $s_1$ 和 $s_2$ 尽可能小，可以让分子和分母同时除以一个尽可能大的数，同时保证它们仍然是整数。
++ 显然，由于 $\frac{b}{gcd}$ 与 $\frac{a}{gcd}$ 互质，因此 `gcd` 是允许作为除数的最大数 $\frac{s_{1}}{s_{2}}=\frac{b}{a}=\frac{\frac{b}{gcd}}{\frac{a}{gcd}}$，得 $s_1$ 和 $s_2$ 的最小取值是 $\frac{b}{gcd}$ 与 $\frac{a}{gcd}$，证毕！
++ 也就是说，`x` 和 `y` 的所有解分别以 $\frac{b}{gcd}$ 与 $\frac{a}{gcd}$ 为周期。
++ 那么其中 x 的最小非负整数解是什么呢？
++ 从直观上来看就是 $x\%\frac{b}{gcd}$。
++ 但是由于通过 `exGcd()` 函数计算出来的 `x`、`y` 可正可负，因此实际上 $x\%\frac{b}{gcd}$ 会得到一个负数，例如 `(-15)%4=-3`。
++ 考虑到即便 `x` 是负数，$x\%\frac{b}{gcd}$ 的范围也是在 $(-x\%\frac{b}{gcd},0)$，因此对任意整数而言，$(x\%\frac{b}{gcd}+\frac{b}{gcd})\%\frac{b}{gcd}$ 才是对应的最小非负整数解。
++ 特殊的，如果 `gcd==1`，全部解的公式简化为下式，且 `x` 的最小非负整数解也可以简化为 $(x\%b+b)\%b$。全部解为：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231224142141.png)
+#### 方程 ax+by=c 的求解
++ 至此我们已经知道如何求解 `ax+by=gcd` 的解，其最常见的应用就是用来求解 `ax+by=c`，其中 `c` 为任意整数。
++ 首先，假设 `ax+by=gcd` 有一组解 $(x_0,y_0)$，现在在其等号两边同时乘 $\frac{c}{gcd}$，即有 $a\frac{cx_0}{gcd}+b\frac{cy_0}{gcd}=c$ 成立，因此 $(x,y)=(\frac{cx_0}{gcd},\frac{cy_0}{gcd})$ 是 `ax+by=c` 的一组解。
++ 但是显然这样做的充要条件是 `c%gcd==0`，否则第一步在等号两边同时乘 $\frac{c}{gcd}$ 都无法做到。
++ 于是 `ax+by=c` 存在解的充要条件是 `c%gcd==0`，且一组解 $(x,y)=(\frac{cx_0}{gcd},\frac{cy_0}{gcd})$ 。
++ 为了获得全部解的公式，可以模仿之前的做法，假设新的解为 $x+s_1$ 、$y-s_2$，然后将 $a(x+s_1)+b(y-s_2)=c$ 与 $ax+by=c$ 联立，发现同样可以得到 $\frac{s_{1}}{s_{2}}=\frac{b}{a}$ 成立。
++ 于是因为同样的原因，$s_1$ 和 $s_2$ 的最小值仍然是 $\frac{b}{gcd}$ 与 $\frac{a}{gcd}$。因此 $ax+by=c$ 的全部解的公式为：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231224152717.png)
++ 由此会发现与 $ax+by=gcd$ 全部解的公式是一样的，唯一不同的是初始解 $(x,y)$ 不同。
++ 因此对 $ax+by=c$ 来说，其解 $(x,y)$ 同样分别以 $\frac{b}{gcd}$ 与 $\frac{a}{gcd}$ 为周期。
++ 除此之外，可以得到和上面一样的结论，对任意整数来说，$(x\%\frac{b}{gcd}+\frac{b}{gcd})\%\frac{b}{gcd}$ 是 $ax+by=c$ 中 $x$ 的最小非负整数，一般来说可以让 $x$ 取 $\frac{cx_0}{gcd}$，其中 $x_0$ 是 $ax+by=gcd$ 的一个解。
++ 并且，如果 `gcd==1`，那么全部解的公式可以化简为下式，且 $x$ 的最小非负整数解可以简化为 $(x\%b+b)\%b$。全部解为：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231224153906.png)
+#### 同余式 ax=c(mod m)的求解
