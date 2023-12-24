@@ -10531,6 +10531,66 @@ int exGcd(int a,int b,int &x,int &y)//x和y使用引用
 + 特殊的，如果 `gcd==1`，全部解的公式简化为下式，且 `x` 的最小非负整数解也可以简化为 $(x\%b+b)\%b$。全部解为：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231224142141.png)
+例题：[二元一次方程的整数解](https://sunnywhy.com/sfbj/5/7/224)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+using namespace std;
+
+//求解最大公约数函数(递归算法)
+int gcd(int a,int b)
+{
+    if(b==0)
+        return a;
+    else
+        return gcd(b,a%b);
+}
+
+//扩展欧几里得算法
+int exGcd(int a,int b,int &x,int &y)//x和y使用引用
+{
+	if(b==0)
+	{
+		x=1;
+		y=0;
+		return a;
+	}
+	int g = exGcd(b,a%b,x,y);//递归计算exGcd(b,a%b,x,y)
+	int temp = x;//存放x的值
+	x=y;//更新x=y(old)
+	y=temp-a/b*y;//更新y=x(old)-a/b*y(old)
+	return g;//g是gcd
+}
+
+//主函数
+int main()
+{
+    int a,b;
+    scanf("%d %d",&a,&b);
+    int x,y,g;
+    g=exGcd(a,b,x,y);
+    int x_ans,y_ans;
+    x_ans=(x%(b/g)+b/g)%(b/g);
+    y_ans=(g-a*x_ans)/b;
+    printf("%d %d\n",x_ans,y_ans);
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：该题目与上述介绍的思路一致，属于简单题。
 #### 方程 ax+by=c 的求解
 + 至此我们已经知道如何求解 `ax+by=gcd` 的解，其最常见的应用就是用来求解 `ax+by=c`，其中 `c` 为任意整数。
 + 首先，假设 `ax+by=gcd` 有一组解 $(x_0,y_0)$，现在在其等号两边同时乘 $\frac{c}{gcd}$，即有 $a\frac{cx_0}{gcd}+b\frac{cy_0}{gcd}=c$ 成立，因此 $(x,y)=(\frac{cx_0}{gcd},\frac{cy_0}{gcd})$ 是 `ax+by=c` 的一组解。
@@ -10546,4 +10606,73 @@ int exGcd(int a,int b,int &x,int &y)//x和y使用引用
 + 并且，如果 `gcd==1`，那么全部解的公式可以化简为下式，且 $x$ 的最小非负整数解可以简化为 $(x\%b+b)\%b$。全部解为：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231224153906.png)
+例题：[二元一次方程的整数解II](https://sunnywhy.com/sfbj/5/7/225)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+using namespace std;
+
+//求解最大公约数函数(递归算法)
+int gcd(int a,int b)
+{
+    if(b==0)
+        return a;
+    else
+        return gcd(b,a%b);
+}
+
+//扩展欧几里得算法
+int exGcd(int a,int b,int &x,int &y)//x和y使用引用
+{
+	if(b==0)
+	{
+		x=1;
+		y=0;
+		return a;
+	}
+	int g = exGcd(b,a%b,x,y);//递归计算exGcd(b,a%b,x,y)
+	int temp = x;//存放x的值
+	x=y;//更新x=y(old)
+	y=temp-a/b*y;//更新y=x(old)-a/b*y(old)
+	return g;//g是gcd
+}
+
+//主函数
+int main()
+{
+    int a,b,c;
+    scanf("%d %d %d",&a,&b,&c);
+    if(c%gcd(a,b)!=0)
+        printf("No Solution\n");
+    else
+    {
+        int x,y,g;
+        g=exGcd(a,b,x,y);
+        int x_ans,y_ans;
+        //分b/g的正负
+        if(b/g<0)
+            x_ans=((x*c/g)%(b/g)-b/g)%(b/g);
+        else
+            x_ans=((x*c/g)%(b/g)+b/g)%(b/g);
+        y_ans=(c-a*x_ans)/b;
+        printf("%d %d\n",x_ans,y_ans);
+    }
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：这道题目需要注意 `b/g` 是否为负数，其余部分上述介绍的思路一致，属于简单题。
 #### 同余式 ax=c(mod m)的求解
