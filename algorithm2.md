@@ -10676,3 +10676,92 @@ int main()
 ```
 + 总结：这道题目需要注意 `b/g` 是否为负数，其余部分上述介绍的思路一致，属于简单题。
 #### 同余式 ax=c(mod m)的求解
++ 既然已经解决了 $ax+by=c$ 的求解问题, 不得不提及同余式 $ax\equiv c(mod \ m)$ 的求解。
++ 先解释什么是**同余式**：
++ 对整数 `a`、`b`、`m` 来说，如果 `m` 整除 `a-b`（即 `(a-b)%m=0`），那么就说 `a` 与 `b` 模 `m` 同余，对应的同余式为 $a\equiv b(mod \ m)$，`m` 称为同余式的模。
++ 例如 `10` 与 `13` 模 `3` 同余，`10` 也与 `1` 模 `3` 同余，它们分别记为 $10\equiv 13(mod \ 3)$、$10\equiv 1(mod \ 3)$。
++ 显然，每一个整数都各自与 `[0,m)` 中的唯一的整数同余。
++ 此处要解决的就是同余式 $ax\equiv c(mod \ m)$ 的求解。
++ 根据同余式的定义，有 $(ax-c)\% m=0$ 成立，因此存在整数 `y`，使得 `ax-c=my` 成立，移项并令 `y=-y` 后即得 `ax+my=c`。
++ 由上节结论，当 `c%gcd(a,m)==0` 时方程才有解，且解的形式如下，其中 `(x,y)` 是 `ax+my=c` 的一组解，可以先通过求解 `ax+my=gcd(a,m)` 得到 $(x_0,y_0)$，然后由公式 $(x,y)=(\frac{cx_0}{gcd(a,m)},\frac{cy_0}{gcd(a,m)})$ 直接得到。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20231224211924.png)
++ 虽然对方程 `ax+my=c` 来说，`K` 可以取任意整数，但是对同余式来说会有很多解在模 `m` 意义下是相同的（由于只关心 `x`，因此下面只考虑 `x`）。
++ 对同余式来说，只需要找出那些在模 `m` 意义下不同的解。
++ 因此考虑 $x^{ \prime } =x+\frac { m }{ gcd(a,m )}*K$，会发现当 `K` 分别取 `0`、`1`、`2`、...、`gcd(a,m)-1` 时，所得到的解在模 `m` 意义下是不同的，而其他解都可以对应到 `K` 取这 `gcd(a,m)` 个数值之一。
++ 由此可以得到结论：
++ 设 `a`, `c`, `m` 是整数，其中 `m≥1`，则
+1. 若 `c%gcd(a,m)!=0`，则同余式方程 $ax\equiv c(mod \ m)$ 无解；
+2. 若 `c%gcd(a,m)==0`，则同余式方程 $ax\equiv c(mod \ m)$ 恰好有 `gcd(a,m)` 个模 m 意义下不同的解，且解的形式为：
+$$ x^{\prime}=x+\frac{m}{gcd(a,m)}*K$$
++ 其中 `K=0,1,...,gcd(a,m)-1`，`x` 是 `ax+my=c` 的一个解。
+
+例题：[同余式方程](https://sunnywhy.com/sfbj/5/7/226)
++ 代码：
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+using namespace std;
+
+//求解最大公约数函数(递归算法)
+int gcd(int a,int b)
+{
+    if(b==0)
+        return a;
+    else
+        return gcd(b,a%b);
+}
+
+//扩展欧几里得算法
+int exGcd(int a,int b,int &x,int &y)//x和y使用引用
+{
+	if(b==0)
+	{
+		x=1;
+		y=0;
+		return a;
+	}
+	int g = exGcd(b,a%b,x,y);//递归计算exGcd(b,a%b,x,y)
+	int temp = x;//存放x的值
+	x=y;//更新x=y(old)
+	y=temp-a/b*y;//更新y=x(old)-a/b*y(old)
+	return g;//g是gcd
+}
+
+//主函数
+int main()
+{
+    int a,c,m;
+    scanf("%d %d %d",&a,&c,&m);
+    if(c%gcd(a,m)==0)
+    {
+        int x,y,g;
+        g=exGcd(a,m,x,y);
+        int x_ans;
+        //分m/g的正负
+        if(m/g<0)
+            x_ans=((x*c/g)%(m/g)-m/g)%(m/g);
+        else
+            x_ans=((x*c/g)%(m/g)+m/g)%(m/g);
+        printf("%d\n",x_ans);
+    }
+    else
+        printf("No Solution\n");
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
++ 总结：这道题目需要注意 `m/g` 是否为负数，其余部分上述介绍的思路一致，属于简单题。
+#### 逆元求解以及 (b/a)%m 的计算
