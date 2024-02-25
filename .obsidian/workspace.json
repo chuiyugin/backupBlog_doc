@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "algorithm2.md",
+                "file": "5g_1.md",
                 "mode": "source",
                 "source": false
               }
@@ -106,7 +106,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "algorithm2.md",
+                "file": "5g_1.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -123,7 +123,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "algorithm2.md",
+                "file": "5g_1.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -151,7 +151,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "algorithm2.md"
+                "file": "5g_1.md"
               }
             }
           },
@@ -182,8 +182,12 @@
   },
   "active": "0d61daecb7e4cb13",
   "lastOpenFiles": [
-    "日记和待办/2023-11-14.md",
+    "translation_1.md",
+    "5g_1.md",
+    "algorithm.md",
+    "exercise1.md",
     "algorithm2.md",
+    "日记和待办/2023-11-14.md",
     "Autohotkey.md",
     "Assembly_language.md",
     "日记和待办/2023-11-16.md",
@@ -191,7 +195,6 @@
     "graph counts.md",
     "Fliplt.md",
     "exercise2.md",
-    "algorithm.md",
     "Myexe.md",
     "hello-world.md",
     "points.md",
@@ -200,7 +203,6 @@
     "Web.md",
     "2023-11-14.md",
     "日记和待办",
-    "exercise1.md",
     "Deep_laerning.md",
     "未命名.canvas"
   ]
