@@ -148,3 +148,57 @@ CPU 想要进行数据的读写，必须和外部器件进行三类信息的交�
 + 那么应该如何**区分**指令和数据呢？
 + 可以看到的是，CPU 将 `CS` 和 `IP` 寄存器指向的内存单元中的内容看作指令，因为在任何时候，`CS` 和 `IP` 寄存器中的内容分别代表指令的段地址和偏移地址，使用它们合成指令的物理地址，通过物理地址到内存中读取指令码并执行。
 + 那么，可以认为如果内存中的一段信息曾被 CPU 执行过的话，那么它所在的内存单元必然被 `CS` 和 `IP` 寄存器指向过。
+### 修改 CS、IP 的指令
++ 事实：执行何处的指令，取决于 `CS` 和 `IP` 寄存器。
++ 应用：可以通过改变 `CS` 和 `IP` 寄存器中的内容，来控制 CPU 要执行的目标指令。
+#### 转移指令 jmp
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240716163546.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240716163804.png)
+
+### 内存中字的存储
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240716164322.png)
+
+#### 字单元
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240716164406.png)
+
+### DS 和 [address]
+#### CPU 从内存单元中读取地址
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240716171244.png)
+
+#### 字的传送
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240716171509.png)
+
++ 例题：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240716171943.png)
+
++ 分析：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240716172010.png)
+
+#### 对内存单元数据的访问
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240716213144.png)
+
+### 三个常用指令总结
+#### mov 指令
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240716213223.png)
+
+#### 加法 add 和减法 sub 指令
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240716213436.png)
+
+#### 用 DS 和[address]形式访问内存中数据段方法小结
++ 字在内存中存储时，要用两个地址连续的内存单元来存放，字的低位字节存放在低地址单元中，高位字节存放再高地址单元中。
++ 用 `mov` 指令要访问内存单元，可以在 `mov` 指令中只给出单元的偏移地址，此时，段地址默认在 `DS` 寄存器中。
++ `[address]` 表示一个偏移地址为 `address` 的内存单元。
++ 在内存和寄存器之间传送字型数据时，**高地址单元**和高 8 位寄存器、 **低地址单元**和低 8 位寄存器相对应。
++ `mov`、`add`、`sub` 是具有两个操作对象的指令，访问内存中的数据段（对照：`jmp` 是具有一个操作对象的指令，对应内存中的代码段）。
++ 可以根据自己的推测，在 `Debug` 模式中实验指令的新格式。
