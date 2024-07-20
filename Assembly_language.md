@@ -293,3 +293,7 @@ end
 #### 程序中可能的错误
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240720111313.png)
+
+#### 源程序到可执行文件的过程
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240720230021.png)
