@@ -244,3 +244,52 @@ CPU 想要进行数据的读写，必须和外部器件进行三类信息的交�
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240716222610.png)
 
 ## 第三章 编写完整程序
+### 汇编语言编写程序的工作过程
++ 第一步：编写汇编源程序。
+	+ 采用文本编辑器（如 Edit、记事本等）
++ 第二步：对源程序进行编译产生目标文件（存储机器码），再用连接程序对目标文件进行连接，生成可在操作系统中直接运行的可执行文件。可执行文件包含以下两部分内容：
+	+ 程序（从源程序中的汇编指令翻译过来的机器码）和数据（源程序中定义的数据）
+	+ 相关的描述信息（比如，程序有多大、要占用多少内存空间等）
++ 第三步：执行可执行文件中的程序。
+	+ 操作系统依照可执行文件中的描述信息，将可执行文件的机器码和数据加载入内存，并进行相关的初始化（比如设置 `CS:IP` 指向第一条要执行的指令），然后由 CPU 执行程序。
+### 源程序
++ 汇编程序：包含**汇编指令**和**伪指令**的文本。
+	+ 汇编指令：有对应机器码的指令，可以被编译为机器指令，最终为 CPU 所执行。
+	+ 伪指令没有对应的机器指令，最终不被 CPU 所执行。伪指令是由编译器来执行的指令，编译器根据伪指令来进行相关的编译工作。
++ 汇编程序示例如下：
+```assembly
+assume cs:codesg 
+codesg segment 
+
+	mov ax,0123H 
+	mov bx,0456H 
+	add ax,bx 
+	add ax,ax 
+
+	mov ax,4c00h 
+	int 21h 
+	
+codesg ends 
+end
+```
+#### 伪指令
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240720110415.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240720110501.png)
+
+#### 源程序经编译连接后变为机器码
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240720110757.png)
+
+#### 汇编程序的结构
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240720111046.png)
+
+#### 如何写出一个汇编程序？
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240720111238.png)
+
+#### 程序中可能的错误
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240720111313.png)
