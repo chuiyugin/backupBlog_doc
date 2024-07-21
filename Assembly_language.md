@@ -297,3 +297,73 @@ end
 #### 源程序到可执行文件的过程
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240720230021.png)
+
+#### DOS 环境的挂载
+
+```
+mount c e:\masm
+*********************************************************
+c:
+```
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721101529.png)
+
+#### asm 文件的编译
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721112140.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721114331.png)
+
+#### 汇编目标文件的连接
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721114212.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721114353.png)
+
+#### 用 debug 跟踪程序执行
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721114916.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721114956.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721115152.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721115246.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721115613.png)
+
+### 实验
++ 将下面程序保存为 `t1.asm` 文件，将其生成可执行文件 `t1.exe` 文件。
+```assembly
+assume cs:codesg 
+codesg segment 
+
+	mov ax,2000H 
+	mov ss,ax
+	mov sp,0
+	add sp,10 ;开辟栈空间
+	pop ax
+	pop bx
+	push ax
+	push bx
+	pop ax
+	pop bx
+
+	mov ax,4c00h 
+	int 21h 
+	
+codesg ends 
+end
+```
+
++ 用 debug 跟踪 `t1.exe` 文件的执行过程，写出每一步执行后，相关寄存器中的内容和栈顶的内容。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721135936.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721140008.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721140034.png)
+
++ `PSP` 的头两个字节是 `CD 20`，用 debug 加载 `t1.exe` 文件，查看 `PSP` 的内容。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721140401.png)
