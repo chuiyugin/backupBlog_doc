@@ -367,3 +367,38 @@ end
 + `PSP` 的头两个字节是 `CD 20`，用 debug 加载 `t1.exe` 文件，查看 `PSP` 的内容。
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240721140401.png)
+
+## 第四章 [BX]和 Loop 指令
+### [...] 的规定与 (...) 的约定
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240723211951.png)
+
+### 再约定：idata 表示常量
++ 例如：
+	+ `mov ax,[idata]` ：代表 `mov ax,[1]` 、`mov ax,[2]` 、`mov ax,[3]` ...
+	+ `mov bx,idata` ：代表 `mov bx,1` 、`mov bx,2` 、`mov bx,3` ...
+	+ `mov ds,idata` ：代表 `mov ds,1` 、`mov ds,2` ... (但都是非法指令）
+
+### Loop 指令
+#### Loop 指令要点
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240723213103.png)
+
+#### Loop 指令编程实例
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240723213434.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240723214406.png)
+
+#### 运行示例程序
+##### Debug 执行程序
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240723215237.png)
+
++ 标号 `s` ，用于标识地址，在程序写入内存中会直接转换为地址。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240723215155.png)
+
+#### t 命令、p 命令和 g 命令的区别
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240723215518.png)
