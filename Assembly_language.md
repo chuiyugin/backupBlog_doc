@@ -402,3 +402,69 @@ end
 #### t 命令、p 命令和 g 命令的区别
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240723215518.png)
+
+### 段前缀
+#### 一个“异常”现象及对策
++ 现象：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726141501.png)
+
++ 对策：
+	+ 在 `[idata]` 前显式地写上段寄存器，例 `mov al,ds:[bx]`。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726141818.png)
+
++ 这些出现在访问内存单元的指令中，用于**显式**地指明内存单元的段地址的 `ds:` 、`cs:` 、 `ss:` 或 `es:` ”，在汇编语言中称为**段前缀**。
+
+#### 访问连续的内存单元 —— Loop 和 [bx] 联手
++ 问题：计算 `ffff:0~ffff:b` 字节单元中的数据的和，结果存储在 `dx` 中。
++ 分析：
+	+ 运算后的结果是否会超出 `dx` 所能存储的范围？
+		+ `ffff:0～ffff:b` 内存单元中的数据是字节型数据，范围在 `0～255` 之间，`12` 个这样的数据相加，结果不会大于 `65535`，可以在 `dx` 中存放下。
+	+ 是否可以将 `ffff:0～ffff:b` 中的数据直接累加到 `dx` 中？`add dx,ds:[addr]` ; `(dx)=(dx)+`?
+		+ 期望：取出内存中的 8 位数据进行相加；实际：取出的是内存中的 16 位数据。
+	+ 是否可以将 `ffff:0～ffff:b` 中的数据直接累加到 `dl` 中？`add dl,ds:[addr]` ;`(dl)=(dl)+`?
+		+ 期望：取出内存中的 8 位数据相加；实际：取出的是内存中的 8 位数据，但很有可能造成进位丢失。
++ 对策：取出 8 位数据，加到 16 位的寄存器
+
+```assembly
+mov al,ds:[addr] 
+mov ah,0 
+add dx,ax
+```
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726150728.png)
++ 代码：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726150828.png)
+
+#### 段前缀的使用
++ 问题：将内存 `ffff:0~ffff:b` 中的数据拷贝到 `0:200~0:20b` 单元中。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726151542.png)
++ 代码：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726151641.png)
++ 说明：
+	+ 使用 `es` 存放目标空间 `0:200~0:20b` 的段地址，用 `ds` 存放原始空间 `ffff:0~ffff:b` 的段地址。
+	+ 在访问内存单元的指令 `mov es:[bx],al` 中，显式地用附加段前缀 `es:` 给出单元的段地址，这样就不必在循环中重复设置 `ds`。
+
+#### 上述程序的问题
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726221031.png)
+
+##### 解决方案
++ 将数据直接写在代码段中：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726222057.png)
+
+##### 上述程序存在问题
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726222146.png)
+
+##### 改进方案
++ 定义一个标号 `start`，指示代码开始的位置。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726222311.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726222335.png)
