@@ -468,3 +468,29 @@ add dx,ax
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726222311.png)
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726222335.png)
+
+#### 实验四
++ 编程，向内存 `0:200~0:23F` 依次传送数据 `0~63(3FH)`，程序中只能使用 9 条指令，包括 `mov ax,4c00h` 和 `int 21h`。
+```assembly
+assume cs:codesg 
+codesg segment 
+
+    mov ax,0000h
+    mov es,ax
+
+    mov bx,0200h
+    mov cx,0040h
+    
+s:  mov es:[bx],bl
+    inc bx
+    loop s
+
+	mov ax,4c00h 
+	int 21h 
+	
+codesg ends 
+end
+```
+
++ 结果：
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240727222813.png)
