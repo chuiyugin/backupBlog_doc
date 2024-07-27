@@ -469,7 +469,7 @@ add dx,ax
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240726222335.png)
 
-#### 实验四
+### 实验
 + 编程，向内存 `0:200~0:23F` 依次传送数据 `0~63(3FH)`，程序中只能使用 9 条指令，包括 `mov ax,4c00h` 和 `int 21h`。
 ```assembly
 assume cs:codesg 
