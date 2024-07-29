@@ -494,3 +494,34 @@ end
 
 + 结果：
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240727222813.png)
+## 第五章 包含多个段的程序
+### 在代码段中使用栈
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240729172547.png)
+
+#### 数据逆序存放程序
+
+![image.png](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240729172622.png)
+
+#### 在 Debug 中的执行结果
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240729172729.png)
+
+### 将数据、代码、栈放入不同的段
+#### 评价上述方案
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240729173335.png)
+
++ 特点：数据、栈和代码都在一个段。
++ 问题：
+	+ 程序显得混乱，编程和阅读时都要注意何处是数据，何处是栈，何处是代码。
+	+ 只应用于要处理的数据很少，用到的栈空间也小，加上没有多长的代码。
++ 对策：数据、栈和代码放在不同段。
+
+#### 将数据、代码、栈放入不同的段
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240729185016.png)
+
+#### 在 Debug 中的执行结果
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240729211331.png)
