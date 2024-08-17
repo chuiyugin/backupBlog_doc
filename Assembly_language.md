@@ -525,3 +525,7 @@ end
 #### 在 Debug 中的执行结果
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240729211331.png)
+
+## 第六章 更灵活的定位内存地址的方法
+### 处理字符问题
+
