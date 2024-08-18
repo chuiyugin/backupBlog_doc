@@ -528,4 +528,41 @@ end
 
 ## 第六章 更灵活的定位内存地址的方法
 ### 处理字符问题
++ 在汇编程序中，用 `'……'` 的方式指明**数据是以字符的形式给出**的，编译器将把它们转化为相对应的 `ASCII` 码。
++ 代码：
 
+```assembly
+assume cs:code,ds:data
+
+data segment
+ db 'yuGin'
+ db 'Chui'
+data ends
+
+code segment 
+start: mov al,'a'
+	   mov bl,'b'
+
+	   mov ax,4c00h 
+	   int 21h 
+code ends 
+end start
+```
++ 编译为可执行文件，并用 `Debug` 加载查看 `data` 段中的内容：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240818123246.png)
++ 说明：
+	+ 先用 `r` 命令分析一下 `data` 段的地址，因为 `DS=075A`，需要加上一个 `256` 字节称为**程序段前缀（PSP）的数据区**，从 `256` 字节处向后的空间存放的是程序。
+	+ 用 `d` 命令查看 `data` 段，`Debug` 以十六进制数码和 `ASCII` 码字符形式展示其中的内容。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240818124008.png)
+
+### 大小写转换问题
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240818125437.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240818125503.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240818125533.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240818125601.png)
