@@ -566,3 +566,20 @@ end start
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240818125533.png)
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240818125601.png)
+
+### [bx+idata] 方式寻址
+#### [bx+idata] 的含义
++ `[bx+idata]` 是表示一个内存单元，它的偏移地址为 `(bx)+idata`（`bx` 中的数值加上 `idata`）。
++ `mov ax,[bx+200]` / `mov ax, [200+bx]` 的含义：
+	+ 将一个内存单元的内容送入 `ax`，
+	+ 这个内存单元的长度为 `2` 字节（字单元），存放一个字，
+	+ 内存单元的段地址在 `ds` 中，偏移地址为 `200` 加上 `bx` 中的数值，
+	+ 数学化的描述为： `(ax)=((ds)*16+200+(bx))`；
++ 指令 `mov ax,[bx+200]` 的其他写法（常用）：
+	+ `mov ax,[200+bx]`，
+	+ `mov ax,200[bx]`，
+	+ `mov ax,[bx].200`；
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819171406.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819172155.png)
