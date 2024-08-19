@@ -583,3 +583,49 @@ end start
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819171406.png)
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819172155.png)
+
+### SI 寄存器和 DI 寄存器
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819211915.png)
+
+#### SI 寄存器和 DI 寄存器常执行与地址有关的操作
++ `SI` 寄存器和 `DI` 寄存器是 8086 CPU 中和 `BX` 功能相近的寄存器
+	+ 区别：`SI` 寄存器和 `DI` 寄存器不能够分成两个 8 位寄存器来使用。
+	+ `BX` 寄存器：通用寄存器，在计算存储器地址时，常作为基址寄存器来使用，
+	+ `SI` 寄存器：`source index`，源变址寄存器，
+	+ `DI` 寄存器：`destination index`，目标变址寄存器；
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819212350.png)
+#### 应用
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819212724.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819212805.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819212824.png)
+
+### [bx+si] 和[bx+di] 方式寻址
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819215001.png)
+
+### [bx+si+idata] 和[bx+di+idata] 方式指定地址
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819215138.png)
+
+### 不同的寻址方式的灵活应用
+#### 对内存的寻址方式
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819215606.png)
+
+#### 案例 1
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819220030.png)
+
+#### 案例 2
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819220355.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819220433.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20240819220617.png)
+
