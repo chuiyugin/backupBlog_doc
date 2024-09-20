@@ -228,3 +228,71 @@ int main()
     return 0;
 }
 ```
+
+例题：[合法的出栈序列](https://sunnywhy.com/sfbj/7/1/294)
++ 解释：
+	+ **判断出栈序列合法性的规则**‌是：对于出栈序列中的每个数字，它后面的比它小的数字必须是按递减顺序排列的。例如，如果入栈顺序为 `1, 2, 3, 4`，那么合法的出栈序列可以是 `1, 2, 3, 4` 或者 `1, 3, 2, 4` 等，但不包括 `1, 4, 2, 3` 等，因为 `4` 后面的 `2` 和 `3` 不是按递减顺序排列的。
+	+ **总结合法的出栈序列的特点**‌：合法的出栈序列要求每个数字后面的比它小的数字必须是按递减顺序排列的。这是判断出栈序列是否合法的基本规则。
+
++  代码：
+
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <stack>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <climits>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+#include <queue>
+using namespace std;
+
+//主函数
+int main()
+{
+    int n,num,pointer=0;
+    int array[105];
+    bool flag = true;
+    scanf("%d",&n);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&array[i]);
+    }
+    for(int j=0;j<n;j++)
+    {
+        if(pointer<array[j])
+        {
+            pointer=array[j];
+        }
+        else
+        {
+            num=array[j];
+            for(int k=j+1;k<n;k++)
+            {
+                if(array[k-1]<array[k]&&pointer>array[k])
+                {
+                    flag=false;
+                    break;
+                }
+                else if(pointer<array[k])
+                {
+                    j=k-1;
+                    break;
+                }
+            }
+        }
+    }
+    if(flag==true)
+        printf("Yes");
+    else
+        printf("No");
+    //system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}```
