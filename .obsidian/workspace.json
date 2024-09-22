@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "c828256f098e28bd",
+        "id": "9665a61e968379da",
         "type": "tabs",
         "children": [
           {
-            "id": "76e256e8100535da",
+            "id": "e30a22ec0f4ef7bb",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -69,8 +69,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "0edc808bdabaac2f",
@@ -180,10 +179,11 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "76e256e8100535da",
+  "active": "e30a22ec0f4ef7bb",
   "lastOpenFiles": [
     "algorithm2.md",
     "algorithm3.md",
+    "Untitled.canvas",
     "algorithm.md",
     "Assembly_language.md",
     "5g_1.md",
