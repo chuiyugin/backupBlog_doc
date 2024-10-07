@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "algorithm3.md",
+                "file": "computer_networks.md",
                 "mode": "source",
                 "source": false
               }
@@ -69,7 +69,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "0edc808bdabaac2f",
@@ -105,7 +106,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "algorithm3.md",
+                "file": "computer_networks.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -122,7 +123,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "algorithm3.md",
+                "file": "computer_networks.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,7 +151,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "algorithm3.md"
+                "file": "computer_networks.md"
               }
             }
           },
@@ -181,12 +182,14 @@
   },
   "active": "e30a22ec0f4ef7bb",
   "lastOpenFiles": [
-    "algorithm2.md",
+    "5g_1.md",
+    "computer_networks.md",
+    "5g_1 - 副本.md",
     "algorithm3.md",
+    "algorithm2.md",
     "Untitled.canvas",
     "algorithm.md",
     "Assembly_language.md",
-    "5g_1.md",
     "translation_1.md",
     "Deep_laerning.md",
     "Autohotkey.md",
