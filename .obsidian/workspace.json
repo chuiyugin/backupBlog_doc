@@ -69,7 +69,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "19447e33819738b3",
@@ -165,8 +166,9 @@
   },
   "active": "84216eb5005b2274",
   "lastOpenFiles": [
-    "computer_networks.md",
+    "Fliplt.md",
     "houjie_cpp.md",
+    "computer_networks.md",
     "algorithm3.md",
     "exercise1.md",
     "Josephus.md",
