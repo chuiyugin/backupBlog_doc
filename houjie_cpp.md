@@ -1,7 +1,7 @@
 ---
 title: 侯捷C++学习笔记
-tags: 
-categories: 
+tags: [C++语言]
+categories: [C++语言]
 date: 2024-10-27 22:20:00
 excerpt: C++、编程语言
 ---
