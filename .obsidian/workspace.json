@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "algorithm2.md",
+                "file": "houjie_cpp.md",
                 "mode": "source",
                 "source": false
               }
@@ -69,7 +69,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "19447e33819738b3",
@@ -93,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "algorithm2.md",
+                "file": "houjie_cpp.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -110,7 +111,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "algorithm2.md",
+                "file": "houjie_cpp.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -133,7 +134,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "algorithm2.md"
+                "file": "houjie_cpp.md"
               }
             }
           },
@@ -165,12 +166,12 @@
   },
   "active": "84216eb5005b2274",
   "lastOpenFiles": [
-    "houjie_cpp.md",
     "algorithm3.md",
+    "algorithm2.md",
+    "houjie_cpp.md",
     "Fliplt.md",
     "computer_networks.md",
     "exercise1.md",
-    "Josephus.md",
-    "algorithm2.md"
+    "Josephus.md"
   ]
 }

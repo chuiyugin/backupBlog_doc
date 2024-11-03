@@ -276,3 +276,56 @@ private:
 }
 ```
 + 解释如下：在创建了相同 `class` 的两个 `objects` （是 `c1` 和 `c2`）是互为友元的。
+
+## 操作符重载与临时对象
+### 操作符重载之一：成员函数（this）
++ 在 `class` 中实现操作符的重载：
+```cpp
+inline complex&
+__doapl(complex* ths, const complex& r)
+{
+	ths->re += r.re;
+	ths->im += r.im;
+	return *ths;
+}
+inline complex&
+complex::operator += (const complex& r)
+{
+	return __doapl (this, r);
+}
+```
++ 需要注意，`this` 是隐藏参数，不需要写在函数参数传递的过程中：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411031557563.png)
+
+#### return by reference 语法分析
++ 传递者无需知道接收者是以引用的形式接收
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411031618944.png)
+
+### 操作符重载之二：非成员函数（无 this）
++ 为了应付用户的三种用法，对应开发三种函数；
++ 与**成员函数**方式的区别在于**非成员函数**采用的是全局函数（`global`）：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411031718666.png)
+
++ 可以看出，上面的函数绝对不可以采用**返回引用**的形式，因为它们返回的必定是个本地对象（`local object`）。
++ 同时，`typename()` 创建的是**临时对象**，小括号中没有参数就是默认值。例如 `int(5)` 等，表明其是临时的，生命周期很短，在下一行便结束。在上述的例子中也有体现：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411031738262.png)
+
++ `“+”`表示正，`“-”`表示负的情况：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411031742123.png)
+
++ 判断两个复数是否相等（两种情况`==`和`!=`）：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411031746875.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411031746434.png)
+
++ 输出运算符 `“<<”` 也称为流插入运算符，是一个二目运算符，该操作符的重载具有特殊用法：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411031802200.png)
+
+
