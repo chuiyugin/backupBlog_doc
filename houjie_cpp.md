@@ -328,4 +328,111 @@ complex::operator += (const complex& r)
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411031802200.png)
 
+## 带指针的class用法
++ 前面的是**不带指针**的 `class` 的用法介绍，后续介绍**带指针**的 `class` 的用法。
+### 以 string class 为例
+#### 三个特殊函数（Big Three）
+```cpp
+class String
+{
+public:
+	String(const char* cstr = 0);//构造函数
+	String(const String& str);//拷贝构造函数
+	String& operator=(const String& str);//操作符重载（拷贝赋值函数）
+	~String();//析构函数（该类的对象死亡时调用）
+	char* get_c_str() const { return m_data; }//一般的成员函数（属于内联函数，已经写在类里面）
+private:
+	char* m_data;//创建数组指针
+};
+```
 
+#### 构造函数和析构函数
++ 带有指针的构造函数
+```cpp
+inline
+String::String(const char* cstr = 0) {
+	if (cstr) {
+		m_data = new char[strlen(cstr)+1];//动态分配内存
+		strcpy(m_data, cstr);
+	}
+	else { // 未指定初值
+		m_data = new char[1]; *m_data = '\0';
+	}
+}
+```
+
++ 析构函数（释放掉不用的动态内存）
+```cpp
+inline
+String::~String() {
+	delete[] m_data;
+}
+```
+
++ 创建对象和使用
++ 大括号 `“{}”` 内表示其作用域，离开作用域后**析构函数**自然被调用
+```cpp
+{
+	String s1(),
+	String s2("hello");
+	
+	String* p = new String("hello");//动态创建对象
+	delete p;
+}
+```
+
++ 总结
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411142139333.png)
+
+#### class 内带有指针成员
++ `class` 内带有指针成员必须使用拷贝构造函数和拷贝赋值函数，不然会出现以下问题：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411142156017.png)
+
+##### 拷贝构造函数
++ 拷贝构造函数代码
+```cpp
+inline
+String::String(const String& str)
+{
+	m_data = new char[ strlen(str.m_data) + 1 ];
+	strcpy(m_data, str.m_data);
+}
+```
+
++ 拷贝构造函数的调用
+```cpp
+{
+	String s1("hello ");
+	String s2(s1);
+}
+```
+
++ 特别之处：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411142228928.png)
+
+##### 拷贝赋值函数
++ 拷贝赋值函数代码
+```cpp
+inline
+String& String::operator=(const String& str)
+{
+	if (this == &str)//检测自我赋值
+		return *this;
+		
+	delete[] m_data;
+	m_data = new char[ strlen(str.m_data) + 1 ];
+	strcpy(m_data, str.m_data);
+	return *this;
+}
+```
+
++ 一定要在拷贝赋值函数中加入**检测自我赋值**：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411142248922.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411142249036.png)
+
++ 检测自我赋值不止为了效率还有安全性。
