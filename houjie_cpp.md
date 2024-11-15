@@ -353,7 +353,7 @@ private:
 inline
 String::String(const char* cstr = 0) {
 	if (cstr) {
-		m_data = new char[strlen(cstr)+1];//动态分配内存
+		m_data = new char[strlen(cstr)+1];//动态分配内存，称为array new
 		strcpy(m_data, cstr);
 	}
 	else { // 未指定初值
@@ -366,8 +366,7 @@ String::String(const char* cstr = 0) {
 ```cpp
 inline
 String::~String() {
-	delete[] m_data;//前面new带有[]则delete时候也要带有[]
-}
+	delete[] m_data;//前面new带有[]则delete时候也要带有[],称为array delete
 ```
 
 + 创建对象和使用
@@ -491,12 +490,15 @@ ostream& operator << (ostream& os, const String& str)
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411151517633.png)
 
 
-+ delete：先调用析构函数，再释放 `memory`
++ `delete`：先调用析构函数，再释放 `memory`
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411151515975.png)
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411151517543.png)
 
+##### array new 一定要搭配 array delete
+
+![image.png](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411152240380.png)
 
 
 
