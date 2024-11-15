@@ -325,6 +325,7 @@ complex::operator += (const complex& r)
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411031746434.png)
 
 + 输出运算符 `“<<”` 也称为流插入运算符，是一个二目运算符，该操作符的重载具有特殊用法：
++ 该操作符重载的过程是将重载函数**右边的参数**作用到**左边的参数**中：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411031802200.png)
 
@@ -365,7 +366,7 @@ String::String(const char* cstr = 0) {
 ```cpp
 inline
 String::~String() {
-	delete[] m_data;
+	delete[] m_data;//前面new带有[]则delete时候也要带有[]
 }
 ```
 
@@ -436,3 +437,67 @@ String& String::operator=(const String& str)
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411142249036.png)
 
 + 检测自我赋值不止为了效率还有安全性。
+
+##### output 函数
++ `output` 函数，其中操作符 `<<` 的重载是将其重载函数的右边参数作用到左边参数，必须写成非成员函数（即全局函数）：
+```cpp
+#include <iostream.h>
+ostream& operator << (ostream& os, const String& str)
+{
+	os << str.get_c_str();//传递字符串指针（该函数写在String类的内联函数中）
+	return os;
+}
+```
+
++ `output` 函数的调用：
+```cpp
+{
+	String s1("hello ");
+	cout << s1;
+}
+```
+
+#### 栈（stack）和堆（heap）
++ 栈（`stack`）是存在于是某作用域（`scope`）的一块內存空间（`memory space`）。例如在调用函数时，函数本身即会形成一个 `stack` 用来存放它所接收的参数，以及返回地址。在函数本体 (`function body`) 内声明的任何变量，其所使用的內存块都取自上述 `stack`。
++ 堆（`heap`），或 `system heap`，是指由操作系统提供的一块 `global` 內存空间，程序可动态分配 (`dynamic allocated`) 从某内存中获得若干区块 (`blocks`)。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411151446636.png)
+
++ `c1` 便是所谓的 `stack object`，其生命在作用域 (`scope`) 结束之际结束。这种作用域內的 `object`，又称为 `auto object`，因为它会被**析构函数**自动清理。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411151450878.png)
+
++ `c2` 便是所谓的 `static object`，其生命在作用域 (`scope`) 结束之后仍然存在，直到整个程序结束。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411151453950.png)
+
++ `c3` 便是所谓的 `global object`，其生命在整个程序结束之后才结束。也可以把它视为一种 `static object`，其作用域是**整个程序**。
+
+##### heap objects 的生命周期
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411151500963.png)
+
++ `P` 所指的便是 `heap object`，其生命在它被 `delete` 之际结束。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411151501010.png)
+
++ 以上出现内存泄漏 ( `memory leak` )，因为当作用域结束，`p` 所指的 `heap object` 仍然存在，但指针 `p` 的生命却结束了，作用域之外再也看不到 `p` (也就没机会 `delete p`）。
+
+##### new 和 delete 的具体机制
++ `new`：先分配 `memory`, 再调用构造函数
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411151509422.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411151517633.png)
+
+
++ delete：先调用析构函数，再释放 `memory`
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411151515975.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411151517543.png)
+
+
+
+
+
