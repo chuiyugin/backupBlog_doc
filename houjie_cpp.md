@@ -1,11 +1,13 @@
 ---
-title: 侯捷C++学习笔记
-tags: [C++语言]
-categories: [C++语言]
+title: 侯捷 C++学习笔记之面向对象高级编程（一）
+tags:
+  - 面向对象
+categories:
+  - C++语言
 date: 2024-10-27 22:20:00
-excerpt: C++、编程语言
+excerpt: C++、编程语言、面向对象高级编程
 ---
-# 侯捷 C++学习笔记
+# 侯捷 C++学习笔记之面向对象高级编程（一）
 ## 头文件与类的声明
 ### class template 类（模板）简介
 + 例如我们定义下面的一个类，我们可以不把一个类里面定义的变量类型（如：`double`）直接就写死，而是可以定义一个模板 `template`，具体如下面的例子：
@@ -505,6 +507,61 @@ ostream& operator << (ostream& os, const String& str)
 
 ![image.png](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411152240380.png)
 
+## 细节扩展补充
+### 静态（static）
++ 非静态的成员函数有 `this` 指针，能够通过 `this` 指针来区分不同的对象。
++ 而静态的成员函数没有 `this` 指针，只能处理静态数据。
++ 类中的成员函数，若未使用类中的成员变量，则可声明为静态成员函数，函数声明前加上 `static` 关键字。
++ 静态成员函数不属于对象，属于类。静态成员函数不包含编译器提供的 `this` 指针。 在类没有实例化对象前就存在，由于没有 `this` 指针，所以也就没有特定的成员变量可以使用。
++ 静态成员函数与成员函数用法上的主要不同为：
+	+ 静态成员函数可以独立访问，调用静态成员函数时，不需要实例化任何对象。只需要使用**类名 + 命名空间标识符** (`::`) 加函数名即可调用。
 
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411162145790.png)
+
++ 静态（`static`）函数的调用方法：
+	+ 通过 `class` 名调用；
+	+ 通过对象调用。
+```cpp
+class Account {
+public:
+	static double m_rate;//声明静态变量
+	static void set_rate(const double& x) { m_rate = x; }
+};
+double Account::m_rate = 8.0;//定义静态变量，为其分配内存空间，初值可赋可不赋
+
+int main() {
+	Account::set_rate(5.0);//通过class名调用
+	
+	Account a;
+	a.set_rate(7.0);//通过对象调用
+}
+```
+
+### 把构造函数放在 private 区
++ 只有调用 `A::getInstance();` 这个函数对象 `a` 才会被创建出来，并通过类似 `A::getInstance().setup();` 函数的对外接口在外部被调用。
++ 这种方式也成为单例模式：单例模式是一种设计模式，其核心思想是确保一个类只有一个实例，并提供一个全局访问点来获取这个实例。
+
+![image.png](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411162236741.png)
+
+### cout 函数
++ cout 是 ostream 类的一个对象：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411162244217.png)
+
+### 类模板（class template）
++ 类模板的作用：建立一个通用类，类中的成员数据类型可以不具体指定，用一个虚拟的类型来代表。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411162253922.png)
+
+### 函数模板（function template）
++ 函数模板的作用：建立一个通用函数，其函数返回值类型和形参类型可以不具体制定，不用为每一个类型定义新的函数。
++ 下面例子中的 `<` 需要在 `stone` 类中进行操作符函数的重载，这样编译器才能知道如何对 `stone` 类进行比大小。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411162259978.png)
+
+### 命名空间（namespace）
++ 命名空间（`namespace`）是一种将标识符组织在一起的方式，用于防止名字冲突。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411162304335.png)
 
 
