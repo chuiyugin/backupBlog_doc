@@ -541,7 +541,7 @@ int main() {
 + 只有调用 `A::getInstance();` 这个函数对象 `a` 才会被创建出来，并通过类似 `A::getInstance().setup();` 函数的对外接口在外部被调用。
 + 这种方式也成为单例模式：单例模式是一种设计模式，其核心思想是确保一个类只有一个实例，并提供一个全局访问点来获取这个实例。
 
-![image.png](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411162236741.png)
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411162236741.png)
 
 ### cout 函数
 + cout 是 ostream 类的一个对象：
