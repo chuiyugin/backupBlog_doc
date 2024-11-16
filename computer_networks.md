@@ -17,8 +17,6 @@ excerpt: 通信网络系统基础学习!
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202410061500391.png)
 
-<<<<<<< HEAD
-=======
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/QQ_1728357209608.png)
 
 #### 协议实体

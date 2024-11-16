@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "measurement.md",
+                "file": "computer_networks.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "measurement"
+              "title": "computer_networks"
             }
           }
         ]
@@ -186,6 +186,7 @@
   },
   "active": "84216eb5005b2274",
   "lastOpenFiles": [
+    "measurement.md",
     "Myexe.md",
     "houjie_cpp.md",
     "algorithm3.md",
