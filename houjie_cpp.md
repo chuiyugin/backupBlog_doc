@@ -425,18 +425,23 @@ String& String::operator=(const String& str)
 	delete[] m_data;
 	m_data = new char[ strlen(str.m_data) + 1 ];
 	strcpy(m_data, str.m_data);
-	return *this;
+	return *this;//保证可以连等，如 s1=s2=s3;
 }
 ```
 
-+ 一定要在拷贝赋值函数中加入**检测自我赋值**：
++ 一定要在拷贝赋值函数中加入**检测自我赋值**，检测自我赋值不止为了效率还有安全性：
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411142248922.png)
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411142249036.png)
 
-+ 检测自我赋值不止为了效率还有安全性。
-
++ 拷贝赋值函数的调用
+```cpp
+{
+	String s1("hello ");
+	String s2 = s1;
+}
+```
 ##### output 函数
 + `output` 函数，其中操作符 `<<` 的重载是将其重载函数的右边参数作用到左边参数，必须写成非成员函数（即全局函数）：
 ```cpp
