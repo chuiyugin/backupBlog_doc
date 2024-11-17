@@ -79,3 +79,16 @@ excerpt: 计量方法与误差理论知识汇总！
 + 四种计算方法的优缺点：
 
 ![四种计算方法的优缺点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411171840477.png)
+
+##### 多次测量结果的精度指标
++ 多次测量的算术平均值的标准差：
+
+![多次测量的算术平均值的标准差](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411172118051.png)
+
++ 算术平均值的精度指标（常用的有 4 个）：
+
+![算术平均值的精度指标](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411172120867.png)
+
++ 总结：
+
+![总结](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411172121469.png)
