@@ -564,4 +564,28 @@ int main() {
 
 ![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411162304335.png)
 
+## 组合与继承
+### 组合（composition）
++ 组合（`composition`）指的是一个对象**拥有**并可以控制另一个对象的生命周期。在 `class` 中的例子如下：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411181144192.png)
+
++ 利用设计模式中的**适配器模式**书写，表示 `queue` 类拥有 `deque` 类，且 `deque` 类的功能比 `queue` 类更加齐全，只需要把 `deque` 类稍加改造便可实现 `queue` 类的功能，例子如下：
+
+![适配器模式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411181148548.png)
+#### 组合的内存占用计算
++ 组合的内存占用需要把其拥有和部分的内存全部加上来进行计算。
+
+![内存占用计算](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411181150532.png)
+
+#### 组合关系下的构造函数和析构函数
++ 组合关系下构造为"由内而外"，析构为"由外而内"。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411181152957.png)
+
+
+
+
+
+
 
