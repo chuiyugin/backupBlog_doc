@@ -92,3 +92,46 @@ excerpt: 计量方法与误差理论知识汇总！
 + 总结：
 
 ![总结](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411172121469.png)
+#### 非等精度测量
+##### 权的概念
++ “权”可以理解为各组测量结果相对的可信赖程度，测量结果越可靠，其“权”越大，即可靠性越大的测量结果在最后结果中所占的比重越大。
+
+##### 方差已知
++ 权与方差成反比！权表示相对可靠程度，是一个无量纲的数，允许给各组的权数同时增大或者减小若干倍，而比例关系不变。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411202221945.png)
+##### 多次重复测量的权
++ 以多组重复测量为例，测量次数决定权值，即
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411202223699.png)
+
+##### 加权平均表达式
++ 知道权值便可以求加权平均表达式：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411202224912.png)
+
+##### 加权平均的精度参数
++ 误差合成原理：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411202226913.png)
++ 总结：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411202227886.png)
+
+##### 例题
++ 已知方差：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411202228761.png)
+
++ 方差未知，知道测量次数：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411202229204.png)
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411202230441.png)
+
+
+
+
+
+
+
