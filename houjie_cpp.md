@@ -602,4 +602,96 @@ int main() {
 
 ![继承关系下的构造和析构](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411181623036.png)
 
+#### 继承下的虚函数（virtual functions）
++ 类中的函数有以下三种分类：
+	+ 非虚函数（`non-virtual`）: 你不希望派生类（`derived class`）重新定义（`override`，覆写）它；
+	+ 虚函数（`virtual`）：你希望派生类（`derived class`）重新定义（`override`，覆写）它，而且你对它已经有默认定义。语法是在函数名和函数类声明前面加上 `virtual` 字样；
+	+ 纯虚函数（`pure virtual`）：你希望派生类（`derived class`）一定要重新定义（`override`，覆写）它，而且你对它没有有默认定义。语法除了在函数类声明前面加上 `virtual` 字样，还要在函数类声明的最后加上 `=0`。
++ 代码示例：
+```cpp
+class Shape {
+public:
+	virtual void draw( ) const = 0;//纯虚函数
+	virtual void error(const std::string& msg);//虚函数
+	int objectID( ) const;//非虚函数
+	...
+};
+
+class Rectangle: public Shape { ... };
+class Ellipse: public Shape { ... };
+```
+
++ 虚函数的执行步骤，属于设计模式中的模板方法（`Template Method`）：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411211140693.png)
+
++ 具体实现代码示例：
+```cpp
+#include <iostream>
+using namespace std;
+
+//这是前期就写好的类
+class CDocument
+{
+public:
+	void OnFileOpen()
+	{
+		//每个cout输出代表一个实际动作
+		cout << "dialog..." << endl;
+		cout << "check file status..." << endl;
+		cout << "open file..." << endl;
+		Serialize();
+		cout << "close file..." << endl;
+		cout << "update all views..." << endl;
+	}
+	virtual void Serialize() { };
+};
+
+//后期根据要求对虚函数进行覆写
+class CMyDoc : public CDocument
+{
+public:
+	virtual void Serialize()
+	{
+		//对虚函数进行覆写
+		cout << "CMyDoc::Serialize()" << endl;
+	}
+};
+
+int main()
+{
+	CMyDoc myDoc; //假设对应[File/Open]
+	myDoc.OnFileOpen();
+}
+```
+
+#### 继承和组合关系下的构造和析构
++ 构造由内而外，析构由外而内。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411251510497.png)
+
+#### 委托加继承的设计模式
++ 观察者模式 (`observer pattern`)：定义对象之间的一对多依赖关系, 这样当一个对象改变状态时, 它的所有依赖项都会自动得到通知和更新。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411251525156.png)
+
++ 组合模式（`Composite`）属于结构型模式（`Structural Pattern`）的一种。
++ 结构型模式（`Structural Pattern`）描述如何将类或者对象结合在一起形成更大的结构，就像搭积木，可以通过简单积木的组合形成复杂的、功能更为强大的结构。
++ 结构型模式可以分为类结构型模式和对象结构型模式：
+	+ 类结构型模式关心类的组合，由多个类可以组合成一个更大的系统，在类结构型模式中一般只存在继承关系和实现关系。
+	+ 对象结构型模式关心类与对象的组合，通过关联关系使得在一个类中定义另一个类的实例对象，然后通过该对象调用其方法。根据“合成复用原则”，在系统中尽量使用关联关系来替代继承关系，因此大部分结构型模式都是对象结构型模式。
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411251533204.png)
+
++ 原型（`Prototype`）模式是一种创建型设计模式，用于通过复制（克隆）现有的对象来创建新对象，而不是通过直接实例化对象。该模式尤其适合在创建对象的成本较高或对象结构较复杂时使用。在原型模式中，每个对象都会有一个“原型”，通过克隆原型来创建新的对象，而不是通过类的构造函数。这样可以减少对构造函数的依赖，并且可以动态地生成新对象。
+
+![原型模式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411251611721.png)
+
+![原型模式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411251612407.png)
+
+![原型模式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411251613443.png)
+
+![原型模式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202411251613200.png)
+
+
 
