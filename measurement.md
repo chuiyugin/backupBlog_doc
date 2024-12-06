@@ -163,11 +163,14 @@ excerpt: 计量方法与误差理论知识汇总！
 + 对怀疑是粗大误差而又不明原因的数据，应按照统计学方法进行判别。
 ###### 处理方法
 + 莱特准则：
+
 ![莱特准则](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241206171212.png)
 ##### 例题
 + 题目：
+
 ![题目](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241206171528.png)
 + 解答：
+
 ![解答-1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241206171554.png)
 
 ![解答-2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241206171630.png)
