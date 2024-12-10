@@ -175,6 +175,38 @@ excerpt: 计量方法与误差理论知识汇总！
 
 ![解答-2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241206171630.png)
 
+### 误差的合成与分配
+#### 误差的合成（传递）
++ 函数的系统误差公式：
+
+![函数的系统误差公式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241210103424.png)
+
++ 函数标准差的合成公式（一般对下述式子开根号应用）：
+
+![函数标准差的合成公式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241210103804.png)
+
++ 若各测量值之间相互独立，可以简化为如下形式：
+
+![各测量值之间相互独立](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241210104016.png)
+
++ 极限误差的合成公式：
+
+![极限误差的合成公式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241210104449.png)
+
+#### 误差的分配
++ 按等作用原则分配误差：
++ 标准差分配（偏导取绝对值）：
+
+![标准差分配](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241210104653.png)
+
++ 极限误差分配（偏导取绝对值）：
+
+![极限误差分配](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241210104733.png)
+
+
+
+
+
 
 
 
