@@ -202,6 +202,54 @@ excerpt: 计量方法与误差理论知识汇总！
 + 极限误差分配（偏导取绝对值）：
 
 ![极限误差分配](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241210104733.png)
+### 不确定度理论
+#### A 类标准不确定度和自由度
++ A 类评定是用统计分析法评定，其标准不确定度 $u$ 等同于由系列观测值获得的标准差；
++ 单次测量值，则其不确定度为：
+
+![单次测量值的不确定度](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241211104747.png)
+
++ $n$ 次测量值，则其不确定度为：
+
+![n次测量值的不确定度](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241211104857.png)
+
++ A 类自由度：
+
+![A 类自由度](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241211105804.png)
+
+#### B 类标准不确定度和自由度
++ B 类评定不用统计分析法，而是基于其他方法估计概率分布或分布假设来评定标准差并得到标准不确定度（一般含有经验、资料、说明书等字眼）；
++ B 类标准不确定度主要分为下列几种情况：
+
+![B 类标准不确定度的主要几种情况](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241211110849.png)
+
++ B 类自由度：
+
+![B 类自由度](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241211111017.png)
+
+#### 测量不确定度的合成
++ 合成标准不确定度公式：
+
+![合成标准不确定度公式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241211111212.png)
+
++ 如果相互独立，则上述式子可以简化为：
+
+![相互独立的合成不确定度公式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241211111318.png)
+
++ 展伸不确定度：
+
+![展伸不确定度](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241211111501.png)
+
++ 合成不确定度的自由度：
+
+![合成不确定度的自由度](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241211111633.png)
+
+
+
+
+
+
+
 
 
 
