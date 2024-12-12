@@ -244,7 +244,14 @@ excerpt: 计量方法与误差理论知识汇总！
 
 ![合成不确定度的自由度](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241211111633.png)
 
+#### 最小二乘法
++ 最小二乘法理论结合例题：
 
+![最小二乘法例题](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241212104843.png)
+
++ 解答：
+
+![最小二乘法解答](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241212104919.png)
 
 
 
