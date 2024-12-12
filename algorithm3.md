@@ -394,3 +394,103 @@ int main()
 }
 ```
 
+### 队列的应用
++ 队列是一种先进先出的数据结构。
+
+![image.png](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202410282000775.png)
+
++ 一般而言，需要一个队首指针 `front` 来指向队首元素的前一个位置，而使用一个队尾指针 `rear` 来指向队尾元素。
+	+ 当使用链表来实现队列时，则为 `int*` 型变量的指针。
+	+ 当使用数组来实现队列时，队首指针 `front` 和队尾指针 `rear` 为 `int` 型变量（数组下标从 `0` 开始），其示例如下图所示：
+
+![](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202410282028147.png)
+
++ 接下来将使用数组 `q[]` 来实现队列并介绍队列的常用操作：
+#### 清空（clear）
++ 使用数组来实现队列时，初始状态为 `front=-1`、`rear=-1`，上图中第一步 `rear` 指向 `0` 是因为此时队列已经有一个元素了，如果没有元素，`rear` 应当是指向 `-1` 的位置。
+
+```cpp
+void clear()
+{
+	front = rear = -1;
+}
+```
+
+####  获取队列内的元素个数（size）
++ 显然 `rear-front` 即为队列内的元素个数。
+
+```cpp
+int size()
+{
+	return rear - front;
+}
+```
+
+#### 判空（empty）
++ 判定队列为空的条件为 `front==rear`.
+
+```cpp
+bool empty()
+{
+	if(front == rear)
+		return true;
+	else
+		return false;
+}
+```
+
+#### 入队（push）
++ 由于队尾指针 `rear` 指向队尾元素，因此把元素入队时，需要先 `++rear`，然后再将数据存放到 `rear` 指向的位置。
+
+```cpp
+void push(int x)
+{
+	q[++rear] = x;
+}
+```
+
+#### 出队（pop）
++ 可以直接把队首指针 `front++` 来实现出队的效果。
+
+```cpp
+void pop()
+{
+	front++;
+}
+```
+
+#### 取队首元素（get_front）
++ 由于队首指针 `front` 指向的是队首元素的前一个元素，因此 `front+1` 才是队首元素的位置。
+
+```cpp
+int get_front()
+{
+	return q[front+1];
+}
+```
+
+#### 取队尾元素（get_rear）
++ 由于队尾指针 `rear` 指向的是队尾元素，因此可以直接访问 `rear` 的位置。
+
+```cpp
+int get_rear()
+{
+	return q[rear];
+}
+```
+
+#### 总结
++ 与栈类似，`pop ()` 函数、`get_front()` 函数、`get_rear()` 函数之前必须先使用 `empty ()` 函数判断队列是否为空。
++ 同样的，可以使用 `C++ STL` 中的 `queue` 容器来非常容易地使用队列。
++ 另外，由于 `STL` 中没有实现队列的清空，因此需要使用一个 `while` 循环反复 `pop` 出元素直至队列为空。
+
+```cpp
+while(!q.empty())
+{
+	q.pop;
+}
+```
++ 更加常用的是重新定义一个队列以实现队列的清空，`STL` 中 `queue` 进行定义的时间复杂度和 `stack` 一样都是 $O(1)$ 。
+
+### 链表处理
+#### 链表的概念
