@@ -279,6 +279,15 @@ excerpt: 计量方法与误差理论知识汇总！
 
 ![最小二乘法解答](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20241212104919.png)
 
+### 一元线性回归分析
++ 例题：
+
+![例题](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/95f8391a7bb2106f5e7d727dd76758b.jpg)
+
++ 解答：
+
+![解答](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/37781faaa4e9183d2b57e91501c402f.jpg)
+
 
 
 
