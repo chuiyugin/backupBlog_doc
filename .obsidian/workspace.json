@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "measurement.md",
+                "file": "algorithm3.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "measurement"
+              "title": "algorithm3"
             }
           }
         ]
@@ -204,7 +204,11 @@
   },
   "active": "e30a22ec0f4ef7bb",
   "lastOpenFiles": [
+    "houjie_cpp_1.md",
+    "houjie_cpp.md",
+    "houjie_cpp_2.md",
     "algorithm3.md",
+    "measurement.md",
     "algorithm2.md",
     "Untitled.canvas",
     "algorithm.md",
