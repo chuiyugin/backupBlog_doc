@@ -138,3 +138,73 @@ double d = 4+f; //调用operator double() const{}函数将f转为0.6，不报错
 ```
 
 + **说明**：加入 `explicit` 关键字后说明不让编译器自动将 `4` 转为 `Fraction` 类型。因此示例的第一个使用方法会报错，提示需要从 `double` 类型转为 `Fraction` 类型。而第二个使用方法能够将 `f` 转为 `double` 类型并相加就不会报错。
+
+## pointer-like classes
+### 智能指针
++ 较为简单的智能指针的示例（`shared_ptr`）:
+
+![shared_ptr](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250301210258.png)
+
+### 迭代器
++ 迭代器作为容器中的一种用法，以链表迭代器为例：
+
+![链表迭代器 1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250301211615.png)
+
+![链表迭代器 2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250301211659.png)
+
+### 注意点
++ 关于 `C++` 语言中的指针，需要注意运算符 `.` 和 `->` 用法的区别，例子如下：
+
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <memory>
+
+using namespace std;
+
+//主函数
+int main()
+{
+    //智能指针：共享指针
+    shared_ptr<string> name(new string("yugin"));
+    cout << "*name:  " << *name << endl;
+    cout << "(*name).size():  " << (*name).size() << endl;
+    cout << "name->size():  " << name->size() << endl;
+    
+    cout << "---------------" << endl;
+    cout << "name.use_count():  " << name.use_count() << endl;
+    
+    system("pause");// 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
++ 输出结果：
+
+![输出结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250301212429.png)
+
++ 从上述输出结果中不难看出，`(*name).size()` 与 `name->size()` 的输出结果一致，使用的是 `string` 这个对象里面的 `size()` 函数。
++ 而 `name.use_count()` 输出的是数值 1，使用的是智能指针 `shared_ptr<string>` 里面的 `use_count()` 函数。
++ `use_count()` 函数表示有多少个智能指针指向某个对象，主要用于调试目的。例如：
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	shared_ptr<int> p1(new int(100));
+	cout << p1.use_count() << endl; // 1
+	
+	shared_ptr<int> p2(p1);
+	cout << p1.use_count() << endl; // 2
+	
+	shared_ptr<int> p3;
+	p3 = p2;
+	cout << p1.use_count() << endl; // 3
+	cout << p3.use_count() << endl; // 3
+	
+	return 0;
+}
+```

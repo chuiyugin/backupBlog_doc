@@ -34,7 +34,13 @@ private:
 complex<double> c1(2.5,1.5);
 complex<int> c2(2,6);
 ```
++ 其中 `typename` 和 `class` 是一样的意思，用法上相同，例如：
 
+```cpp
+template<typename T>
+template<class T>
+template<class T, class Ref, class Ptr>
+```
 ### inline （内联）函数
 + 若函数在 `class` 本体内部**定义**（并非声明）完成，就会进入内联函数的候选，但是该函数是否真正变成内联函数由编译器所决定。
 + 内联函数具有执行效率比较高的特性，但并非所有定义在 `class` 本体内的函数都能由编译器编译为内联函数。
