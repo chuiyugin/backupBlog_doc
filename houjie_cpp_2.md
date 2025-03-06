@@ -208,3 +208,44 @@ int main()
 	return 0;
 }
 ```
+
+## function-like classes，仿函数
++ 在 C++中，函数调用运算符（`operator()`）允许一个类的对象表现得像函数一样被调用。这种特性通过重载类的圆括号操作符 `operator()` 实现。
++ 注：小括号 `()` 就是函数调用操作符，`operator()` 就是对函数调用操作符进行重载。
++ 这对于实现类似于函数的对象非常有用，例如，你可以创建一个对象，该对象封装了一组操作，而这些操作可以通过调用对象来实现。
++ 例如创建一个简单的计算器类，该类可以执行加法和减法操作：
+
+```cpp
+#include <iostream>
+
+class Calculator {
+public:
+    // 定义函数调用运算符，接受两个int参数并返回它们的和
+    int operator()(int a, int b) {
+        return a + b;
+    }
+    
+    // 定义另一个函数调用运算符，接受两个int参数并返回它们的差
+    int operator()(int a, int b, const char* op) {
+        if (op == "subtract") {
+            return a - b;
+        } else {
+            return a + b; // 默认返回和，如果op不是"subtract"
+        }
+    }
+};
+
+int main() {
+    Calculator calc;
+    std::cout << "Sum: " << calc(5, 3) << std::endl; // 使用第一个重载的operator()
+    std::cout << "Difference: " << calc(5, 3, "subtract") << std::endl; // 使用第二个重载的operator()
+    return 0;
+}
+```
+
+## function template，函数模板
++ 编译器会对函数模板（`function template`）进行实参推导 ( `argument deduction` )。
+
+![函数模板](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306134454.png)
+
+## member template，成员模板
