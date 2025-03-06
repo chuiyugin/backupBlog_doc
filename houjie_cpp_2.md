@@ -258,3 +258,29 @@ int main() {
 ![成员模板2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306171840.png)
 
 ![成员模板3](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306172314.png)
+
+## specialization，模板特化
++ 全特化：特定类型的模板执行特定类型的函数或事情。
+
+![模板特化1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306211554.png)
+
+### 模板的偏特化
++ 个数的偏：
+
+![模板个数的偏特化](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306212509.png)
+
++ 范围的偏：
+
+![模板范围的偏特化](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306212806.png)
+
+## template template parameter，模板模板参数
++ 模板模板参数，即允许一个模板接受另一个模板作为参数。
++ 可以使用 `template<template<...> class...>` 语法来定义一个模板模板参数。
+
+![模板模板参数1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306214228.png)
+
+![模板模板参数2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306215019.png)
+
++ 不是模板模板参数的情况：
+
+![不是模板模板参数的情况](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306215404.png)
