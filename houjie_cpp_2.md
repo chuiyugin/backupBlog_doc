@@ -249,3 +249,12 @@ int main() {
 ![函数模板](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306134454.png)
 
 ## member template，成员模板
++ 在模板类里面还有一份模板，成为成员模板：
+
+![成员模板1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306164753.png)
+
++ 成员模板中的继承关系：
+
+![成员模板2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306171840.png)
+
+![成员模板3](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306172314.png)
