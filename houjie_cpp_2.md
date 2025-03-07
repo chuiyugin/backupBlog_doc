@@ -284,3 +284,57 @@ int main() {
 + 不是模板模板参数的情况：
 
 ![不是模板模板参数的情况](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250306215404.png)
+
+## C++ 11 新特性三个主题简介
+### variadic templates，数量不定的模板参数
++ 数量不定的模板参数的语法是在模板声明中使用省略号（`...`）来表示参数的数量是不确定的。例如：
+
+```cpp
+template<typename... Types>
+void function(const Types&... args) {
+    // 函数体
+}
+```
+
++ 完整代码示例：
+
+```cpp
+#include<iostream>
+using namespace std;
+
+template<typename T, typename... Types>
+void print(const T& firstArg, const Types&... args) {
+    cout << firstArg << endl;
+    print(args...); // 递归调用自身，传递剩余参数
+}
+
+int main() {
+    print(7.5, "hello", 100, 43); // 输出: 7.5 hello 100 43
+    return 0;
+}
+```
+
++ 可以用 `sizeof... (args)` 来获取 `args` 内具多少元素：
+
+![数量不定的模板参数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250307135147.png)
+
+### auto
++ `C++` 中的 `auto` 关键字主要用于自动推导变量的类型。在 `C++ 11` 及以后的版本中，`auto` 不再表示存储类型，而是作为一个类型指示符，用于指示编译器自动推导变量的类型。使用 `auto` 可以简化代码，尤其是在处理复杂类型时，能够减少代码量并提高可读性。
+
+![auto](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250307135625.png)
+
+### ranged-base for，基于范围的 for 循环
++ 基于范围的 `for` 循环是一种简洁而强大的语法，用于遍历容器（如数组、向量、列表、集合等）。
+
+![基于范围的for循环](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250307140826.png)
+
+## reference，再谈引用
++ `object` 和其 `reference` 的大小相同，地址也相同。
+
+![再谈引用1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250307143420.png)
+
+![再谈引用2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250307143447.png)
+
++ 引用（`reference`）通常不用于声明变量，而用于参数类型（`parameters type`）和返回类型（`return type`）的描述。
+
+![再谈引用3](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250307144134.png)
