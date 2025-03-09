@@ -338,3 +338,121 @@ int main() {
 + 引用（`reference`）通常不用于声明变量，而用于参数类型（`parameters type`）和返回类型（`return type`）的描述。
 
 ![再谈引用3](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250307144134.png)
+
+## 对象模型（Object Model）
+### 关于虚指针（vptr）和虚函数表（vtbl）
++ 在 C++中，虚函数和多态是通过虚指针（`vptr`）和虚函数表（`vtbl`）来实现的。这种机制允许在运行时根据对象的实际类型来调用相应的函数，而不是在编译时确定。这对于实现多态行为非常关键，比如在基类指针或引用调用派生类的方法时。
++ 虚指针（`vptr`）：
+	+ 每个包含虚函数的类都会有一个或多个虚指针（`vptr`）；
+	+ 虚指针是一个指向虚函数表的指针，该表包含了指向各个虚函数的指针。这个表对于类的每一个对象来说是唯一的，确保了多态性的实现。
++ 虚函数表（`vtbl`）：
+	+ 虚函数表是一个静态的数据结构，它存储了类中所有虚函数的地址；
+	+ 对于每个包含虚函数的类，编译器都会生成一个虚函数表，当类的对象被创建时，其虚指针（`vptr`）被初始化为指向该类的虚函数表的地址。
++ 代码示例：
+
+```cpp
+class Base {
+public:
+    virtual void func() {
+        cout << "Base func" << endl;
+    }
+};
+ 
+class Derived : public Base {
+public:
+    void func() override {
+        cout << "Derived func" << endl;
+    }
+};
+```
+
++ 在这个例子中，`Base` 类有一个虚函数 `func`。当 `Derived` 类继承 `Base` 并重写 `func` 函数时，编译器会做以下事情：
+
+	1. 为 `Base` 类生成一个虚函数表，其中包含 `func` 函数的地址。
+    
+	2. 为 `Derived` 类生成一个新的虚函数表，其中包含 `func` 函数的地址（即 `Derived` 类中的新实现）。
+    
+	3. 在 `Derived` 类的每个对象中，其虚指针（`vptr`）被初始化为指向 `Derived` 的虚函数表。
+
++ 访问和调用过程：当通过基类指针调用虚函数时，实际调用的函数取决于对象的实际类型。
+
+```cpp
+Base* b = new Derived();
+b->func();  // 输出 "Derived func"
+```
+
++ 在这个例子中，尽管 `b` 是 `Base` 类型的指针，但由于 `b` 指向一个 `Derived` 类型的对象，所以调用的是 `Derived` 的 `func` 方法。这是因为编译器会根据对象的实际类型（通过其虚指针找到正确的虚函数表），从而确定并调用正确的函数。
++ 图片示例：
+
+![虚指针和虚函数表1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250309150806.png)
+
+![虚指针和虚函数表2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250309151059.png)
+
+### 多态
++ 多态（`Polymorphism`）是面向对象编程中的一个核心概念，允许一个接口被多种不同的实现使用。在 C++中，多态主要通过虚函数（`virtual functions`）和继承来实现。
+#### 虚函数
++ 在 C++中，虚函数允许你在派生类中重写基类的函数。这是实现多态的基础：
+
+```cpp
+class Base {
+public:
+    virtual void show() {
+        cout << "Base class show function" << endl;
+    }
+};
+ 
+class Derived : public Base {
+public:
+    void show() override {  // 使用override关键字是C++11标准的一部分，用于确保正确的重写
+        cout << "Derived class show function" << endl;
+    }
+};
+```
+
+#### 指针和引用的多态性
++ 通过基类指针或引用调用虚函数时，会根据对象的实际类型来调用相应的函数，这称为动态绑定（`Dynamic Binding`）。
+
+```cpp
+Base* basePtr;
+Derived derivedObj;
+basePtr = &derivedObj;
+basePtr->show();  // 输出：Derived class show function
+```
+
+#### 纯虚函数和抽象类
++ 纯虚函数是一种特殊的虚函数，它在基类中没有实现，要求任何继承该类的子类必须提供具体实现。含有纯虚函数的类是抽象类，不能直接实例化。
+
+```cpp
+class AbstractBase {
+public:
+    virtual void show() = 0;  // 纯虚函数
+};
+ 
+class Concrete : public AbstractBase {
+public:
+    void show() override {
+        cout << "Concrete class show function" << endl;
+    }
+};
+```
+
+### 关于 this 和动态绑定（Dynamic Binding）
++ 动态绑定（`Dynamic Binding`），`this` 指针所指的对象（`Object`）称为 `this Object`；
++ 虚函数的执行步骤，属于设计模式中的模板方法（`Template Method`）：
+
+![动态绑定](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250309153050.png)
+
++ 动态绑定需要满足三个条件：
+	+ 通过指针调用；
+	+ 向上转型的动作（如 `this` 指针的对象是子类对象）；
+	+ 调用 `this` 指针的子类对象的虚函数。
+
++ 静态绑定：
+
+![静态绑定汇编示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250309161038.png)
+
++ 动态绑定：
+
+![动态绑定汇编示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250309161849.png)
+
+
