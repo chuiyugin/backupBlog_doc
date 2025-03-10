@@ -455,4 +455,54 @@ public:
 
 ![动态绑定汇编示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250309161849.png)
 
+### 谈谈 const
++ 常量成员函数：
+
+![常量成员函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250310144213.png)
+
++ 一个函数通过在其后面加关键字 `const`，它将被声明为常量函数；
++ 在 C++，只有将成员函数声明为常量函数才有意义。带有 `const` 作后缀的常量成员函数又被称为视察者 (`inspector`)，没有 `const` 作后缀的非常量成员函数被称为变异者 (`mutator`)；
++ 常量函数可以被任何对象调用，而非常量函数则只能被非常量对象调用，不能被常量对象调用；
++ 在 C++中，一个对象的所有方法都接收一个指向对象本身的隐含的 `this` 指针，常量方法则获取了一个隐含的常量 `this` 指针；
++ 在类中允许存在同名的常量函数和非常量函数，编译器根据调用该函数的对象选择合适的函数：
+	+ 当非常量对象调用该函数时，先调用非常量函数；
+	+ 当常量对象调用该函数时，只能调用常量函数；
+	+ 如果在类中只有常量函数而没有与其同名的非常量函数，则非常量与常量对象都可调用该常量函数。
+    
+### 关于 new 和 delete
++ 第一部分关于 `new` 和 `delete` 的汇总：
+
+![关于 new 和 delete](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250310145853.png)
+
++ 重载全局 `new` 和全局 `delete` 以及全局 `new[]` 和全局 `delete[]`：
+
+![重载全局new和全局delete](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250310150432.png)
+
++ 重载成员 `new` 和成员 `delete`：
+
+![重载成员 new 和成员 delete 1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250310151326.png)
+
++ 重载成员 `new[]` 和成员 `delete[]`：
+
+![重载成员 new 和成员 delete 2]( https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250310151431.png )
+
++ 设计示例和接口：
+
+![设计示例和接口1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250310152522.png)
+
+![设计示例和接口2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250310153157.png)
+
+![设计示例和接口3](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250310153411.png)
+
++ 重载 `new()`、`delete()` :
+
+![重载 new()、delete() 1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250310154749.png)
+
+![重载 new()、delete() 2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250310154820.png)
+
+![重载 new()、delete() 3](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250310154900.png)
+
++ 标准库重载 `new()` 的示例：
+
+![标准库重载 new() 的示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250310155449.png)
 
