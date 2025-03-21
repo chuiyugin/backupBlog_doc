@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "houjie_cpp_1.md",
+                "file": "zuo_algorithm.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "houjie_cpp_1"
+              "title": "zuo_algorithm"
             }
           }
         ]
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "0edc808bdabaac2f",
@@ -204,8 +205,8 @@
   },
   "active": "98e96bcb338768f8",
   "lastOpenFiles": [
-    "houjie_cpp_2.md",
     "houjie_cpp_1.md",
+    "houjie_cpp_2.md",
     "zuo_algorithm.md",
     "algorithm.md",
     "houjie_cpp_2 - 副本.md",
