@@ -72,6 +72,84 @@ excerpt: C语言系统学习
 
 ![scanf](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326160605.png)
 
+## 整数的编码
+### 有/无符号整数
++ 无符号整数：
+
+![无符号整数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326202710.png)
+
++ 有符号整数：
+
+![有符号整数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326202741.png)
++ 两个性质：
+
+![两个性质](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326203540.png)
+
++ 原码、补码、反码
+	+ 正数的原码、反码、补码均相同。  
+	+ 原码：用最高位表示符号位，其余位表示数值位的编码称为原码。其中，正数的符号位为 0，负数的符号位为 1。  
+	+ 负数的反码：把原码的符号位保持不变，数值位逐位取反，即可得原码的反码。  
+	+ 负数的补码：在反码的基础上加 1 即得该原码的补码。    
+	+ 例如：  
+		+ +11 的原码为: 0000 1011  
+		+ +11 的反码为: 0000 1011  
+		+ +11 的补码为: 0000 1011  
+  
+		+ -7 的原码为：1000 0111  
+		+ -7 的反码为：1111 1000  
+		+ -7 的补码为：1111 1001  
+  
+	+ 注意，对补码再求一次补码操作就可得该补码对应的原码。
+
+## 浮点数
++ 浮点数是不精确的
+
+![浮点数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326204701.png)
+
+## 字符
++ 字符的编码为 ASCII：
+
+![ASCII](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326210204.png)
+
++ 类型通用的两个特征：
+
+![类型通用的两个特征](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326210319.png)
+
++ 表示值：
+
+![表示值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326210426.png)
+
++ 支持哪些操作：
+
+![支持哪些操作](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326210509.png)
+
++ 读/写（和用户操作）
+
+![读/写（和用户操作）](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326210602.png)
+
++ 惯用法：
+
+![惯用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326210830.png)
+
+## 类型转换
++ 隐式转换：不要将有符号整数和无符号整数混合运算
+
+![隐式转换](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326211751.png)
+
++ 强制转换
+
+![强制转换](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326212431.png)
+
+## 定义别名
++ 定义别名的作用
+
+![定义别名](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326213123.png)
+
+## sizeof 运算符
++ `sizeof()` 运算符
+
+![sizeof()运算符](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250326213219.png)
+
 
 
 
