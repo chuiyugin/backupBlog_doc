@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "C_system.md",
+                "file": "zuo_algorithm.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "C_system"
+              "title": "zuo_algorithm"
             }
           }
         ]
@@ -205,8 +205,8 @@
   },
   "active": "98e96bcb338768f8",
   "lastOpenFiles": [
-    "zuo_algorithm.md",
     "C_system.md",
+    "zuo_algorithm.md",
     "5g_1.md",
     "Myexe - 副本.md",
     "algorithm.md",
