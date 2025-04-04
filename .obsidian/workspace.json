@@ -1,24 +1,24 @@
 {
   "main": {
-    "id": "76613650f1b6dec5",
+    "id": "f9f1625208dae965",
     "type": "split",
     "children": [
       {
-        "id": "060673a8c129b9a8",
+        "id": "845c808720bde508",
         "type": "tabs",
         "children": [
           {
-            "id": "84216eb5005b2274",
+            "id": "98e96bcb338768f8",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "houjie_cpp.md",
+                "file": "zuo_algorithm.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "houjie_cpp"
+              "title": "zuo_algorithm"
             }
           }
         ]
@@ -27,27 +27,28 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "8d58c2d1f71eb29c",
+    "id": "c7d093df6da397f4",
     "type": "split",
     "children": [
       {
-        "id": "fcea4f7e42ea303d",
+        "id": "ee023f44182dfa75",
         "type": "tabs",
         "children": [
           {
-            "id": "8a73799f74f4c4b4",
+            "id": "de4ffc31af042fe1",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
               "state": {
-                "sortOrder": "alphabetical"
+                "sortOrder": "alphabetical",
+                "autoReveal": false
               },
               "icon": "lucide-folder-closed",
               "title": "文件列表"
             }
           },
           {
-            "id": "986956923c3d5f7d",
+            "id": "79e3ca1b23e04ee4",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -64,7 +65,7 @@
             }
           },
           {
-            "id": "9ba94e6f3e638282",
+            "id": "45951002a74de8a5",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -77,62 +78,20 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
+    "width": 200,
     "collapsed": true
   },
   "right": {
-    "id": "19447e33819738b3",
+    "id": "0edc808bdabaac2f",
     "type": "split",
     "children": [
       {
-        "id": "b1945cee064a6378",
+        "id": "e8f0e6425c52bccc",
         "type": "tabs",
+        "dimension": 31.470588235294116,
         "children": [
           {
-            "id": "15ce945883bf81df",
-            "type": "leaf",
-            "state": {
-              "type": "calendar",
-              "state": {},
-              "icon": "calendar-with-checkmark",
-              "title": "Calendar"
-            }
-          },
-          {
-            "id": "955258eba083e418",
-            "type": "leaf",
-            "state": {
-              "type": "backlink",
-              "state": {
-                "file": "houjie_cpp.md",
-                "collapseAll": false,
-                "extraContext": false,
-                "sortOrder": "alphabetical",
-                "showSearch": false,
-                "searchQuery": "",
-                "backlinkCollapsed": false,
-                "unlinkedCollapsed": true
-              },
-              "icon": "links-coming-in",
-              "title": "houjie_cpp 的反向链接列表"
-            }
-          },
-          {
-            "id": "ba6c2fac0c880999",
-            "type": "leaf",
-            "state": {
-              "type": "outgoing-link",
-              "state": {
-                "file": "houjie_cpp.md",
-                "linksCollapsed": false,
-                "unlinkedCollapsed": true
-              },
-              "icon": "links-going-out",
-              "title": "houjie_cpp 的出链列表"
-            }
-          },
-          {
-            "id": "f7dd538298c6f30d",
+            "id": "9f246dea04273cad",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -145,19 +104,80 @@
             }
           },
           {
-            "id": "707e7a7352babeeb",
+            "id": "7d8d8586ce5ab35a",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {},
+              "icon": "calendar-with-checkmark",
+              "title": "Calendar"
+            }
+          },
+          {
+            "id": "ec4e4e4dad3a3469",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "measurement.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "measurement 的反向链接列表"
+            }
+          },
+          {
+            "id": "cd2d9b3bcf8fad8f",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "measurement.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "measurement 的出链列表"
+            }
+          },
+          {
+            "id": "b490c24077ba6817",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          }
+        ],
+        "currentTab": 1
+      },
+      {
+        "id": "6a733a4544ee5554",
+        "type": "tabs",
+        "dimension": 68.52941176470588,
+        "children": [
+          {
+            "id": "72c1e472e67fcec0",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "houjie_cpp.md"
+                "file": "measurement.md"
               },
               "icon": "lucide-list",
-              "title": "houjie_cpp 的大纲"
+              "title": "measurement 的大纲"
             }
           },
           {
-            "id": "e5009c17bab4d5bb",
+            "id": "675c3727447be4cb",
             "type": "leaf",
             "state": {
               "type": "todo",
@@ -166,12 +186,11 @@
               "title": "Todo List"
             }
           }
-        ],
-        "currentTab": 5
+        ]
       }
     ],
     "direction": "horizontal",
-    "width": 300,
+    "width": 200,
     "collapsed": true
   },
   "left-ribbon": {
@@ -184,16 +203,36 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "84216eb5005b2274",
+  "active": "98e96bcb338768f8",
   "lastOpenFiles": [
-    "measurement.md",
-    "houjie_cpp.md",
-    "computer_networks.md",
-    "Myexe.md",
-    "algorithm3.md",
+    "C_system.md",
+    "zuo_algorithm.md",
+    "5g_1.md",
+    "Myexe - 副本.md",
+    "algorithm.md",
     "algorithm2.md",
-    "Fliplt.md",
+    "algorithm3.md",
+    "exercise2.md",
     "exercise1.md",
-    "Josephus.md"
+    "sort.md",
+    "points.md",
+    "Myexe.md",
+    "graph counts.md",
+    "Fliplt.md",
+    "houjie_cpp_1.md",
+    "hello-world.md",
+    "houjie_cpp_2.md",
+    "houjie_cpp_2 - 副本.md",
+    "houjie_cpp_1 - 副本.md",
+    "houjie_cpp.md",
+    "measurement.md",
+    "Untitled.canvas",
+    "Assembly_language.md",
+    "translation_1.md",
+    "Deep_laerning.md",
+    "Autohotkey.md",
+    "日记和待办/2023-11-14.md",
+    "日记和待办",
+    "未命名.canvas"
   ]
 }
