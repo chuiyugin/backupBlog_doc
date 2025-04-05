@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "zuo_algorithm.md",
+                "file": "RS_code.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "zuo_algorithm"
+              "title": "RS_code"
             }
           }
         ]
@@ -40,8 +40,7 @@
             "state": {
               "type": "file-explorer",
               "state": {
-                "sortOrder": "alphabetical",
-                "autoReveal": false
+                "sortOrder": "alphabetical"
               },
               "icon": "lucide-folder-closed",
               "title": "文件列表"
@@ -74,7 +73,8 @@
               "title": "书签"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -205,10 +205,12 @@
   },
   "active": "98e96bcb338768f8",
   "lastOpenFiles": [
-    "C_system.md",
-    "zuo_algorithm.md",
-    "5g_1.md",
+    "Myexe.md",
+    "RS_code.md",
     "Myexe - 副本.md",
+    "5g_1.md",
+    "zuo_algorithm.md",
+    "C_system.md",
     "algorithm.md",
     "algorithm2.md",
     "algorithm3.md",
@@ -216,7 +218,6 @@
     "exercise1.md",
     "sort.md",
     "points.md",
-    "Myexe.md",
     "graph counts.md",
     "Fliplt.md",
     "houjie_cpp_1.md",
@@ -231,7 +232,6 @@
     "translation_1.md",
     "Deep_laerning.md",
     "Autohotkey.md",
-    "日记和待办/2023-11-14.md",
     "日记和待办",
     "未命名.canvas"
   ]
