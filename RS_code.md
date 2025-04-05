@@ -181,7 +181,7 @@ int Div(int a, int b)
 	+ 在 $GF(2^{3})$ 伽罗华域下的 `n`，`k` 分组码为 `RS(7,3)`，即 `n=7`，`k=3`。
 	+ 原理简单而言就是将消息序列作为 $u(x)$ 多项式的系数，然后从 1 到 $α^6$ 代入到 $u(x)$ 多项式中得到码字。
 
-![iGF(8)伽罗华域下的编码实现](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202504051441241.png)
+![GF(8)伽罗华域下的编码实现](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202504051441241.png)
 
 + 在 $GF(2^{10})$ 伽罗华域下的 `RS(1023,512)` 里德-所罗门 ( `Reed-Solomon` ) 编码的 `C++` 实现如下：
 
