@@ -970,6 +970,44 @@ int main()
 ```
 
 ### 题目六
++  相交链表：[160.相交链表](https://leetcode.cn/problems/intersection-of-two-linked-lists/description/)
++ 思路：
+
+![相交链表思路](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250407170603.png)
+
++ 代码：
+
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        ListNode *p = headA;
+        ListNode *q = headB;
+        while(q!=p)
+        {
+            if(p!=nullptr)
+                p = p->next;
+            else
+                p = headB;
+            if(q!=nullptr)
+                q = q->next;
+            else
+                q = headA;
+        }
+        return p;
+    }
+};
+```
+
+### 题目七
 + 环形链表 II：[142.环形链表II](https://leetcode.cn/problems/linked-list-cycle-ii/description/)
 + 思路：[代码随想录-142.环形链表](https://programmercarl.com/0142.%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8II.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
 + 代码：

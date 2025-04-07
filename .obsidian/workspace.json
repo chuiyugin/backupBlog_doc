@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "C_system.md",
+                "file": "zuo_algorithm.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "C_system"
+              "title": "zuo_algorithm"
             }
           },
           {
@@ -92,7 +92,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "0edc808bdabaac2f",
@@ -218,8 +219,8 @@
   },
   "active": "98e96bcb338768f8",
   "lastOpenFiles": [
-    "zuo_algorithm.md",
     "C_system.md",
+    "zuo_algorithm.md",
     "algorithm3.md",
     "Autohotkey.md",
     "RS_code.md",
