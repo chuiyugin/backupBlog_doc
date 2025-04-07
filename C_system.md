@@ -342,9 +342,9 @@ void yihuo_find(vector<int>& a,int& ans_1,int& ans_2)
 using namespace std;
 
 //把int类型最右侧的1找出来
-int yihuo_last_one(int& a)
+int lastSetBit(int n)
 {
-    return a&(-a);//把int类型最右侧的1找出来
+	return n & -n;
 }
 
 //采用异或运算找到数组中出现奇数次的两个数a、b
@@ -379,3 +379,66 @@ int main()
     system("pause"); // 防止运行后自动退出，需头文件stdlib.h
     return 0;
 }
+```
+
+## 语句
++ 语句的分类：
+
+![语句的分类](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250407194813.png)
+
+## 数组
+### 数组的内存模型
++ 连续的一片内存空间，并且会划分成大小相等的小空间。
++ 使用同一类型使得能够随机访问元素。
+
+![数组的内存模型_1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250407200257.png)
+
++ 数组的索引一般是从 `0` 开始的：
+
+![数组的内存模型_2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250407200440.png)
+
++ 数组效率一般高于链表效率：
+	+ 空间利用率更高；
+	+ 空间局部性（数组是连续的）。
+
+### 数组的定义
++ 数组的定义：
+	+ 数组的操作只有取下标。
+
+![数组的定义_1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250407201301.png)
+
+![数组的定义_2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250407201707.png)
+
++ 求数组的大小的宏函数：
+
+```cpp
+#define SIZE(a) (sizeof(a) / sizeof(a[0]))
+```
+
++ 类型的判断：
+	+ 先看标识符；
+	+ 从标识符表示往右看；
+	+ 再从标识符往左看得到完整的类型信息，例：
+
+![类型的判断](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250407201452.png)
+
+### 多维数组
++ 注意：C 语言只有一维数组，多维数组本质上也是一维数组。
+
+![多维数组](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250407203805.png)
+
+### 常量数组
++ 常量数组：元素不能够修改。
+	+ 安全，用于存储静态数组；
+	+ 效率高，编译器能够对常量数组做一些优化。
+
+![常量数组](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250407204317.png)
+
+## 函数
+### 函数的特征
++ 数学上的函数：有返回值，没有副作用；
++ C 语言的函数：可以没有返回值，可以有副作用。
+
+### 函数的准则
++ 函数的功能应该越单一越好（能够复用），函数的实现越高效越好；
++ 函数是 C 语言的“基本构建组件”，C 语言的本质就是函数之间的调用。

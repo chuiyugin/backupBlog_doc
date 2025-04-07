@@ -4,35 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "845c808720bde508",
+        "id": "d466bfe35b95c7b2",
         "type": "tabs",
         "children": [
           {
-            "id": "98e96bcb338768f8",
+            "id": "8609771c2096d38a",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "zuo_algorithm.md",
+                "file": "C_system.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "zuo_algorithm"
-            }
-          },
-          {
-            "id": "4c1f2d5e27fee504",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "zuo_algorithm.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "zuo_algorithm"
+              "title": "C_system"
             }
           }
         ]
@@ -217,10 +203,10 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "98e96bcb338768f8",
+  "active": "8609771c2096d38a",
   "lastOpenFiles": [
-    "C_system.md",
     "zuo_algorithm.md",
+    "C_system.md",
     "algorithm3.md",
     "Autohotkey.md",
     "RS_code.md",
