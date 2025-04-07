@@ -968,3 +968,43 @@ int main()
     return 0;
 }
 ```
+
+### 题目六
++ 环形链表 II：[142.环形链表II](https://leetcode.cn/problems/linked-list-cycle-ii/description/)
++ 思路：[代码随想录-142.环形链表](https://programmercarl.com/0142.%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8II.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
++ 代码：
+
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        ListNode* fast_ptr = head;
+        ListNode* slow_ptr = head;
+        while(fast_ptr != nullptr && fast_ptr->next != nullptr)
+        {
+            fast_ptr = fast_ptr->next->next;
+            slow_ptr = slow_ptr->next;
+            if(slow_ptr == fast_ptr)
+            {
+                ListNode* index1 = head;
+                ListNode* index2 = fast_ptr;
+                while(index1 != index2)
+                {
+                    index1 = index1->next;
+                    index2 = index2->next;
+                }
+                return index1;
+            }
+        }
+        return nullptr;
+    }
+};
+```

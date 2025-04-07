@@ -99,7 +99,10 @@ excerpt: C语言系统学习
 		+ -7 的反码为：1111 1000  
 		+ -7 的补码为：1111 1001  
   
-	+ 注意，对补码再求一次补码操作就可得该补码对应的原码。
+	+ 注意：
+		+ 对补码再求一次补码操作就可得该补码对应的原码。
+		+ 在计算机系统中，数值一律用补码来表示（存储）。
+		+ 使用补码，可以将符号位和其他位统一处理;
 
 ## 浮点数
 + 浮点数是不精确的
@@ -204,3 +207,175 @@ bool isPowerOf2(int n)
 	return (n & n-1) == 0;
 }
 ```
+
+### 问题三
++ 给定一个值不为 `0` 的整数，请找出值为 `1` 的最低有效位（`last set bit`）。
+
+![问题三](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250407160135.png)
++ 代码：
+
+```cpp
+int lastSetBit(int n)
+{
+	return n & -n;
+}
+```
+
++ 原理：
+	+ `n` 的原码（补码）：`0001 1000`
+	+ `-n` 的补码：`0110 1000`
+	+ `n & -n` 的码：`0000 1000`
+	+ 在计算机系统中，数值一律用补码来表示（存储）。
+
+### 问题四
++ 给定两个不同的整数 a 和 b，请交换它们两个的值（要求不使用中间临时变量）。
+	+ 关键是找到一对逆运算，如 `a=a+b-b;`
++ 代码：
+
+```cpp
+void swap(int a,int b)
+{
+	a = a + b;
+	b = a - b;
+	a = a - b;
+}
+```
+
++ 但是使用加法容易造成溢出的情况，可以使用异或这个逆运算。
+
+```cpp
+void swap(int a,int b)
+{
+	a = a ^ b;
+	b = a ^ b;
+	a = a ^ b;
+}
+```
+
+### 问题五
++ 一个数组中有一种数出现了奇数次，其他数都出现了偶数次，怎么找到并打印这种数？
++ 关键部分：
+
+```cpp
+//采用异或运算找到数组中出现奇数次的数
+int yihuo_find(vector<int>& a)
+{
+    int eor = 0;
+    for(int i=0;i<a.size();i++)
+    {
+        eor = eor ^ a[i];//用eor与数组中的所有元素相异或
+    }
+    return eor;
+}
+```
+
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+//采用异或运算找到数组中出现奇数次的数
+int yihuo_find(vector<int>& a)
+{
+    int eor = 0;
+    for(int i=0;i<a.size();i++)
+    {
+        eor = eor ^ a[i];//用eor与数组中的所有元素相异或
+    }
+    return eor;
+}
+
+int main()
+{
+    vector<int>  vec1= {1, 1, 3, 3, 3}; //3是奇数个
+    int ans = yihuo_find(vec1);
+    printf("%d",ans);
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
++ 证明：
+	+ 1、具有 `a^a=0` 和 `a^0=a` 的性质；
+	+ 2、偶数个数据累积异或后是 `0`，奇数个数据累积异或后就剩下它自身。
+
+### 问题六
++ 一个数组中有两个不相等的数出现了奇数次，其他数都出现了偶数次，怎么找到并打印这两个数？
++ 关键代码：
+
+```cpp
+//采用异或运算找到数组中出现奇数次的两个数a、b
+void yihuo_find(vector<int>& a,int& ans_1,int& ans_2)
+{
+    int eor = 0,eor_2 = 0;
+    for(int i=0;i<a.size();i++)
+    {
+        eor = eor ^ a[i];//找到eor = a^b
+    }
+    //找到eor = a^b中的最右侧的1（问题三的函数）
+    int OnlyOne = lastSetBit(eor);
+    //由于eor = a^b中的最右侧为1，a和b在这一位一定不相等
+    //只需要在数组中找到这一位只为1的数再做一次eor即可把a或者b找出来
+    for(int i=0;i<a.size();i++)
+    {
+        if((OnlyOne & a[i]) != 0)
+        {
+            eor_2 = eor_2 ^ a[i];//找到eor_2 = a或者eor_2 = b
+        }
+    }
+    ans_1 = eor_2;
+    ans_2 = eor_2 ^ eor;
+}
+```
+
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+//把int类型最右侧的1找出来
+int yihuo_last_one(int& a)
+{
+    return a&(-a);//把int类型最右侧的1找出来
+}
+
+//采用异或运算找到数组中出现奇数次的两个数a、b
+void yihuo_find(vector<int>& a,int& ans_1,int& ans_2)
+{
+    int eor = 0,eor_2 = 0;
+    for(int i=0;i<a.size();i++)
+    {
+        eor = eor ^ a[i];//找到eor = a^b
+    }
+    //找到eor = a^b中的最右侧的1
+    int OnlyOne = yihuo_last_one(eor);
+    //由于eor = a^b中的最右侧为1，a和b在这一位一定不相等
+    //只需要在数组中找到这一位只为1的数再做一次eor即可把a或者b找出来
+    for(int i=0;i<a.size();i++)
+    {
+        if((OnlyOne & a[i]) != 0)
+        {
+            eor_2 = eor_2 ^ a[i];//找到eor_2 = a或者eor_2 = b
+        }
+    }
+    ans_1 = eor_2;
+    ans_2 = eor_2 ^ eor;
+}
+
+int main()
+{
+    int ans_1=0,ans_2=0;
+    vector<int>  vec1= {1, 1, 3, 3, 3, 6}; 
+    yihuo_find(vec1,ans_1,ans_2);
+    printf("%d、%d\n",ans_1,ans_2);
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
