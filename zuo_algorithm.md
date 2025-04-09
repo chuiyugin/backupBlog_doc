@@ -1126,3 +1126,79 @@ int main()
     return 0;
 }
 ```
+
+### 题目二
++ 用队列实现栈：[225.用队列实现栈](https://leetcode.cn/problems/implement-stack-using-queues/description/)
++ 思路：采用两个队列，始终保持一个队列为空，当要 `pop` 数据的时候，把非空队列的元素依次输出到另外一个空队列，剩下最后一个元素进行返回和 `pop`。`push` 数据时要向非空队列传入数据，若两个队列都是空的就向任意一个队列传数据即可。
++ 代码：
+
+```cpp
+class MyStack {
+public:
+    queue<int> qu_1;
+    queue<int> qu_2;
+    MyStack() {}
+
+    void push(int x) 
+    {
+        if(!qu_1.empty())
+            qu_1.push(x);
+        else if(!qu_2.empty())
+            qu_2.push(x);
+        else
+            qu_1.push(x);
+    }
+
+    int pop() 
+    {
+        int temp;
+        if(!qu_1.empty())
+        {
+            while(qu_1.size()>1)
+            {
+                qu_2.push(qu_1.front());
+                qu_1.pop();
+            }
+            temp = qu_1.front();
+            qu_1.pop();
+            return temp;
+        }
+        else
+        {
+            while(qu_2.size()>1)
+            {
+                qu_1.push(qu_2.front());
+                qu_2.pop();
+            }
+            temp = qu_2.front();
+            qu_2.pop();
+            return temp;
+        }
+    }
+
+    int top() 
+    {
+        if(!qu_1.empty())
+            return qu_1.back();
+        else
+            return qu_2.back();
+    }
+
+    bool empty() 
+    {
+        if(qu_1.empty() && qu_2.empty())
+            return true;
+        else
+            return false;
+    }
+};
+
+/**
+ * Your MyStack object will be instantiated and called as such:
+ * MyStack* obj = new MyStack();
+ * obj->push(x);
+ * int param_2 = obj->pop();
+ * int param_3 = obj->top();
+ * bool param_4 = obj->empty();
+ */
+```
