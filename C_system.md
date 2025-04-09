@@ -498,3 +498,26 @@ int main()
 + 具有递归结构的问题，不一定要用递归求解。
 + 递归可能存在大量重复计算的问题。
 + 可以采用**动态规划**来避免重复计算的问题：顺序求解子问题，并将子问题的解保存起来，从而避免重复计算，最终求解到大问题。
+
+### 汉诺塔问题
++ 汉诺塔问题：
+
+![汉诺塔问题_1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250409195250.png)
+
+![汉诺塔问题_2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250409195403.png)
+
+### 约瑟夫环问题
++ 约瑟夫环问题：
+
+![约瑟夫环问题_1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250409200726.png)
+
+![约瑟夫环问题_2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250409200946.png)
+
++ 更一般的约瑟夫环问题：
+
+![更一般的约瑟夫环问题](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250409201409.png)
+
+### 递归三问
++ 递归三问：什么时候使用递归？
+
+![递归三问](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250409201536.png)
