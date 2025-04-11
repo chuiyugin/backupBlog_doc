@@ -521,3 +521,20 @@ int main()
 + 递归三问：什么时候使用递归？
 
 ![递归三问](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250409201536.png)
+
+## 指针基础
+### 内存模型
++ 指针的内存模型：
+
+![指针的内存模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411131416.png)
+### 指针的操作
++ 指针的定义：
+
+![指针的定义](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411131533.png)
+
++ 指针的两个基本操作：
+
+![指针的两个基本操作](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411131714.png)
+
+
+
