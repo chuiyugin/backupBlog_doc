@@ -536,5 +536,31 @@ int main()
 
 ![指针的两个基本操作](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411131714.png)
 
+### 野指针
++ 野指针：不知道指向哪块数据。
+
+![野指针](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411155133.png)
+
++ 如何给指针变量赋值？
+	+ `int *p = &i;`
+	+ `int *q = p;`
+	+ `p = NULL;`：空指针，不指向任何对象指针。
+
++ 指针赋值示例：
+
+![指针赋值示例_1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411155759.png)
+
+![指针赋值示例_2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411155946.png)
+
+### 指针的应用
++ 作为参数——在被调函数中修改主调函数的值。
+
+![指针的应用_1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411160139.png)
+
++ 指针作为返回值。
+	+ 教训：不要返回指向当前栈帧的指针！
+
+![指针的应用_2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411160254.png)
+
 
 

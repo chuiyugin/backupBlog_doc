@@ -1202,3 +1202,132 @@ public:
  * bool param_4 = obj->empty();
  */
 ```
+
+## 排序问题
+### 归并排序
+#### 普通归并排序
++ 递归方法：[912.排序数组](https://leetcode.cn/problems/sort-an-array/description/)
++ 思路：采用二分法和递归的方式实现 $O(NlogN)$ 的归并排序；
++ 代码：
+
+```cpp
+class Solution {
+public:
+    
+    void merge(vector<int>& nums,int L,int M,int R)
+    {
+        vector<int> temp(R-L+1);
+        int i = L,j = M+1,k = 0;
+        while(i<=M && j<=R)
+        {
+            temp[k++] = nums[i]<=nums[j]? nums[i++] : nums[j++];
+        }
+        //要么i越界了,把j剩下的拷贝进去
+        while(j<=R)
+            temp[k++] = nums[j++];
+        //要么j越界了,把i剩下的拷贝进去
+        while(i<=M)
+            temp[k++] = nums[i++];
+        for(int t=0;t<temp.size();t++)
+            nums[L+t] = temp[t];//需要注意nums的区间
+    }
+    
+    void process(vector<int>& nums,int L,int R)
+    {
+        int mid = L + (R - L)/2;
+        //递归边界条件
+        if(L == R)
+            return;
+        process(nums,L,mid);
+        process(nums,mid+1,R);
+        merge(nums,L,mid,R);
+    }
+
+    vector<int> sortArray(vector<int>& nums) {
+        process(nums,0,nums.size()-1);
+        return nums;
+    }
+};
+```
+
+#### 小和问题
++ 问题描述：
++ 在一个数组中，每一个数的左边比当前数小的数累加起来，叫做这个数组的小和。求一个数组的小和。  
+	+ 例子：对于数组 `[1,3,4,2,5]` ，
+		+ `1` 左边比 `1` 小的数，没有；
+		+ `3` 左边比 `3` 小的数，`1`；
+		+ `4` 左边比 `4` 小的数，`1,3`；
+		+ `2` 左边比 `2` 小的数，`1`；
+		+ `5` 左边比 `5` 小的数，`1,2,3,4`；
+		+ 所以小和为 `1+1+3+1+1+2+3+4 = 16` 。
++ 思路：
+	+ 此处使用归并排序，在 `merge` 时，由于左右两部分都已经有序，可以确定一侧的数都大于正在比较的数，例如，
+	+ 归并 `2 4 5 | 1 3 7` 两个部分时，`2` 比 `3` 小，此时可以确定后面的数都大于 `2`，此时便可以一次性计算小和 `2 * 2`(两个数大于 `2`)，而不用一个个遍历。
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Solution {
+    public:
+        
+        int merge(vector<int>& nums,int L,int M,int R)
+        {
+            vector<int> temp(R-L+1);
+            int i = L,j = M+1,k = 0;
+            int ans = 0;
+            while(i<=M && j<=R)
+            {
+                //左组小于右组数，把小和累加进去
+                ans += nums[i]<nums[j] ? (R-j+1)*nums[i] : 0;
+                temp[k++] = nums[i]<nums[j] ? nums[i++] : nums[j++];
+            }
+            //要么i越界了,把j剩下的拷贝进去
+            while(j<=R)
+                temp[k++] = nums[j++];
+            //要么j越界了,把i剩下的拷贝进去
+            while(i<=M)
+                temp[k++] = nums[i++];
+            for(int t=0;t<temp.size();t++)
+                nums[L+t] = temp[t];//需要注意nums的区间
+            return ans;
+        }
+        
+        int process(vector<int>& nums,int L,int R)
+        {
+            int mid = L + (R - L)/2;
+            int ans = 0;
+            //递归边界条件
+            if(L == R)
+                return 0;
+            ans = process(nums,L,mid) + process(nums,mid+1,R) + merge(nums,L,mid,R);
+            return ans;
+        }
+    
+        int smallSum(vector<int>& nums) {
+            int ans;
+            ans = process(nums,0,nums.size()-1);
+            return ans;
+        }
+    };
+
+int main()
+{
+    Solution mysolution;
+    vector<int> vec = {2,4,5,1,7,3};
+    int ans;
+    ans = mysolution.smallSum(vec);
+    printf("%d\n",ans);
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+  
+
+
+
