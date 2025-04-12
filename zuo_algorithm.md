@@ -1262,7 +1262,7 @@ public:
 		+ 所以小和为 `1+1+3+1+1+2+3+4 = 16` 。
 + 思路：
 	+ 此处使用归并排序，在 `merge` 时，由于左右两部分都已经有序，可以确定一侧的数都大于正在比较的数，例如，
-	+ 归并 `2 4 5 | 1 3 7` 两个部分时，`2` 比 `3` 小，此时可以确定后面的数都大于 `2`，此时便可以一次性计算小和 `2 * 2`(两个数大于 `2`)，而不用一个个遍历。
+	+ 归并 `2 4 5 | 1 3 7` 两个部分时，`2` 比 `3` 小，此时可以确定后面的数都大于 `2`，此时便可以一次性计算小和 `2 * 2` (两个数大于 `2`)，而不用一个个遍历。
 + 代码：
 
 ```cpp
@@ -1328,6 +1328,93 @@ int main()
 }
 ```
   
+#### 逆序对问题
++ 交易逆序对总数：[LCR 170 交易逆序对总数](https://leetcode.cn/problems/sort-an-array/description/)
++ 思路：参考归并排序的算法，区别在于在 `merge` 的时候从右到左进行比较，
+	+ 左组数比右组数大时，通过 `ans+=j-(M+1)+1;` 计算逆序对的个数，并将左组数拷贝到 `temp` 数组并左移一位；
+	+ 右组数比左组数大时，无需计算逆序对个数，只需要将右组数拷贝到 `temp` 数组并左移一位即可。
+	+ 注意递归的边界条件！
++ 代码：
 
+```cpp
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Solution {
+    public:
+        
+        int merge(vector<int>& record,int L,int M,int R)
+        {
+            int ans = 0;
+            int i = M;
+            int j = R;
+            vector<int> temp(R-L+1);
+            int k=R-L;
+            while(i>=L && j >= M+1)
+            {
+                if(record[i]>record[j])
+                {
+                    ans+=j-(M+1)+1;
+                    temp[k--] = record[i--];
+                }
+                else
+                {
+                    temp[k--] = record[j--];
+                }
+            }
+            while(i>=L)
+            {
+                temp[k--] = record[i--];
+            }
+            while(j >= M+1)
+            {
+                temp[k--] = record[j--];
+            }
+            for(int t=0;t<temp.size();t++)
+                record[L+t] = temp[t];
+            return ans;
+        }
+    
+        int process(vector<int>& record,int L,int R)
+        {
+            
+            int mid = L + (R-L)/2;
+            int ans = 0;
+            //递归边界条件
+            if(R==L)
+                return 0;
+            ans = process(record,L,mid) 
+                    + process(record,mid+1,R) 
+                    + merge(record,L,mid,R);
+            return ans;
+        }
+    
+        int reversePairs(vector<int>& record) {
+            int ans = 0;
+            if(record.size()==0)
+                return 0;
+            else
+            {
+                ans = process(record,0,record.size()-1);
+                return ans;
+            }
+        }
+    };
+
+int main()
+{
+    Solution mysolution;
+    vector<int> vec = {9,7,5,4,6};
+    int ans;
+    ans = mysolution.reversePairs(vec);
+    printf("%d\n",ans);
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
 
 
