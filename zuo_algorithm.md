@@ -1417,4 +1417,74 @@ int main()
 }
 ```
 
+#### 双倍逆序对问题
++ 题目描述：
+	+ 给定一个整数数组 `nums`，统计其中满足以下条件的逆序对数量：
+	- 条件：存在两个下标 `i` 和 `j`（ `i < j` ），使得 `nums[i] > 2 * nums[j]`。要求设计一个时间复杂度为 $O(NlogN)$ 的算法解决此问题。
+	- 示例：
+		- 输入：`nums = [8, 3, 5, 1, 2]`  
+		- 输出：`6`  
+		- 解释：  满足条件的逆序对为：`(8,3)`, `(8,1)`, `(8,2)`, `(3,1)`, `(5,1)`, `(5,2)`，共 `6` 对。
+- 思路：
+	- 基于**归并排序的分治框架**，在合并两个有序子数组的过程中，利用**双指针滑动窗口**高效统计满足条件的逆序对。具体步骤如下
+	1. **递归划分**：将数组递归分割为子数组，直到子数组长度为 `1`。
+	2. **合并与统计**：在合并两个已排序的子数组时，遍历左半部分的每个元素，通过滑动窗口找到右半部分中满足 `nums[i] > 2 * nums[j]` 的元素数量。
+	3. **排序保证**：合并完成后，保证当前子数组有序，为后续递归合并提供正确输入。
++ 代码：
+
+```cpp
+class Solution {
+    public:
+        
+        int merge(vector<int>& nums,int L,int M,int R)
+        {
+            vector<int> temp(R-L+1);
+            int i = L,j = M+1,k = 0;
+            int ans = 0;
+            
+            //计算左边数比右边数大2倍的数量
+            int winR = M+1;
+            for(int i=L;i<=M;i++)
+            {
+                while(winR<=R && nums[i]>(nums[winR]*2))
+                    winR++;
+                ans += winR - (M+1);
+            }
+
+            //排序合并
+            i = L,j = M+1,k = 0;
+            while(i<=M && j<=R)
+            {
+                temp[k++] = nums[i]<nums[j] ? nums[i++] : nums[j++];
+            }
+            //要么i越界了,把j剩下的拷贝进去
+            while(j<=R)
+                temp[k++] = nums[j++];
+            //要么j越界了,把i剩下的拷贝进去
+            while(i<=M)
+                temp[k++] = nums[i++];
+            for(int t=0;t<temp.size();t++)
+                nums[L+t] = temp[t];//需要注意nums的区间
+            return ans;
+        }
+        
+        int process(vector<int>& nums,int L,int R)
+        {
+            int mid = L + (R - L)/2;
+            int ans = 0;
+            //递归边界条件
+            if(L == R)
+                return 0;
+            ans = process(nums,L,mid) + process(nums,mid+1,R) + merge(nums,L,mid,R);
+            return ans;
+        }
+    
+        int Than2(vector<int>& nums) {
+            int ans;
+            ans = process(nums,0,nums.size()-1);
+            return ans;
+        }
+    };
+```
+
 
