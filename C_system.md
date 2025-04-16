@@ -687,7 +687,88 @@ int main()
 
 ![不能写成该形式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416154620.png)
 
+#### 声明和初始化
++ 注意数组的初始化和字符串的字面值。
 
+![声明和初始化](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416191810.png)
 
+#### 读和写（和用户交互）
++ `printf()+%s` 输出字符串
 
+![输出字符串](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416192436.png)
 
++ `scanf()+%s` 读字符串
+	+ `%s` 的匹配规则：
+		+ 忽略前置空白的字符，读取字符填入字符数组；
+		+ 遇到空白字符结束。
+	+ 缺点：
+		+ 不能够存储空白字符；
+		+ 不会检查数组越界。
+
+![scanf()+%s 读字符串](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416192753.png)
+
++ `puts()` 函数：`puts(str);` 等价于 `printf("%s\n",str);`
+
+![puts() 函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416195429.png)
+
++ `gets()` 函数
+	+ 从 `stdin`（标准输入流） 中读取一行数据，传入字符数组，并将 `'\n'` 替换为 `'\0'`；
+	+ 缺陷：不会检查数组越界。
+
+![gets() 函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416200223.png)
+
++ `fgets()` 函数
+	+ 和 `gets()` 函数的区别：
+		+ 会检查是否越界；
+		+ 会存储 `'\n'` 符，并在后面添加 `'\0'`。
+
+![fets() 函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416200843.png)
+
+### 字符串库函数
++ 需要引入 `#include <string.h>` 库。
+#### strlen
++ `strlen()` 的实现和遍历字符串的惯用法：
+
+![遍历字符串的惯用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416204136.png)
+
++ `strlen()` 不会计算 `'\0'`：
+
+![计算字符串的长度](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416204226.png)
+
+#### strcpy() 和 strncpy() 函数
++ `strcpy()` 函数不检查数组越界，`strncpy()` 函数要设定最大拷贝的数量。
+
+![strncpy()函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416205020.png)
+
++ `strcpy()` 函数的实现和惯用法：
+	+ 将赋值运算符右侧的"表达式”的值赋给左侧的变量，赋值表达式的值就是被赋值的变量的值。
+	+ 例如：`a=(b=5)` 相当于 `b=5` 和 `a=b` 两个赋值表达式，因此 `a` 的值等于 `5`，整个赋值表达式的值也等于 `5`。
+
+![strcpy()的实现和惯用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416210657.png)
+
++ `strncpy()` 函数的实现：
+
+![strncpy()的实现](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416211333.png)
+
+#### strcat() 和 strncat() 函数
++ `strcat()` 函数不检查数组越界，`strncat()` 函数要设定最大拷贝的数量。
+
+![strcat() 和 strncat() 函数的使用](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416212013.png)
+
++ `strcat()` 函数的实现：
+
+![strcat()函数的实现](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416212212.png)
+
++ `strncat()` 函数的实现：
+
+![strncat()函数的实现](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416212331.png)
+
+#### strcmp()函数
++ 字符串的比较：`strcmp()` 函数
++ 比较规则：字典序（`ASCII`）
+
+![字符串的比较](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416212727.png)
+
++ `strcmp()` 函数的实现：
+
+![strcmp()函数的实现](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416213027.png)
