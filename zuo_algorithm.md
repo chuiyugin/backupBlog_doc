@@ -970,6 +970,44 @@ int main()
 ```
 
 ### 题目六
++  相交链表：[160.相交链表](https://leetcode.cn/problems/intersection-of-two-linked-lists/description/)
++ 思路：
+
+![相交链表思路](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250407170603.png)
+
++ 代码：
+
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        ListNode *p = headA;
+        ListNode *q = headB;
+        while(q!=p)
+        {
+            if(p!=nullptr)
+                p = p->next;
+            else
+                p = headB;
+            if(q!=nullptr)
+                q = q->next;
+            else
+                q = headA;
+        }
+        return p;
+    }
+};
+```
+
+### 题目七
 + 环形链表 II：[142.环形链表II](https://leetcode.cn/problems/linked-list-cycle-ii/description/)
 + 思路：[代码随想录-142.环形链表](https://programmercarl.com/0142.%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8II.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
 + 代码：
@@ -1008,3 +1046,288 @@ public:
     }
 };
 ```
+
+## 队列和栈
+### 题目一
++ 用栈实现队列：[232.用栈实现队列](https://leetcode.cn/problems/implement-queue-using-stacks/description/)
++ 思路：[代码随想录-232.用栈实现队列](https://programmercarl.com/0232.%E7%94%A8%E6%A0%88%E5%AE%9E%E7%8E%B0%E9%98%9F%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <stack>
+using namespace std;
+
+class MyQueue {
+    public:
+        stack<int> In;
+        stack<int> Out;
+        MyQueue() {}
+    
+        void push(int x) { In.push(x); }
+    
+        int pop() {
+            if (!Out.empty()) {
+                int temp = Out.top();
+                Out.pop();
+                return temp;
+            } else {
+                while (!In.empty()) {
+                    Out.push(In.top());
+                    In.pop();
+                }
+                return Out.top();
+            }
+        }
+    
+        int peek() {
+            if (!Out.empty())
+                return Out.top();
+            else {
+                while (!In.empty()) {
+                    Out.push(In.top());
+                    In.pop();
+                }
+                return Out.top();
+            }
+        }
+    
+        bool empty() {
+            if (In.empty() && Out.empty())
+                return true;
+            else
+                return false;
+        }
+    };
+    
+    /**
+     * Your MyQueue object will be instantiated and called as such:
+     * MyQueue* obj = new MyQueue();
+     * obj->push(x);
+     * int param_2 = obj->pop();
+     * int param_3 = obj->peek();
+     * bool param_4 = obj->empty();
+     */
+    
+int main()
+{
+    MyQueue* myQueue = new MyQueue();
+    //myQueue->push(1);
+    myQueue->push(2);
+    printf("%d\n",myQueue->peek());
+    myQueue->pop();
+    //myQueue->pop();
+    printf("%d\n",myQueue->empty());
+    //myQueue->peek();
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+### 题目二
++ 用队列实现栈：[225.用队列实现栈](https://leetcode.cn/problems/implement-stack-using-queues/description/)
++ 思路：采用两个队列，始终保持一个队列为空，当要 `pop` 数据的时候，把非空队列的元素依次输出到另外一个空队列，剩下最后一个元素进行返回和 `pop`。`push` 数据时要向非空队列传入数据，若两个队列都是空的就向任意一个队列传数据即可。
++ 代码：
+
+```cpp
+class MyStack {
+public:
+    queue<int> qu_1;
+    queue<int> qu_2;
+    MyStack() {}
+
+    void push(int x) 
+    {
+        if(!qu_1.empty())
+            qu_1.push(x);
+        else if(!qu_2.empty())
+            qu_2.push(x);
+        else
+            qu_1.push(x);
+    }
+
+    int pop() 
+    {
+        int temp;
+        if(!qu_1.empty())
+        {
+            while(qu_1.size()>1)
+            {
+                qu_2.push(qu_1.front());
+                qu_1.pop();
+            }
+            temp = qu_1.front();
+            qu_1.pop();
+            return temp;
+        }
+        else
+        {
+            while(qu_2.size()>1)
+            {
+                qu_1.push(qu_2.front());
+                qu_2.pop();
+            }
+            temp = qu_2.front();
+            qu_2.pop();
+            return temp;
+        }
+    }
+
+    int top() 
+    {
+        if(!qu_1.empty())
+            return qu_1.back();
+        else
+            return qu_2.back();
+    }
+
+    bool empty() 
+    {
+        if(qu_1.empty() && qu_2.empty())
+            return true;
+        else
+            return false;
+    }
+};
+
+/**
+ * Your MyStack object will be instantiated and called as such:
+ * MyStack* obj = new MyStack();
+ * obj->push(x);
+ * int param_2 = obj->pop();
+ * int param_3 = obj->top();
+ * bool param_4 = obj->empty();
+ */
+```
+
+## 排序问题
+### 归并排序
+#### 普通归并排序
++ 递归方法：[912.排序数组](https://leetcode.cn/problems/sort-an-array/description/)
++ 思路：采用二分法和递归的方式实现 $O(NlogN)$ 的归并排序；
++ 代码：
+
+```cpp
+class Solution {
+public:
+    
+    void merge(vector<int>& nums,int L,int M,int R)
+    {
+        vector<int> temp(R-L+1);
+        int i = L,j = M+1,k = 0;
+        while(i<=M && j<=R)
+        {
+            temp[k++] = nums[i]<=nums[j]? nums[i++] : nums[j++];
+        }
+        //要么i越界了,把j剩下的拷贝进去
+        while(j<=R)
+            temp[k++] = nums[j++];
+        //要么j越界了,把i剩下的拷贝进去
+        while(i<=M)
+            temp[k++] = nums[i++];
+        for(int t=0;t<temp.size();t++)
+            nums[L+t] = temp[t];//需要注意nums的区间
+    }
+    
+    void process(vector<int>& nums,int L,int R)
+    {
+        int mid = L + (R - L)/2;
+        //递归边界条件
+        if(L == R)
+            return;
+        process(nums,L,mid);
+        process(nums,mid+1,R);
+        merge(nums,L,mid,R);
+    }
+
+    vector<int> sortArray(vector<int>& nums) {
+        process(nums,0,nums.size()-1);
+        return nums;
+    }
+};
+```
+
+#### 小和问题
++ 问题描述：
++ 在一个数组中，每一个数的左边比当前数小的数累加起来，叫做这个数组的小和。求一个数组的小和。  
+	+ 例子：对于数组 `[1,3,4,2,5]` ，
+		+ `1` 左边比 `1` 小的数，没有；
+		+ `3` 左边比 `3` 小的数，`1`；
+		+ `4` 左边比 `4` 小的数，`1,3`；
+		+ `2` 左边比 `2` 小的数，`1`；
+		+ `5` 左边比 `5` 小的数，`1,2,3,4`；
+		+ 所以小和为 `1+1+3+1+1+2+3+4 = 16` 。
++ 思路：
+	+ 此处使用归并排序，在 `merge` 时，由于左右两部分都已经有序，可以确定一侧的数都大于正在比较的数，例如，
+	+ 归并 `2 4 5 | 1 3 7` 两个部分时，`2` 比 `3` 小，此时可以确定后面的数都大于 `2`，此时便可以一次性计算小和 `2 * 2`(两个数大于 `2`)，而不用一个个遍历。
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Solution {
+    public:
+        
+        int merge(vector<int>& nums,int L,int M,int R)
+        {
+            vector<int> temp(R-L+1);
+            int i = L,j = M+1,k = 0;
+            int ans = 0;
+            while(i<=M && j<=R)
+            {
+                //左组小于右组数，把小和累加进去
+                ans += nums[i]<nums[j] ? (R-j+1)*nums[i] : 0;
+                temp[k++] = nums[i]<nums[j] ? nums[i++] : nums[j++];
+            }
+            //要么i越界了,把j剩下的拷贝进去
+            while(j<=R)
+                temp[k++] = nums[j++];
+            //要么j越界了,把i剩下的拷贝进去
+            while(i<=M)
+                temp[k++] = nums[i++];
+            for(int t=0;t<temp.size();t++)
+                nums[L+t] = temp[t];//需要注意nums的区间
+            return ans;
+        }
+        
+        int process(vector<int>& nums,int L,int R)
+        {
+            int mid = L + (R - L)/2;
+            int ans = 0;
+            //递归边界条件
+            if(L == R)
+                return 0;
+            ans = process(nums,L,mid) + process(nums,mid+1,R) + merge(nums,L,mid,R);
+            return ans;
+        }
+    
+        int smallSum(vector<int>& nums) {
+            int ans;
+            ans = process(nums,0,nums.size()-1);
+            return ans;
+        }
+    };
+
+int main()
+{
+    Solution mysolution;
+    vector<int> vec = {2,4,5,1,7,3};
+    int ans;
+    ans = mysolution.smallSum(vec);
+    printf("%d\n",ans);
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+  
+
+
+
