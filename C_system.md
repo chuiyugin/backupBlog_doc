@@ -791,4 +791,115 @@ int main()
 
 ![字符指针数组](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250417153006.png)
 
+## 命令行参数
++ 命令行参数：指命令行中给定的参数。
+
+![操作系统与main函数的交互](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418152343.png)
+
++ 接收命令行参数的 `main` 函数写法：
+
+![接收命令行参数的 main 函数写法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418152458.png)
+
++ 命令行参数的内存模型和使用方法：
+
+![命令行参数的内存模型和使用方法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418152616.png)
+
++ 命令行参数和从 `stdin` 中读取数据有什么区别？
+	+ 命令行参数：程序还未执行；
+	+ 从 `stdin` 中读取数据：程序已经在运行的过程中。
+
++ 命令行参数有什么作用？
+	+ `cp src dst`：写一些非常通用的程序；
+	+ `ls l`：改变程序的行为，参数不同，行为不同。
+
++ 命令行参数的类型转换：`sscanf("%d",&n);`
+
+![命令行参数的类型转换](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418153127.png)
+
++ 命令行参数类型转换的原理：与 `scanf()` 类似
+
+![命令行参数类型转换的原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418153308.png)
+
+## 结构体
++ 先介绍对象包含的内容：
+	+ 属性：静态数据
+	+ 方法：行为
++ C 语言中的结构体类似其它语言中的"类"，不同的是结构体只有属性而没有方法。
+### 结构体的语法
++ 结构体的定义、声明和初始化变量：
+
+![结构体的定义、声明和初始化变量](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418155636.png)
+
+### 结构体的内存模型
++ 结构体的内存模型：
+	+ 一片连续的内存空间；
+	+ 会按声明的顺序存放每一个成员；
+	+ 在结构体变量的中间或后面，可能会有填充（填充是为了对齐，对齐是为了更快德访问数据），因为考虑到以前数据总线是 `32 bit` 的。
+
+![结构体的内存模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418160257.png)
+
+### 结构体的变量操作
++ 结构体的获取成员和赋值：
+
+![结构体的获取成员和赋值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418163457.png)
+
++ 一般采用结构体指针操作结构体的变量，避免结构体的大量复制，避免占用大量内存空间：
+
+![结构体指针操作结构体的变量](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418163553.png)
+
++ 使用 `typedef` 对 `struct` 取别名：
+
+![使用 typedef 对 struct 取别名](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418164346.png)
+
++ 匿名结构体：只能被引用一次
+
+![匿名结构体](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418164513.png)
+
+## 枚举
++ 作用：表示一些离散值（例如：类别，状态）。
+
+![枚举类型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418171111.png)
+
+## 动态内存分配
++ 为什么要在堆上分配空间？
+	+ 栈帧的大小是在编译期间确定的：
+		+ 栈不能够存放动态大小的数据；
+	+ 栈空间比较小，是受限的：
+		+ 主线程：`8M`
+		+ 其它线程：`2M`
+		+ 栈上不能存放很大的数据。
+	+ 栈空间最好不要放多线程共享的数据。
+
+![在堆上分配动态内存空间](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418172137.png)
+
++ 如何在堆中申请空间？
+
+![在堆中申请空间](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418203143.png)
+
++ 在堆中申请空间有失败的可能性，因此执行完 `malloc()` 或者 `calloc()` 函数之后需要判断返回的指针是否为空。
+
+```cpp
+int main(void)
+{
+	int *p = malloc(sizeof(int) * 100);
+	if(p == NULL)//或者if(!p)
+	{
+		printf("ERROR:malloc failed in main\n");
+		exit(1);
+	}
+}
+```
+
++ 储存指针 `p` 的空间是在栈中，分配的连续的内存空间是在堆中。
+
+![指针p和连续内存空间的位置](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418203817.png)
+
++ `void*`：通用指针
+	+ 作用：可以和其它类型指针相互转换；
+	+ 当指向对象的类型还不确定时，不能够直接操作通用指针！
+
+
+
+
+
 
