@@ -525,25 +525,37 @@ int main()
 ## 指针基础
 ### 内存模型
 + 指针的内存模型：
+	+ 计算机的最小寻址单位——字节
+	+ 变量的地址——变量首字节的地址
+	+ 指针——地址
+	+ 指针变量——存储地址值的变量
 
 ![指针的内存模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411131416.png)
 ### 指针的操作
 + 指针的定义：
+	+ 变量名：`p`
+	+ 类型：`int*`
+	+ 注意事项：声明指针变量时，需要指定它指向对象的类型
 
 ![指针的定义](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411131533.png)
 
 + 指针的两个基本操作：
+	+ 取地址运算符：`&` —— `&i`
+	+ 解引用运算符：`*` ——  `*p` 
+		+ 指针变量 `p` 指向对象的别名
+		+ 间接引用——访问内存两次
 
 ![指针的两个基本操作](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411131714.png)
 
 ### 野指针
 + 野指针：不知道指向哪块数据。
+	+ 对野指针进行解引用操作，是未定义行为。
 
 ![野指针](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411155133.png)
 
 + 如何给指针变量赋值？
 	+ `int *p = &i;`
-	+ `int *q = p;`
+	+ `int *q = p;` —— 指针变量 `p`，`q` 指向同一个对象。
 	+ `p = NULL;`：空指针，不指向任何对象指针。
 
 + 指针赋值示例：
@@ -562,5 +574,221 @@ int main()
 
 ![指针的应用_2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250411160254.png)
 
+### 指针常量和常量指针
++ 指针变量 `p` 对内存 `1`，内存 `2` 都有写权限：
+
+![指针变量](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416133938.png)
+
++ 常量指针，对内存 `1` 有写权限：
+
+![常量指针](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416134812.png)
+
++ 指针常量，对内存 `2` 有写权限：
+
+![指针常量](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416134930.png)
+
++ 两边加 `const` 修饰符，对内存 `1`，内存 `2` 都没有写权限：
+
+![两边加const](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416135053.png)
+
++ 本质：限制变量的写权限！
+
+### 传入参数和传出参数
++ 传入参数：在函数里面，不会（不能够）通过指针变量修改它指向的对象：
+
+![传入参数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416135658.png)
+
++ 传出参数：在函数里面，可以通过指针变量修改它指向的对象！
+
+![传出参数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416140224.png)
+
+### 指针的算术运算
++ 画图表现数组和指针：
+
+![数组和指针的画图表示](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416141535.png)
+
++ 指针加上一个整数，结果还是一个指针：
+	+ 指针加上一个整数 `n`，其含义在于指针向右偏移了 `n` 个单位；
+	+ 单位表示的是对象类型的大小。
+
+![指针加上整数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416141818.png)
+
++ 指针减去一个整数 `n`，其含义在于指针向左偏移了 `n` 个单位：
+
+![指针减去整数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416142057.png)
+
++ 两个指针相减，结果是一个整数：
+
+![两个指针相减](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416142407.png)
+
++ 根据指针减法，可以定义指针的比较运算：
+
+![指针的比较运算](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416142618.png)
+
+### 指针和数组的关系
++ 采用指针处理数组：
+
+![指针处理数组](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416143530.png)
+
++ `*` 和 `++` 的组合，`--` 同理：
+
+![指针运算的组合](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416144140.png)
+
++ 指针运算的组合的示例：
+
+![指针运算的组合的示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416144222.png)
+
++  在必要的时候，数组可以退化成指向它索引为 `0` 元素的指针：
+
+![数组退化示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416144603.png)
+
++ 数组退化的几种情况总结
+	+ 数组作为参数：`fun(arr);`
+	+ 数组在赋值表达式的右边：`int* p = arr;`
+	+ 数组参与算术运算：`arr+3;`
+
+ + 指针也支持取下标运算：
+
+![指针取下标运算](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416145337.png)
+
++ 下标可以放到中括号 `[]` 前面：
+
+![下标可以放到中括号前面]( https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416145643.png )
+
+## 字符串
+### 字符串字面值
++ 三种书写方式：
+	+ 如第三种方式，如果两个字符串字面值之间仅有空白字符，可以认为这两个字符串字面值是相邻的，相邻的字符串字面值在编译的时候就会拼接成一个字符串字面值。
+
+![字符串字面值的三种书写方式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416150744.png)
+
++ 内存模型：
+	+ 字符串字面值在代码段——不可被修改的。
+	+ 可以把字符串字面值看作常量数组。
+
+![字符串字面值的内存模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416151840.png)
+
++ 字符串字面值支持的操作：
+	+ 常量数组能支持的操作，字符串字面值都支持，例：
+	+ 十进制转换为十六进制的函数：
+
+![十进制转换为十六进制的函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416152559.png)
+
+### 字符串变量
++ 总纲：
+	+ C 语言中没有字符串类型—— `string`、`String`
+	+ C 语言中的字符串依赖字符数组存在！
+	+ C 语言字符串是一种“逻辑类型”。
+
+![字符串和字符数组](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416154414.png)
+
++ 注意事项：
+	+ 字符串必须以 `'\0'` 结尾！
+	+ 在 C 语言中求字符串的长度不是 $O(1)$ 的时间复杂度，不能写成下面的例子：
+
+![不能写成该形式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416154620.png)
+
+#### 声明和初始化
++ 注意数组的初始化和字符串的字面值。
+
+![声明和初始化](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416191810.png)
+
+#### 读和写（和用户交互）
++ `printf()+%s` 输出字符串
+
+![输出字符串](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416192436.png)
+
++ `scanf()+%s` 读字符串
+	+ `%s` 的匹配规则：
+		+ 忽略前置空白的字符，读取字符填入字符数组；
+		+ 遇到空白字符结束。
+	+ 缺点：
+		+ 不能够存储空白字符；
+		+ 不会检查数组越界。
+
+![scanf()+%s 读字符串](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416192753.png)
+
++ `puts()` 函数：`puts(str);` 等价于 `printf("%s\n",str);`
+
+![puts() 函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416195429.png)
+
++ `gets()` 函数
+	+ 从 `stdin`（标准输入流） 中读取一行数据，传入字符数组，并将 `'\n'` 替换为 `'\0'`；
+	+ 缺陷：不会检查数组越界。
+
+![gets() 函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416200223.png)
+
++ `fgets()` 函数
+	+ 和 `gets()` 函数的区别：
+		+ 会检查是否越界；
+		+ 会存储 `'\n'` 符，并在后面添加 `'\0'`。
+
+![fets() 函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416200843.png)
+
+### 字符串库函数
++ 需要引入 `#include <string.h>` 库。
+#### strlen
++ `strlen()` 的实现和遍历字符串的惯用法：
+
+![遍历字符串的惯用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416204136.png)
+
++ `strlen()` 不会计算 `'\0'`：
+
+![计算字符串的长度](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416204226.png)
+
+#### strcpy() 和 strncpy() 函数
++ `strcpy()` 函数不检查数组越界，`strncpy()` 函数要设定最大拷贝的数量。
+
+![strncpy()函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416205020.png)
+
++ `strcpy()` 函数的实现和惯用法：
+	+ 将赋值运算符右侧的"表达式”的值赋给左侧的变量，赋值表达式的值就是被赋值的变量的值。
+	+ 例如：`a=(b=5)` 相当于 `b=5` 和 `a=b` 两个赋值表达式，因此 `a` 的值等于 `5`，整个赋值表达式的值也等于 `5`。
+
+![strcpy()的实现和惯用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416210657.png)
+
++ `strncpy()` 函数的实现：
+
+![strncpy()的实现](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416211333.png)
+
+#### strcat() 和 strncat() 函数
++ `strcat()` 函数不检查数组越界，`strncat()` 函数要设定最大拷贝的数量。
+
+![strcat() 和 strncat() 函数的使用](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416212013.png)
+
++ `strcat()` 函数的实现：
+
+![strcat()函数的实现](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416212212.png)
+
++ `strncat()` 函数的实现：
+
+![strncat()函数的实现](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416212331.png)
+
+#### strcmp()函数
++ 字符串的比较：`strcmp()` 函数
++ 比较规则：字典序（`ASCII`）
+
+![字符串的比较](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416212727.png)
+
++ `strcmp()` 函数的实现：
+
+![strcmp()函数的实现](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250416213027.png)
+
+### 字符串数组
+#### 字符串数组
++ 字符数组的数组——二维字符数组
+	+ 缺陷：
+		+ 浪费内存空间；
+		+ 交换字符串不方便。
+	+ 初始化的时候是数组初始化式。
+
+![字符串数组](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250417152319.png)
+
+#### 字符指针数组
++ 储存的是字符指针，比较灵活，不会造成内存空间的浪费；
++ 直接初始化的时候是字面值，字符串存储在代码段，无法修改；
++ 需要能够修改的字符串要先定义字符串变量再合并到字符指针数组。
+
+![字符指针数组](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250417153006.png)
 
 

@@ -1262,7 +1262,7 @@ public:
 		+ 所以小和为 `1+1+3+1+1+2+3+4 = 16` 。
 + 思路：
 	+ 此处使用归并排序，在 `merge` 时，由于左右两部分都已经有序，可以确定一侧的数都大于正在比较的数，例如，
-	+ 归并 `2 4 5 | 1 3 7` 两个部分时，`2` 比 `3` 小，此时可以确定后面的数都大于 `2`，此时便可以一次性计算小和 `2 * 2`(两个数大于 `2`)，而不用一个个遍历。
+	+ 归并 `2 4 5 | 1 3 7` 两个部分时，`2` 比 `3` 小，此时可以确定后面的数都大于 `2`，此时便可以一次性计算小和 `2 * 2` (两个数大于 `2`)，而不用一个个遍历。
 + 代码：
 
 ```cpp
@@ -1328,6 +1328,241 @@ int main()
 }
 ```
   
+#### 逆序对问题
++ 交易逆序对总数：[LCR 170 交易逆序对总数](https://leetcode.cn/problems/sort-an-array/description/)
++ 思路：参考归并排序的算法，区别在于在 `merge` 的时候从右到左进行比较，
+	+ 左组数比右组数大时，通过 `ans+=j-(M+1)+1;` 计算逆序对的个数，并将左组数拷贝到 `temp` 数组并左移一位；
+	+ 右组数比左组数大时，无需计算逆序对个数，只需要将右组数拷贝到 `temp` 数组并左移一位即可。
+	+ 注意递归的边界条件！
++ 代码：
 
+```cpp
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+using namespace std;
 
+class Solution {
+    public:
+        
+        int merge(vector<int>& record,int L,int M,int R)
+        {
+            int ans = 0;
+            int i = M;
+            int j = R;
+            vector<int> temp(R-L+1);
+            int k=R-L;
+            while(i>=L && j >= M+1)
+            {
+                if(record[i]>record[j])
+                {
+                    ans+=j-(M+1)+1;
+                    temp[k--] = record[i--];
+                }
+                else
+                {
+                    temp[k--] = record[j--];
+                }
+            }
+            while(i>=L)
+            {
+                temp[k--] = record[i--];
+            }
+            while(j >= M+1)
+            {
+                temp[k--] = record[j--];
+            }
+            for(int t=0;t<temp.size();t++)
+                record[L+t] = temp[t];
+            return ans;
+        }
+    
+        int process(vector<int>& record,int L,int R)
+        {
+            
+            int mid = L + (R-L)/2;
+            int ans = 0;
+            //递归边界条件
+            if(R==L)
+                return 0;
+            ans = process(record,L,mid) 
+                    + process(record,mid+1,R) 
+                    + merge(record,L,mid,R);
+            return ans;
+        }
+    
+        int reversePairs(vector<int>& record) {
+            int ans = 0;
+            if(record.size()==0)
+                return 0;
+            else
+            {
+                ans = process(record,0,record.size()-1);
+                return ans;
+            }
+        }
+    };
 
+int main()
+{
+    Solution mysolution;
+    vector<int> vec = {9,7,5,4,6};
+    int ans;
+    ans = mysolution.reversePairs(vec);
+    printf("%d\n",ans);
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+#### 双倍逆序对问题
++ 题目描述：
+	+ 给定一个整数数组 `nums`，统计其中满足以下条件的逆序对数量：
+	- 条件：存在两个下标 `i` 和 `j`（ `i < j` ），使得 `nums[i] > 2 * nums[j]`。要求设计一个时间复杂度为 $O(NlogN)$ 的算法解决此问题。
+	- 示例：
+		- 输入：`nums = [8, 3, 5, 1, 2]`  
+		- 输出：`6`  
+		- 解释：  满足条件的逆序对为：`(8,3)`, `(8,1)`, `(8,2)`, `(3,1)`, `(5,1)`, `(5,2)`，共 `6` 对。
+- 思路：
+	- 基于**归并排序的分治框架**，在合并两个有序子数组的过程中，利用**双指针滑动窗口**高效统计满足条件的逆序对。具体步骤如下
+	1. **递归划分**：将数组递归分割为子数组，直到子数组长度为 `1`。
+	2. **合并与统计**：在合并两个已排序的子数组时，遍历左半部分的每个元素，通过滑动窗口找到右半部分中满足 `nums[i] > 2 * nums[j]` 的元素数量。
+	3. **排序保证**：合并完成后，保证当前子数组有序，为后续递归合并提供正确输入。
++ 代码：
+
+```cpp
+class Solution {
+    public:
+        
+        int merge(vector<int>& nums,int L,int M,int R)
+        {
+            vector<int> temp(R-L+1);
+            int i = L,j = M+1,k = 0;
+            int ans = 0;
+            
+            //计算左边数比右边数大2倍的数量
+            int winR = M+1;
+            for(int i=L;i<=M;i++)
+            {
+                while(winR<=R && nums[i]>(nums[winR]*2))
+                    winR++;
+                ans += winR - (M+1);
+            }
+
+            //排序合并
+            i = L,j = M+1,k = 0;
+            while(i<=M && j<=R)
+            {
+                temp[k++] = nums[i]<nums[j] ? nums[i++] : nums[j++];
+            }
+            //要么i越界了,把j剩下的拷贝进去
+            while(j<=R)
+                temp[k++] = nums[j++];
+            //要么j越界了,把i剩下的拷贝进去
+            while(i<=M)
+                temp[k++] = nums[i++];
+            for(int t=0;t<temp.size();t++)
+                nums[L+t] = temp[t];//需要注意nums的区间
+            return ans;
+        }
+        
+        int process(vector<int>& nums,int L,int R)
+        {
+            int mid = L + (R - L)/2;
+            int ans = 0;
+            //递归边界条件
+            if(L == R)
+                return 0;
+            ans = process(nums,L,mid) + process(nums,mid+1,R) + merge(nums,L,mid,R);
+            return ans;
+        }
+    
+        int Than2(vector<int>& nums) {
+            int ans;
+            ans = process(nums,0,nums.size()-1);
+            return ans;
+        }
+    };
+```
+
+#### 区间和的个数问题
++ 区间和的个数问题：[327.区间和的个数](https://leetcode.cn/problems/count-of-range-sum/description/)
++ 思路：
+	+ 转化为归并排序进行求解，复杂度为 $O(NlogN)$。将原问题转化为**前缀和数组**的有序对统计问题，区间和 `[i, j]` 对应前缀和 `sum[j] - sum[i]`，要求满足 `lower ≤ sum[j] - sum[i] ≤ upper`，即等价于统计满足 `sum[j] - upper ≤ sum[i] ≤ sum[j] - lower` 的有序对 `(i, j)`（`i < j`）。
++ 代码：
+
+```cpp
+class Solution {
+    public:
+        
+        int merge(vector<long long>& sum,int L,int M,int R, int lower, int upper)
+        {
+            int ans = 0;
+            int winL = L;
+            int winR = L;
+            for(int i=M+1;i<=R;i++)
+            {
+                long long min_ = sum[i] - upper;
+                long long max_ = sum[i] - lower;
+                while(winR<=M && sum[winR]<=max_)
+                    winR++;
+                while(winL<=M && sum[winL]<min_)
+                    winL++;
+                ans += winR - winL;
+            }
+            //做merge操作
+            vector<long long> temp(R-L+1);
+            int k=0;
+            int i=L;
+            int j=M+1;
+            while(i<=M && j<=R)
+                temp[k++] = sum[i]<sum[j] ? sum[i++] : sum[j++];
+            while(i<=M)
+                temp[k++] = sum[i++];
+            while(j<=R)
+                temp[k++] = sum[j++];
+            for(int k=0;k<temp.size();k++)
+                sum[L+k] = temp[k];
+    
+            return ans;
+        }
+    
+        int process(vector<long long>& sum,int L,int R ,int lower, int upper)
+        {
+            int ans = 0;
+            int mid = L + (R-L)/2;
+            //递归边界条件
+            if(L==R)
+            {
+                if(sum[L]>=lower && sum[L]<=upper)
+                    return 1;
+                else
+                    return 0;
+            }
+            ans = process(sum,L,mid,lower,upper) 
+            + process(sum,mid+1,R,lower,upper) 
+            + merge(sum,L,mid,R,lower,upper);
+            return ans;
+        }
+    
+        int countRangeSum(vector<int>& nums, int lower, int upper) 
+        {
+            if(nums.size() == 0)
+                return 0;
+    
+            //求前缀和数组
+            vector<long long> sum;
+            sum.push_back(nums[0]);
+            for(int i=1;i<nums.size();i++)
+            {
+                sum.push_back(sum[i-1]+nums[i]);
+            }
+    
+            int ans = 0;
+            ans = process(sum,0,sum.size()-1,lower,upper);
+            return ans;
+        }
+    };
+```
