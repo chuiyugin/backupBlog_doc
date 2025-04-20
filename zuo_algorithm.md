@@ -1566,3 +1566,49 @@ class Solution {
         }
     };
 ```
+
+### 快速排序
+#### 颜色分类
++ 颜色分类问题：[75.颜色分类](https://leetcode.cn/problems/sort-colors/)
++ 思路：
+
+![颜色分类问题](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250420144955.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+
+    void swap(vector<int>& nums,int a,int b)
+    {
+        int temp = nums[a];
+        nums[a] = nums[b];
+        nums[b] = temp;
+    }
+
+    void sortColors(vector<int>& nums) {
+        if(nums.size()==1)
+            return;
+        int pre = -1;//数组的前一个区域
+        int now = 0;
+        int last = nums.size();//数组后的一个数
+
+        while(now<last)
+        {
+            if(nums[now]<1)
+            {
+                swap(nums,now,pre+1);
+                pre++;
+                now++;
+            }
+            else if(nums[now]>1)
+            {
+                swap(nums,now,last-1);
+                last--;
+            }
+            else
+                now++;
+        }
+    }
+};```
