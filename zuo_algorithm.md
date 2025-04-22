@@ -346,6 +346,90 @@ int main()
 }
 ```
 
+## 数组
+### 题目一
++ 有序数组的平方：[977.有序数组的平方](https://leetcode.cn/problems/squares-of-a-sorted-array/description/)
++ 思路：
+	+ 能够找到数组 `nums` 中负数与非负数的分界线，那么就可以用类似「**归并排序**」的方法。
+	+ 具体地，设 `index` 为数组 `nums` 中负数与非负数的分界线，也就是说，`nums[0]` 到 `nums[index]` 均为负数，而 `nums[index+1]` 到 `nums[len−1]` 均为非负数。当我们将数组 `nums` 中的数平方后，那么 `nums[0]` 到 `nums[index]` 单调递减，`nums[index+1]` 到 `nums[len−1]` 单调递增。
+	+ 由于我们得到了两个已经有序的子数组，因此就可以使用归并的方法进行排序了。具体地，使用两个指针分别指向位置 `index` 和 `index+1`，每次比较两个指针对应的数，选择较小的那个放入答案并移动指针。当某一指针移至边界时，将另一指针还未遍历到的数依次放入答案。
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+class Solution
+{
+public:
+    vector<int> sortedSquares(vector<int> &nums)
+    {
+        int len = nums.size();
+        if (len == 1)
+        {
+            nums[0] = nums[0] * nums[0];
+            return nums;
+        }
+        int index = -1;
+        for (int i = 0; i < len; i++)
+        {
+            if (nums[i] < 0)
+                index = i;
+            else
+                break;
+        }
+        int left = index;
+        int right = index + 1;
+        vector<int> arr;
+        while (left >= 0 && right <= len - 1)
+        {
+            if (nums[left] * nums[left] <= nums[right] * nums[right])
+            {
+                arr.push_back(nums[left] * nums[left]);
+                left--;
+            }
+            else
+            {
+                arr.push_back(nums[right] * nums[right]);
+                right++;
+            }
+        }
+        while (left >= 0)
+        {
+            arr.push_back(nums[left] * nums[left]);
+            left--;
+        }
+        while (right <= len - 1)
+        {
+            arr.push_back(nums[right] * nums[right]);
+            right++;
+        }
+        return arr;
+    }
+};
+
+int main()
+{
+    Solution mysolution;
+    vector<int> vec = {0, 2};
+    vector<int> ans;
+    int num;
+    ans = mysolution.sortedSquares(vec);
+    num = ans.size();
+    for (int i = 0; i < num; i++)
+    {
+        printf("%d\n", ans[i]);
+    }
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
 ## 链表
 ### 题目一
 + 移除链表元素：[203.移除链表元素](https://leetcode.cn/problems/remove-linked-list-elements/description/)
