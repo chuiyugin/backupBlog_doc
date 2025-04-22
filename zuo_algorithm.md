@@ -1566,3 +1566,130 @@ class Solution {
         }
     };
 ```
+
+### 快速排序
+#### 颜色分类
++ 颜色分类问题：[75.颜色分类](https://leetcode.cn/problems/sort-colors/)
++ 思路：
+
+![颜色分类问题](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250420144955.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+
+    void swap(vector<int>& nums,int a,int b)
+    {
+        int temp = nums[a];
+        nums[a] = nums[b];
+        nums[b] = temp;
+    }
+
+    void sortColors(vector<int>& nums) {
+        if(nums.size()==1)
+            return;
+        int pre = -1;//数组的前一个区域
+        int now = 0;
+        int last = nums.size();//数组后的一个数
+
+        while(now<last)
+        {
+            if(nums[now]<1)
+            {
+                swap(nums,now,pre+1);
+                pre++;
+                now++;
+            }
+            else if(nums[now]>1)
+            {
+                swap(nums,now,last-1);
+                last--;
+            }
+            else
+                now++;
+        }
+    }
+};
+```
+
+#### 随机快排
++ 思路：
+	+ 在前面所述的颜色分类问题的基础上，随机快排的 `partition()` 函数将数组分为 `<基准值区域`、`=基准值区域`、`>基准值区域` 三个区域，通过 `pre` 和 `last` 标记边界；
+	+ 快速排序随机选择从 `[L, R-1]` 范围上选择基准值与 `nums[R]` 进行交换，在代码中通过 `swap(nums,R,rand()%(R-L+1))` 体现；
+	+ 随机快排采用递归的方式完成对数组的排序，需要注意随机快排依赖 `qickSort()` 函数中的**递归终止条件**（`L >= R`）。
++ 代码：
+
+```cpp
+class Solution {
+    public:
+	    //交换函数
+        void swap(vector<int>& nums,int a,int b)
+        {
+            int temp = nums[a];
+            nums[a] = nums[b];
+            nums[b] = temp;
+        }
+        
+	    //荷兰国旗问题（颜色分类问题）的变形
+        vector<int> partition(vector<int>& nums,int L,int R)
+        {
+            vector<int> area(2);
+            int pre = L-1; // <区
+            int last = R; // >区
+            int now = L;
+            if(L==R)
+            {
+                area[0] = L;
+                area[1] = R;
+                return area;
+            }
+            else
+            {
+                while(now<last)
+                {
+                    if(nums[now]==nums[R])
+                        now++;
+                    else if(nums[now]<nums[R])
+                    {
+                        swap(nums,now,pre+1);
+                        pre++;
+                        now++;
+                    }
+                    else
+                    {
+                        swap(nums,now,last-1);
+                        last--;
+                    }
+                }
+                swap(nums,last,R);//最后把nums[R]放到=区的末尾
+                area[0] = pre+1;
+                area[1] = last;
+                return area;
+            }
+        }
+
+		//快排递归函数（注意递归边界）
+        void qickSort(vector<int>& nums,int L,int R)
+        {
+            //递归边界（注意）
+            if(L>=R)
+                return;
+
+            //随机选择一个数和nums[R]进行交换
+            srand(time(NULL));
+            swap(nums,R,L+rand()%(R-L+1));
+
+            vector<int> area(2);
+            area = partition(nums,L,R);
+            qickSort(nums,L,area[0]-1);
+            qickSort(nums,area[1]+1,R);
+        }
+    
+        vector<int> sortArray(vector<int>& nums) {
+            qickSort(nums,0,nums.size()-1);
+            return nums;
+        }
+    };
+```
