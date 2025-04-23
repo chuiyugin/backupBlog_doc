@@ -430,6 +430,41 @@ int main()
 }
 ```
 
+### 题目二
++ 长度最小的子数组：[209.长度最小的子数组](https://leetcode.cn/problems/minimum-size-subarray-sum/description/)
++ 思路：
+	+ 滑动窗口就是满足总和 `sum` 大于等于 `target` 的长度最小的连续子数组。
+	+ 滑动窗口的起始位置如何移动：如果当前窗口的总和 `sum` 大于等于 `target` 了，窗口就要向前移动了（也就是该缩小 `i++` 了）。
+	+ 滑动窗口的结束位置如何移动：窗口的结束位置就是遍历数组的指针，也就是 `for` 循环里的索引，`j++` 。
+	+ 可以发现滑动窗口的精妙之处在于根据当前子序列和大小的情况，不断调节子序列的起始位置。从而将 $O(n^2)$ 暴力解法降为 $O(n)$ 。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int minSubArrayLen(int target, vector<int>& nums) {
+        int len = nums.size(); //滑动窗口的长度
+        int sum = 0; // 滑动窗口数值之和
+        int i = 0; //滑动窗口的起始位置
+        //j表示移动窗口结束的位置
+        for(int j=0;j<nums.size();j++)
+        {
+            sum+=nums[j];
+            while(sum>=target) //直到滑动窗口中的数值之和小于target
+            {
+                sum-=nums[i];
+                len = min(len,j-i+1);//取长度中的最小值
+                i++;
+            }
+        }
+        if(i==0 && sum<target)
+            return 0;
+        else
+            return len;
+    }
+};
+```
+
 ## 链表
 ### 题目一
 + 移除链表元素：[203.移除链表元素](https://leetcode.cn/problems/remove-linked-list-elements/description/)
