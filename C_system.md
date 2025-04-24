@@ -926,6 +926,8 @@ void grow_capacity(Vector* v)
     
     //下面代码有问题，realloc失败会返回NULL，原来的内存空间不会被释放，造成内存泄漏
     //v->elements = realloc(v->elements,new_capacity * sizeof(E));
+    
+    //正确代码写法
     E* p = realloc(v->elements,new_capacity * sizeof(E));
     if(p == NULL)
     {
@@ -1051,6 +1053,8 @@ void grow_capacity(Vector* v)
     
     //下面代码有问题，realloc失败会返回NULL，原来的内存空间不会被释放，造成内存泄漏
     //v->elements = realloc(v->elements,new_capacity * sizeof(E));
+    
+    //正确代码写法
     E* p = realloc(v->elements,new_capacity * sizeof(E));
     if(p == NULL)
     {
