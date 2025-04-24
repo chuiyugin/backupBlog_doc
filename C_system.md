@@ -902,3 +902,175 @@ int main(void)
 + 其中 `void*` 是通用指针，作用是可以和其它类型指针相互转换。
 	+ 如果 `void*` 指向对象的类型还不确定，不能够直接操作通用指针（例如对指针进行解引用等操作）。
 
+### 动态数组
++ 自定义实现动态数组的模型：
+
+![动态数组模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250424211336.png)
+
++ 依赖关系如下：
+	+ 依赖接口，不需要依赖具体的实现！
+
+![依赖关系图](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250424211453.png)
+
++ `realloc()` 函数的缩容和扩容原理
+
+![realloc()函数的缩容和扩容原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250424211834.png)
+
++ 扩容代码：
+
+```cpp
+void grow_capacity(Vector* v)
+{
+    int new_capacity = v->capacity < PREALLOC_MAX ?
+        v->capacity * 2 : v->capacity+PREALLOC_MAX;
+    
+    //下面代码有问题，realloc失败会返回NULL，原来的内存空间不会被释放，造成内存泄漏
+    //v->elements = realloc(v->elements,new_capacity * sizeof(E));
+    E* p = realloc(v->elements,new_capacity * sizeof(E));
+    if(p == NULL)
+    {
+        printf("Error: realloc failed in grow_capacity!");
+        exit(1);
+    }
+
+    v->elements = p;
+    v->capacity = new_capacity;
+}
+```
+
++ 大端法和小端法
+
+![大端法和小端法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250424212052.png)
+
++ `free()` 函数的使用问题：
+	+ `free()` 函数使用之后，其原本指针属于悬空指针（野指针的一种），因此
+		+ 要避免 `free()` 函数使用多次的问题（`double free`）；
+		+ `free()` 函数使用之后继续使用原本的指针（`use after free`）；
+	+ 当堆上的数据不在使用时，应该有且只释放一次！
+
+![free()函数的使用问题](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250424212751.png)
+
++ 垃圾回收器的优缺点：
+
+![垃圾回收器的优缺点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250424212858.png)
+
++ `main.c` 代码：
+
+```c
+#include "Vector.h" //""：搜索路径：当前目录 -> 系统的头文件包含的目录下
+#include <stdio.h>  //<>：搜索路径：系统的头文件包含目录下
+#include <stdlib.h>
+
+int main(void)
+{
+    //创建空的动态数组
+    Vector* v = vector_create();
+
+    for(int i=0; i<200; i++)
+    {
+        push_back(v,i);
+    }
+    printf("push_finish\n");
+    vector_destroy(v);
+    printf("destroy_finish\n");
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
++ `Vector.h` 代码：
+
+```c
+//头文件：类型的定义和API声明
+#include <stddef.h>
+#include <stdlib.h>
+
+typedef int E;
+
+typedef struct
+{
+    E* elements;
+    int capacity;
+    int size;
+}Vector;
+
+//函数声明
+//构造函数
+Vector* vector_create(void);
+
+//析构函数
+Vector* vector_destroy(Vector* v);
+
+void push_back(Vector* v,E val);
+```
+
++ `Vector.c` 代码：
+
+```c
+#include "Vector.h"//""：搜索路径：当前目录 -> 系统的头文件包含的目录下
+
+#define DEFAULT_CAPACITY 8
+#define PREALLOC_MAX 1024 //提前申请的最大值
+
+//构造函数（创建空的动态数组）
+Vector* vector_create(void)
+{
+    Vector* v = malloc(sizeof(Vector));
+    if(v==NULL)
+    {
+        printf("Error: malloc failed in vector_create!");
+        exit(1);
+    }
+    E* p = malloc(DEFAULT_CAPACITY * sizeof(E));
+    if(p == NULL)
+    {
+        free(v);//要将之前创建的v释放掉
+        printf("Error: malloc failed in vector_create!");
+        exit(1);
+    }
+    //设置基本参数
+    v->elements = p;
+    v->capacity = DEFAULT_CAPACITY;
+    v->size = 0;
+
+    return v;
+}
+
+//析构函数（释放动态数组）
+Vector* vector_destroy(Vector* v)
+{
+    //从内到外释放（按照申请的相反顺序释放）
+    free(v->elements);
+    free(v);
+}
+
+void grow_capacity(Vector* v)
+{
+    int new_capacity = v->capacity < PREALLOC_MAX ?
+        v->capacity * 2 : v->capacity+PREALLOC_MAX;
+    
+    //下面代码有问题，realloc失败会返回NULL，原来的内存空间不会被释放，造成内存泄漏
+    //v->elements = realloc(v->elements,new_capacity * sizeof(E));
+    E* p = realloc(v->elements,new_capacity * sizeof(E));
+    if(p == NULL)
+    {
+        printf("Error: realloc failed in grow_capacity!");
+        exit(1);
+    }
+
+    v->elements = p;
+    v->capacity = new_capacity;
+}
+
+void push_back(Vector* v,E val)
+{
+    //判断是否需要扩容
+    if(v->size == v->capacity)
+    {
+        grow_capacity(v);
+    }
+    //添加元素val
+    v->elements[v->size++] = val;
+}
+```
+
