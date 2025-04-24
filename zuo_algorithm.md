@@ -346,6 +346,125 @@ int main()
 }
 ```
 
+## 数组
+### 题目一
++ 有序数组的平方：[977.有序数组的平方](https://leetcode.cn/problems/squares-of-a-sorted-array/description/)
++ 思路：
+	+ 能够找到数组 `nums` 中负数与非负数的分界线，那么就可以用类似「**归并排序**」的方法。
+	+ 具体地，设 `index` 为数组 `nums` 中负数与非负数的分界线，也就是说，`nums[0]` 到 `nums[index]` 均为负数，而 `nums[index+1]` 到 `nums[len−1]` 均为非负数。当我们将数组 `nums` 中的数平方后，那么 `nums[0]` 到 `nums[index]` 单调递减，`nums[index+1]` 到 `nums[len−1]` 单调递增。
+	+ 由于我们得到了两个已经有序的子数组，因此就可以使用归并的方法进行排序了。具体地，使用两个指针分别指向位置 `index` 和 `index+1`，每次比较两个指针对应的数，选择较小的那个放入答案并移动指针。当某一指针移至边界时，将另一指针还未遍历到的数依次放入答案。
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+class Solution
+{
+public:
+    vector<int> sortedSquares(vector<int> &nums)
+    {
+        int len = nums.size();
+        if (len == 1)
+        {
+            nums[0] = nums[0] * nums[0];
+            return nums;
+        }
+        int index = -1;
+        for (int i = 0; i < len; i++)
+        {
+            if (nums[i] < 0)
+                index = i;
+            else
+                break;
+        }
+        int left = index;
+        int right = index + 1;
+        vector<int> arr;
+        while (left >= 0 && right <= len - 1)
+        {
+            if (nums[left] * nums[left] <= nums[right] * nums[right])
+            {
+                arr.push_back(nums[left] * nums[left]);
+                left--;
+            }
+            else
+            {
+                arr.push_back(nums[right] * nums[right]);
+                right++;
+            }
+        }
+        while (left >= 0)
+        {
+            arr.push_back(nums[left] * nums[left]);
+            left--;
+        }
+        while (right <= len - 1)
+        {
+            arr.push_back(nums[right] * nums[right]);
+            right++;
+        }
+        return arr;
+    }
+};
+
+int main()
+{
+    Solution mysolution;
+    vector<int> vec = {0, 2};
+    vector<int> ans;
+    int num;
+    ans = mysolution.sortedSquares(vec);
+    num = ans.size();
+    for (int i = 0; i < num; i++)
+    {
+        printf("%d\n", ans[i]);
+    }
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+### 题目二
++ 长度最小的子数组：[209.长度最小的子数组](https://leetcode.cn/problems/minimum-size-subarray-sum/description/)
++ 思路：
+	+ 滑动窗口就是满足总和 `sum` 大于等于 `target` 的长度最小的连续子数组。
+	+ 滑动窗口的起始位置如何移动：如果当前窗口的总和 `sum` 大于等于 `target` 了，窗口就要向前移动了（也就是该缩小 `i++` 了）。
+	+ 滑动窗口的结束位置如何移动：窗口的结束位置就是遍历数组的指针，也就是 `for` 循环里的索引，`j++` 。
+	+ 可以发现滑动窗口的精妙之处在于根据当前子序列和大小的情况，不断调节子序列的起始位置。从而将 $O(n^2)$ 暴力解法降为 $O(n)$ 。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int minSubArrayLen(int target, vector<int>& nums) {
+        int len = nums.size(); //滑动窗口的长度
+        int sum = 0; // 滑动窗口数值之和
+        int i = 0; //滑动窗口的起始位置
+        //j表示移动窗口结束的位置
+        for(int j=0;j<nums.size();j++)
+        {
+            sum+=nums[j];
+            while(sum>=target) //直到滑动窗口中的数值之和小于target
+            {
+                sum-=nums[i];
+                len = min(len,j-i+1);//取长度中的最小值
+                i++;
+            }
+        }
+        if(i==0 && sum<target)
+            return 0;
+        else
+            return len;
+    }
+};
+```
+
 ## 链表
 ### 题目一
 + 移除链表元素：[203.移除链表元素](https://leetcode.cn/problems/remove-linked-list-elements/description/)
@@ -1426,7 +1545,7 @@ int main()
 		- 输出：`6`  
 		- 解释：  满足条件的逆序对为：`(8,3)`, `(8,1)`, `(8,2)`, `(3,1)`, `(5,1)`, `(5,2)`，共 `6` 对。
 - 思路：
-	- 基于**归并排序的分治框架**，在合并两个有序子数组的过程中，利用**双指针滑动窗口**高效统计满足条件的逆序对。具体步骤如下
+	- 基于**归并排序的分治框架**，在合并两个有序子数组的过程中，利用**双指针滑动窗口**高效统计满足条件的逆序对。具体步骤如下：
 	1. **递归划分**：将数组递归分割为子数组，直到子数组长度为 `1`。
 	2. **合并与统计**：在合并两个已排序的子数组时，遍历左半部分的每个元素，通过滑动窗口找到右半部分中满足 `nums[i] > 2 * nums[j]` 的元素数量。
 	3. **排序保证**：合并完成后，保证当前子数组有序，为后续递归合并提供正确输入。
