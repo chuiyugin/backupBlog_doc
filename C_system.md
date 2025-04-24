@@ -792,7 +792,8 @@ int main()
 ![字符指针数组](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250417153006.png)
 
 #### 命令行参数
-+ 命令行参数和从 `stdin` 读取数据有什么区别？
++ 命令行参数可以认为是操作系有调用 `main()` 函数时传递的参数。
++ 命令行参数和从 `stdin` （标准输入）读取数据有什么区别？
 	+ 命令行参数：程序还未执行；
 	+ 从 `stdin` 读取数据：程序已经运行。
 + 命令行参数有什么作用？
@@ -802,7 +803,8 @@ int main()
 ![操作系统与主函数的关系](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418152343.png)
 
 + `argc` : `argument count`，命令行参数的个数；
-+ `argv`：`argument vector` ，命令行参数，字符串第一个参数是可执行程序的路径。
++ `argv`：`argument vector` ，命令行参数，命令行参数都是字符串。
+	+ `argv[0]`：表示可执行程序的路径。
 
 ![命令行参数代码](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418152458.png)
 
@@ -868,7 +870,7 @@ int main()
 			+ 主线程：8M；
 			+ 其他线程：2M；
 			+ 因此栈上不能存放很大的数据。
-		+ 栈空间最好不要放多线程共享的数据。
+		+ 每个线程都有自己的栈，所以栈空间最好不要放多线程共享的数据。
 
 ### 堆空间
 + 堆空间的内存模型：
@@ -890,7 +892,10 @@ int main(void)
 {
 	int *p = calloc(100,sizeof(int));
 	if(p==NULL)
+	{
 		printf("Error: calloc failed\n");
+		exit(1);
+	}
 }
 ```
 
