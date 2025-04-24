@@ -835,6 +835,7 @@ int main()
 ![结构体的typedef使用](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418164346.png)
 
 + 匿名结构体，只能被使用一次
+
 ![匿名结构体](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418164513.png)
 
 #### 结构体的内存模型
