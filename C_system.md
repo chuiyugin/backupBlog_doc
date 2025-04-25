@@ -1078,3 +1078,67 @@ void push_back(Vector* v,E val)
 }
 ```
 
+### 二级指针
++ 二级指针，即指向指针的指针。
+
+![二级指针](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425152831.png)
+
++ C 语言函数是的参数传递属于传值，因此下面例子中只是把指针 `head` 的值传入了 `addNode()` 函数的栈帧中，并没有实质性地修改指针 `head` 的指向。
+
+![只传递了一级指针的值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425153224.png)
+
++ 传**二级指针**即可解决上述问题：
+
+![二级指针](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425153433.png)
+
++ 总结：怎么确定传一级指针还是二级指针？
+	+ 想要修改哪个变量，就传那个变量的地址；
+	+ 想修改指针指向的对象，传**一级指针**；
+	+ 想修改指针的值（指向），传**二级指针**。
+
+### 函数指针
++ 函数指针，即指向函数的指针，它保存了函数的地址，可以通过它调用指向的函数。
+
+![函数指针](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425154607.png)
+
++ 函数指针的语法和调用：
+
+![函数指针的语法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425154651.png)
+
+![函数指针的语法和调用](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425154817.png)
+
++ 函数指针的作用：
+	+ 函数式编程（传递函数，返回函数），通过函数指针支持函数式编程。
+		+ 分解任务，解耦合。
+	+ 编写非常通用的函数（功能非常强大的函数）。
++ `qsort()` 函数示例：
+
+![qsort()函数示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425161711.png)
+
++ `qsort()` 函数利用函数指针（钩子函数）分解任务，解耦合：
+
+![qsort()函数利用函数指针（钩子函数）分解任务，解耦合](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425161959.png)
+
+## 数据结构
+### 链表
+#### 单向链表
++ 增：在某个结点后面添加结点。
+
+![单链表增加结点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425163131.png)
+
++ 删：在某个结点后面删除。
+
+![单链表删除结点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425163238.png)
+
++ 查：
+	+ 根据索引查找结点；
+	+ 查找与特定值相等的结点。
+
+![单链表查找结点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425163535.png)
+
++ 遍历：正向遍历。
+
+![单链表的正向遍历和插入结点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425164651.png)
+
+
+
