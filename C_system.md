@@ -1216,5 +1216,62 @@ void push_back(Vector* v,E val)
 
 ![将中缀表达式转换成后缀表达式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250426210217.png)
 
+##### 用栈记录轨迹
++ 浏览器的前进/后退功能：
+	+ `http`：无状态协议，每一次请求是独立的。
+
+![浏览器的前进/后退功能](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427200407.png)
+
++ 深度优先搜索
++ 回溯问题
+
+### 队列
+#### 队列模型
++ 队列模型：受限的线性表，一端添加元素，另一端删除元素。
+
+![队列模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427204016.png)
+
+#### 队列基本操作
++ 基本操作：
+	+ 入队列：`push()`;
+	+ 出队列：`pop()`;
+	+ 查看队头：`peek()`；
+	+ 判空：`empty()`;
+	+ 判满：`full()`;
+
+#### 队列的实现（动态数组）
+##### 实现一
++ 队头为 `0` 位置，用 `rear` 标识队尾：
+
+![队列的实现_1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427204904.png)
+
+##### 实现二
++ 用 `front` 标识队头，用 `rear` 标识队尾：
+
+![队列的实现_2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427205206.png)
+
+##### 实现三
++ 采用循环数组：
+
+![采用循环数组实现队列](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427205808.png)
+
++ 入队列（需要扩容的设计）：
+
+![入队列（需要扩容的设计）](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427210406.png)
+
++ 其它操作的实现：
+
+![其它操作的实现](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427210454.png)
+
+#### 队列的应用
++ 缓冲（先进先出），具有公平性，一般采用有界队列。
++ 消息队列（中间件），避免集群之间耦合导致故障扩散。
+
+![消息队列（中间件）](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427211143.png)
+
++ 广度优先搜索（三度好友、队列）。
+
+![广度优先搜索](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427211308.png)
+
 
 
