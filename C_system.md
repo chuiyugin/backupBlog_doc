@@ -1273,5 +1273,51 @@ void push_back(Vector* v,E val)
 
 ![广度优先搜索](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427211308.png)
 
+### 哈希表
+#### 引入
++ 为什么需要哈希表？
++ 问题：统计一个文件中，字母出现的次数（不区分大小写）
+	+ 可以采用数组来存储，数组下标表示字母，数组的值表示次数。这样的对应关系称为**键值对**（ `key-value` ）。
+	+ 具有以下两点限制：
+		+ 键的取值范围很小；
+		+ 键可以很容易地转换成数组的下标。
+	+ 核心问题在于：如果不满足上述的两个限制条件，该如何表示**键值对**（ `key-value` ）？
+		+ 采用哈希表！
+
+![哈希表的引入](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250428125717.png)
+
+#### 模型
++ 同一个哈希表，哈希桶的数据结构可以不一样，但是 `key` 是唯一的！
+
+![哈希表的模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250428125929.png)
+
+#### 基本操作
++ 增：`put(key, val)`;
++ 删：`delete(key)`;
++ 查：`val = get(key)`；
++ 遍历：依次遍历每一个哈希桶。
+
+#### 哈希表的实现
++ 哈希函数（数据的指纹）
+
+![哈希函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250428141648.png)
+
++ 性能高的哈希函数（等概率随机映射）
+
+![性能高的哈希函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250428141812.png)
+
++ 哈希桶（用于解决哈希冲突）
+	+ 拉链法
+	+ 开放地址法
+
+![拉链法哈希桶](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250428142409.png)
+
+![开放地址法哈希桶](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250428142439.png)
+
+
+
+
+
+
 
 
