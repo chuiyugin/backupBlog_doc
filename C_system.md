@@ -1648,6 +1648,27 @@ void destroy_hashmap(HashMap* map)
 }
 ```
 
+#### 哈希表的扩容
++ 安全性：在扩容时，更改 `HashSeed`。
+
+![image.png](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250429162926.png)
+
++ 扩容方案：
+
+![扩容方案](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250429163122.png)
+
+#### 哈希表的性能
++ 哈希表的性能与所有哈希桶中链表的平均长度有关
+	+ 一般设定负载因子在 0.75
+
+![哈希表的性能](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250429162600.png)
+
+#### 哈希表的应用
++ 存储键值对数据；
++ Redis（C 语言）—— 内存数据库（键值对数据库）—— 缓存；
+	+ Redis 内部大量使用哈希表。
+
+
 
 
 
