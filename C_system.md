@@ -791,4 +791,885 @@ int main()
 
 ![字符指针数组](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250417153006.png)
 
+#### 命令行参数
++ 命令行参数可以认为是操作系有调用 `main()` 函数时传递的参数。
++ 命令行参数和从 `stdin` （标准输入）读取数据有什么区别？
+	+ 命令行参数：程序还未执行；
+	+ 从 `stdin` 读取数据：程序已经运行。
++ 命令行参数有什么作用？
+	+ `cp src dst`：写一些非常通用的程序；
+	+ `ls -l` ：改变程序的行为，参数不同，行为不同。
+
+![操作系统与主函数的关系](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418152343.png)
+
++ `argc` : `argument count`，命令行参数的个数；
++ `argv`：`argument vector` ，命令行参数，命令行参数都是字符串。
+	+ `argv[0]`：表示可执行程序的路径。
+
+![命令行参数代码](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418152458.png)
+
++ 命令行参数的内存模型：
+
+![命令行参数的内存模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418152616.png)
+
++ 命令行参数的类型转换（`sscanf()` 函数)：
+
+![命令行参数的内存模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418153127.png)
+
++ 不同的指定格式（类型）读取函数，从不同的输入中读取数据：
+
+![不同的指定格式（类型）读取函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418153308.png)
+
+## 结构体
+#### 结构体的含义
++ 对象的含义：
+	+ 属性：静态数据；
+	+ 方法：行为。
++ C 语言的结构体类似其它语言的“类”，不一样的是，结构体只有属性没有方法。
+
+#### 结构体的语法
++ 结构体的语法：
+
+![结构体的语法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418155636.png)
+
++ 一般来说，使用 `typedef` 给 `struct` 类型取别名 `Student`，这样就可以直接使用 `Student a;` 来定义结构体。
+
+![结构体的typedef使用](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418164346.png)
+
++ 匿名结构体，只能被使用一次
+
+![匿名结构体](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418164513.png)
+
+#### 结构体的内存模型
++ 一片连续的内存空间；
++ 会按声明的顺序存放每一个成员；
++ 在结构体变量的中间或后面，可能会有填充（由于以前的数据总线只有 `32 bit` ，因此填充是为了对齐，对齐是为了更快地访问数据）。
+
+![结构体的内存模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418160257.png)
+
+#### 结构体变量的操作
++ 获取成员和赋值（结构体变量的复制），但是由于结构体的参数量可能很大，所以往往更习惯传递一个指向结构体变量的指针。
+
+![获取成员和赋值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418163457.png)
+
++ 结构体指针操作的语法糖：
+
+![结构体指针操作的语法糖](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418163553.png)
+
+## 枚举
++ 枚举的作用：表示一些离散值（类别或者状态）
++ 枚举的定义和用法：
+
+![枚举的定义和用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418171111.png)
+
+## 动态内存分配
++ 为什么要在堆上分配空间？
+	+ 因为栈空间是受限的！
+		+ 栈帧的大小是在编译期间确定的，而且栈不能存放动态大小的数据；
+		+ 栈空间比较小：
+			+ 主线程：8M；
+			+ 其他线程：2M；
+			+ 因此栈上不能存放很大的数据。
+		+ 每个线程都有自己的栈，所以栈空间最好不要放多线程共享的数据。
+
+### 堆空间
++ 堆空间的内存模型：
+
+![堆空间的内存模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418172137.png)
+
++ 如何申请堆空间？
+
+![申请堆空间的三个函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418203143.png)
+
++ 在堆上成功创建连续的内存空间后会返回指向新内存块的指针，创建失败则返回空指针。
+
+![申请堆空间的三个函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250418203817.png)
+
++ `calloc()` 函数的示例代码：
+
+```cpp
+int main(void)
+{
+	int *p = calloc(100,sizeof(int));
+	if(p==NULL)
+	{
+		printf("Error: calloc failed\n");
+		exit(1);
+	}
+}
+```
+
++ 其中 `void*` 是通用指针，作用是可以和其它类型指针相互转换。
+	+ 如果 `void*` 指向对象的类型还不确定，不能够直接操作通用指针（例如对指针进行解引用等操作）。
+
+### 动态数组
++ 自定义实现动态数组的模型：
+
+![动态数组模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250424211336.png)
+
++ 依赖关系如下：
+	+ 依赖接口，不需要依赖具体的实现！
+
+![依赖关系图](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250424211453.png)
+
++ `realloc()` 函数的缩容和扩容原理
+
+![realloc()函数的缩容和扩容原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250424211834.png)
+
++ 扩容代码：
+
+```cpp
+void grow_capacity(Vector* v)
+{
+    int new_capacity = v->capacity < PREALLOC_MAX ?
+        v->capacity * 2 : v->capacity+PREALLOC_MAX;
+    
+    //下面代码有问题，realloc失败会返回NULL，原来的内存空间不会被释放，造成内存泄漏
+    //v->elements = realloc(v->elements,new_capacity * sizeof(E));
+    
+    //正确代码写法
+    E* p = realloc(v->elements,new_capacity * sizeof(E));
+    if(p == NULL)
+    {
+        printf("Error: realloc failed in grow_capacity!");
+        exit(1);
+    }
+
+    v->elements = p;
+    v->capacity = new_capacity;
+}
+```
+
++ 大端法和小端法
+
+![大端法和小端法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250424212052.png)
+
++ `free()` 函数的使用问题：
+	+ `free()` 函数使用之后，其原本指针属于悬空指针（野指针的一种），因此
+		+ 要避免 `free()` 函数使用多次的问题（`double free`）；
+		+ `free()` 函数使用之后继续使用原本的指针（`use after free`）；
+	+ 当堆上的数据不在使用时，应该有且只释放一次！
+
+![free()函数的使用问题](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250424212751.png)
+
++ 垃圾回收器的优缺点：
+
+![垃圾回收器的优缺点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250424212858.png)
+
++ `main.c` 代码：
+
+```c
+#include "Vector.h" //""：搜索路径：当前目录 -> 系统的头文件包含的目录下
+#include <stdio.h>  //<>：搜索路径：系统的头文件包含目录下
+#include <stdlib.h>
+
+int main(void)
+{
+    //创建空的动态数组
+    Vector* v = vector_create();
+
+    for(int i=0; i<200; i++)
+    {
+        push_back(v,i);
+    }
+    printf("push_finish\n");
+    vector_destroy(v);
+    printf("destroy_finish\n");
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
++ `Vector.h` 代码：
+
+```c
+//头文件：类型的定义和API声明
+#include <stddef.h>
+#include <stdlib.h>
+
+typedef int E;
+
+typedef struct
+{
+    E* elements;
+    int capacity;
+    int size;
+}Vector;
+
+//函数声明
+//构造函数
+Vector* vector_create(void);
+
+//析构函数
+Vector* vector_destroy(Vector* v);
+
+void push_back(Vector* v,E val);
+```
+
++ `Vector.c` 代码：
+
+```c
+#include "Vector.h"//""：搜索路径：当前目录 -> 系统的头文件包含的目录下
+
+#define DEFAULT_CAPACITY 8
+#define PREALLOC_MAX 1024 //提前申请的最大值
+
+//构造函数（创建空的动态数组）
+Vector* vector_create(void)
+{
+    Vector* v = malloc(sizeof(Vector));
+    if(v==NULL)
+    {
+        printf("Error: malloc failed in vector_create!");
+        exit(1);
+    }
+    E* p = malloc(DEFAULT_CAPACITY * sizeof(E));
+    if(p == NULL)
+    {
+        free(v);//要将之前创建的v释放掉
+        printf("Error: malloc failed in vector_create!");
+        exit(1);
+    }
+    //设置基本参数
+    v->elements = p;
+    v->capacity = DEFAULT_CAPACITY;
+    v->size = 0;
+
+    return v;
+}
+
+//析构函数（释放动态数组）
+Vector* vector_destroy(Vector* v)
+{
+    //从内到外释放（按照申请的相反顺序释放）
+    free(v->elements);
+    free(v);
+}
+
+void grow_capacity(Vector* v)
+{
+    int new_capacity = v->capacity < PREALLOC_MAX ?
+        v->capacity * 2 : v->capacity+PREALLOC_MAX;
+    
+    //下面代码有问题，realloc失败会返回NULL，原来的内存空间不会被释放，造成内存泄漏
+    //v->elements = realloc(v->elements,new_capacity * sizeof(E));
+    
+    //正确代码写法
+    E* p = realloc(v->elements,new_capacity * sizeof(E));
+    if(p == NULL)
+    {
+        printf("Error: realloc failed in grow_capacity!");
+        exit(1);
+    }
+
+    v->elements = p;
+    v->capacity = new_capacity;
+}
+
+void push_back(Vector* v,E val)
+{
+    //判断是否需要扩容
+    if(v->size == v->capacity)
+    {
+        grow_capacity(v);
+    }
+    //添加元素val
+    v->elements[v->size++] = val;
+}
+```
+
+### 二级指针
++ 二级指针，即指向指针的指针。
+
+![二级指针](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425152831.png)
+
++ C 语言函数是的参数传递属于传值，因此下面例子中只是把指针 `head` 的值传入了 `addNode()` 函数的栈帧中，并没有实质性地修改指针 `head` 的指向。
+
+![只传递了一级指针的值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425153224.png)
+
++ 传**二级指针**即可解决上述问题：
+
+![二级指针](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425153433.png)
+
++ 总结：怎么确定传一级指针还是二级指针？
+	+ 想要修改哪个变量，就传那个变量的地址；
+	+ 想修改指针指向的对象，传**一级指针**；
+	+ 想修改指针的值（指向），传**二级指针**。
+
+### 函数指针
++ 函数指针，即指向函数的指针，它保存了函数的地址，可以通过它调用指向的函数。
+
+![函数指针](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425154607.png)
+
++ 函数指针的语法和调用：
+
+![函数指针的语法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425154651.png)
+
+![函数指针的语法和调用](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425154817.png)
+
++ 函数指针的作用：
+	+ 函数式编程（传递函数，返回函数），通过函数指针支持函数式编程。
+		+ 分解任务，解耦合。
+	+ 编写非常通用的函数（功能非常强大的函数）。
++ `qsort()` 函数示例：
+
+![qsort()函数示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425161711.png)
+
++ `qsort()` 函数利用函数指针（钩子函数）分解任务，解耦合：
+
+![qsort()函数利用函数指针（钩子函数）分解任务，解耦合](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425161959.png)
+
+## 数据结构
+### 链表
+#### 单向链表
++ 增：在某个结点后面添加结点。
+
+![单链表增加结点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425163131.png)
+
++ 删：在某个结点后面删除。
+
+![单链表删除结点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425163238.png)
+
++ 查：
+	+ 根据索引查找结点；
+	+ 查找与特定值相等的结点。
+
+![单链表查找结点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425163535.png)
+
++ 遍历：正向遍历。
+
+![单链表的正向遍历和插入结点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250425164651.png)
+
+#### 双向链表
++ 双向链表的模型：
+
+![双向链表的模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250426141149.png)
+
++ 基本操作：
+	+ 增：能够在某个结点的前后添加；
+	+ 删：删除当前结点；
+	+ 查：
+		+ 根据索引查找值：
+			+ 单链表：$O(n)$，平均遍历 $\frac{n}{2}$；
+			+ 双链表：$O(n)$，平均遍历 $\frac{n}{4}$；
+		+ 查找与特定值相等的结点：
+			+ 无序：$O(n)$；
+			+ 有序：双链表比单链表效果更好（在多次查找的时候，通过记录上一次查找的结点来优化）；
+		+ 查找前驱结点：$O(n)$；
+	+ 遍历：
+		+ 正向；
+		+ 逆向。
++ 空间和时间：
+	+ 空间换时间：缓存、缓冲；
+	+ 时间换空间：压缩、交换区（ `swap area` ）；
+
+### 栈
++ 栈的模型：栈是操作受限的线性表（数组、链表），在一端添加，在同一端删除元素。
+	+ 特性：先进后出
++ 为什么需要栈这种数据结构？
+	+ 安全；
+	+ 可读性强；
+	+ 和现实生活中的场景是对应的。
+
+![栈的模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250426202955.png)
+
++ 栈的基本操作：
+	+ 添加：`push()`;
+	+ 删除：`pop()`;
+	+ 查找：`peek()`;
+	+ 判空：`empty()` ->遍历来实现；
++ 栈的实现：
+
+![栈的实现](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250426203434.png)
+
+####  栈的应用
+##### 函数调用栈
++ 函数调用栈：
+
+![函数调用栈](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250426203803.png)
+
+##### 符号匹配问题
++ 符号匹配问题：
+	+ 遍历字符串
+		+ 遇到左括号，将对应的右括号入栈；
+		+ 遇到右括号，出栈，判断是否和遇到的右括号一致：
+			+ 否：不匹配
+			+ 是：继续
+		+ 遍历完字符串后，判断栈是否为空：
+			+ 否：不匹配
+			+ 是：匹配
+
+![符号匹配问题](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250426204701.png)
+
+##### 栈表示优先级
++ 栈表示优先级：
+	+ 单调栈：从栈顶到栈底是单调递增或者单调递减的。
++ 中缀表达式和后缀表达式：
+
+![中缀表达式和后缀表达式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250426205542.png)
+
++ 如何计算后缀表达式：
+
+![计算后缀表达式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250426205729.png)
+
++ 如何将中缀表达式转换成后缀表达式：
+
+![将中缀表达式转换成后缀表达式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250426210217.png)
+
+##### 用栈记录轨迹
++ 浏览器的前进/后退功能：
+	+ `http`：无状态协议，每一次请求是独立的。
+
+![浏览器的前进/后退功能](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427200407.png)
+
++ 深度优先搜索
++ 回溯问题
+
+### 队列
+#### 队列模型
++ 队列模型：受限的线性表，一端添加元素，另一端删除元素。
+
+![队列模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427204016.png)
+
+#### 队列基本操作
++ 基本操作：
+	+ 入队列：`push()`;
+	+ 出队列：`pop()`;
+	+ 查看队头：`peek()`；
+	+ 判空：`empty()`;
+	+ 判满：`full()`;
+
+#### 队列的实现（动态数组）
+##### 实现一
++ 队头为 `0` 位置，用 `rear` 标识队尾：
+
+![队列的实现_1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427204904.png)
+
+##### 实现二
++ 用 `front` 标识队头，用 `rear` 标识队尾：
+
+![队列的实现_2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427205206.png)
+
+##### 实现三
++ 采用循环数组：
+
+![采用循环数组实现队列](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427205808.png)
+
++ 入队列（需要扩容的设计）：
+
+![入队列（需要扩容的设计）](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427210406.png)
+
++ 其它操作的实现：
+
+![其它操作的实现](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427210454.png)
+
+#### 队列的应用
++ 缓冲（先进先出），具有公平性，一般采用有界队列。
++ 消息队列（中间件），避免集群之间耦合导致故障扩散。
+
+![消息队列（中间件）](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427211143.png)
+
++ 广度优先搜索（三度好友、队列）。
+
+![广度优先搜索](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250427211308.png)
+
+### 哈希表
+#### 引入
++ 为什么需要哈希表？
++ 问题：统计一个文件中，字母出现的次数（不区分大小写）
+	+ 可以采用数组来存储，数组下标表示字母，数组的值表示次数。这样的对应关系称为**键值对**（ `key-value` ）。
+	+ 具有以下两点限制：
+		+ 键的取值范围很小；
+		+ 键可以很容易地转换成数组的下标。
+	+ 核心问题在于：如果不满足上述的两个限制条件，该如何表示**键值对**（ `key-value` ）？
+		+ 采用哈希表！
+
+![哈希表的引入](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250428125717.png)
+
+#### 模型
++ 同一个哈希表，哈希桶的数据结构可以不一样，但是 `key` 是唯一的！
+
+![哈希表的模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250428125929.png)
+
+#### 基本操作
++ 增：`put(key, val)`;
++ 删：`delete(key)`;
++ 查：`val = get(key)`；
++ 遍历：依次遍历每一个哈希桶。
+
+#### 哈希表的实现
++ 哈希函数（数据的指纹）
+
+![哈希函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250428141648.png)
+
++ 性能高的哈希函数（等概率随机映射）
+
+![性能高的哈希函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250428141812.png)
+
++ 哈希桶（用于解决哈希冲突）
+	+ 拉链法
+	+ 开放地址法
+
+![拉链法哈希桶](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250428142409.png)
+
+![开放地址法哈希桶](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250428142439.png)
+
++ `main.c` 代码：
+
+```c
+#include "hashmap.h"
+
+int main(void)
+{
+    //创建空的哈希表
+    HashMap* map = create_hashmap();
+
+    //向哈希表写入数据
+    put(map, "test", "123");
+    put(map, "test1", "234");
+    put(map, "test2", "345");
+    put(map, "test3", "567");
+    put(map, "test4", "678");
+    put(map, "test5", "789");
+    put(map, "test6", "345");
+    put(map, "test7", "567");
+    put(map, "test8", "678");
+    put(map, "test9", "789");
+
+    V val_2 = get(map,"test9");
+    puts(val_2);
+
+    put(map, "test2", NULL);
+    put(map, "test8", "456");
+
+    V val_1 = get(map,"test8");
+    puts(val_1);
+
+    map_remove(map,"test6");
+
+    V val_3 = get(map,"test7");
+    puts(val_3);
+
+    if(get(map,"test6")==NULL)
+        printf("empty!\n");
+    else
+        puts(val_3);
+
+    // 销毁哈希表
+    destroy_hashmap(map);
+    printf("sucess!\n");
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
++ `hashmap.h` 代码：
+
+```c
+#include <stdint.h>
+#include <stdbool.h>
+#define CAPACITY 10
+
+typedef char* K;
+typedef char* V;
+
+// 键值对结点
+typedef struct node_s {
+  K key;
+  V val;
+  struct node_s* next;
+} KeyValueNode;
+
+typedef struct {
+  // 哈希桶
+  KeyValueNode** table; // 二级指针
+  // 存储的数量
+  int size;
+  // 容量大小
+  int capacity;
+  // 哈希函数需要的种子值
+  uint32_t hash_seed; 
+} HashMap;
+
+// 创建一个固定容量的哈希表
+HashMap* create_hashmap(void);
+// 销毁一个哈希表
+void destroy_hashmap(HashMap* map);
+
+// 插入一个键值对
+V put(HashMap* map, K key, V val);
+// 查询一个键值对
+V get(HashMap* map, K key);
+// 删除某个键值对
+bool map_remove(HashMap* map, K key);
+```
+
++ `hashmap.c` 代码：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "hashmap.h"
+
+#define DEFAULT_CAPACITY 4
+#define LOAD_FACTOR 0.75
+#define MAX_PREALLOCATE 256
+
+// 创建空的哈希表
+HashMap* create_hashmap(void)
+{
+    HashMap* map = malloc(sizeof(HashMap));
+    if(map == NULL)
+    {
+        printf("ERROR:malloc failed in create_hashmap!");
+        exit(1);
+    }
+
+    map->size = 0;
+    map->capacity = DEFAULT_CAPACITY;
+    map->hash_seed = time(NULL);
+    map->table = calloc(DEFAULT_CAPACITY,sizeof(KeyValueNode*));
+    if(map->table == NULL)
+    {
+        printf("ERROR:calloc failed in create_hashmap!");
+        exit(1);
+    }
+
+    return map;
+}
+
+// MurmurHash2函数
+uint32_t hash(const void* key, int len, uint32_t seed) {
+    const uint32_t m = 0x5bd1e995;  // 修正十六进制拼写错误
+    const int r = 24;
+    uint32_t h = seed ^ len;        // 正确初始化方式
+
+    const unsigned char* data = (const unsigned char*)key;
+
+    while (len >= 4) {
+        uint32_t k = *(uint32_t*)data;
+
+        k *= m;
+        k ^= k >> r;  // 正确运算顺序
+        k *= m;
+
+        h *= m;
+        h ^= k;        // 异或操作替代原错误乘法
+
+        data += 4;
+        len -= 4;
+    }
+
+    // 处理剩余字节
+    switch (len) {
+        case 3: h ^= data[2] << 16;
+                // fall through
+        case 2: h ^= data[1] << 8;
+                // fall through
+        case 1: h ^= data[0];
+                h *= m;
+    }
+
+    // 最终混合
+    h ^= h >> 13;
+    h *= m;
+    h ^= h >> 15;
+
+    return h;
+}
+
+//扩容函数的子函数
+void rehash(KeyValueNode* cur,KeyValueNode** new_table,int new_capacity,uint32_t seed)
+{
+    //计算key的哈希值
+    int len = strlen(cur->key);
+    int idx = hash(cur->key,len,seed) % new_capacity;
+    //头插法
+    cur->next = new_table[idx];
+    new_table[idx] = cur;
+}
+
+//对哈希表进行扩容
+void grow_capacity(HashMap* map)
+{
+    //新的容量
+    int new_capacity = (map->capacity <= MAX_PREALLOCATE)?
+                    (map->capacity << 1) : (map->capacity + MAX_PREALLOCATE);
+    //创建新的哈希数组
+    KeyValueNode** new_table = calloc(new_capacity,sizeof(KeyValueNode*));
+    if(new_table == NULL)
+    {
+        printf("ERROR:calloc failed in grow_capacity!");
+        exit(1);
+    }
+    //重新设置哈希种子(更加安全)
+    uint32_t new_seed = time(NULL);
+    //将旧的哈希表迁移到新的哈希表上
+    for(int i=0; i<map->capacity; i++)
+    {
+        KeyValueNode* cur = map->table[i];
+        while(cur != NULL)
+        {
+            KeyValueNode* next = cur->next;
+            //将旧表重映射到新表上
+            rehash(cur,new_table,new_capacity,new_seed);
+            cur = next;
+        }
+    }
+    //释放旧的表
+    free(map->table);
+
+    //更新参数
+    map->table = new_table;
+    map->capacity = new_capacity;
+    map->hash_seed = new_seed;
+}
+
+
+// 往哈希表添加元素
+// a.如果key不存在，添加 key-val，并返回NULL
+// b.如果key存在，更新key关联的val，返回原来的val
+V put(HashMap* map, K key, V val)
+{
+    int idx = hash(key,strlen(key),map->table) % map->capacity;
+    //遍历链表
+    KeyValueNode* cur = map->table[idx];
+    while(cur != NULL)
+    {
+        if(strcmp(cur->key,key) == 0)
+        {
+            //更新key关联的值，并返回原来的值
+            V old_val = cur->val;
+            cur->val = val;
+            return old_val;
+        }
+        cur = cur->next;
+    }
+    //cur == NULL
+    //a.如果key不存在，添加 key-val，并返回NULL
+    KeyValueNode* new_node = malloc(sizeof(KeyValueNode));
+    if(new_node == NULL)
+    {
+        printf("ERROR:malloc failed in put!");
+        exit(1);
+    }
+    new_node->key = key;
+    new_node->val = val;
+
+    //判断是否需要扩容
+    double table_load = (1.0 * map->size) / map->capacity;
+    //如果超过负载因子就需要扩容
+    if(table_load >= LOAD_FACTOR)
+    {
+        grow_capacity(map);
+        //计算新的索引
+        idx = hash(key,strlen(key),map->hash_seed) % map->capacity;
+    }
+    //头插法
+    new_node->next = map->table[idx];//map->table[idx]哈希桶也存放着结点
+    //链接
+    map->table[idx] = new_node;
+    //更新哈希表信息
+    map->size++;
+
+    return NULL;
+}
+
+// 根据key值，获取关联的值
+// 如果key不存在，返回NULL
+V get(HashMap* map, K key)
+{
+    //对key进行哈希，判断key在哪个哈希桶中
+    int idx = hash(key,strlen(key),map->table) % map->capacity;
+    //遍历链表
+    KeyValueNode* cur = map->table[idx];
+    while(cur != NULL)
+    {
+        if(strcmp(cur->key,key) == 0)
+        {
+            //找到了
+            return cur->val;
+        }
+        cur = cur->next;
+    }
+    return NULL;
+};
+
+//删除键值对，如果key不存在，什么也不做
+bool map_remove(HashMap* map, K key)
+{
+    int idx = hash(key,strlen(key),map->table) % map->capacity;
+    //遍历链表
+    KeyValueNode* pre = NULL;
+    KeyValueNode* cur = map->table[idx];
+    while(cur != NULL)
+    {
+        if(strcmp(cur->key,key) == 0)
+        {
+            //删除结点
+            if(pre == NULL)
+            {
+                map->table[idx] = cur->next;
+            }
+            else
+            {
+                pre->next = cur->next;
+            }
+            free(cur);
+            map->size--;
+            return true;
+        }
+        pre = cur;
+        cur = cur->next;
+    }//cur == NULL,什么也不做
+    return true;
+}
+
+// 销毁一个哈希表
+void destroy_hashmap(HashMap* map)
+{
+    //释放所有结点(遍历哈希表)
+    for(int i=0;i<map->capacity;i++)
+    {
+        KeyValueNode* cur = map->table[i];
+        while(cur != NULL)
+        {
+            KeyValueNode* next = cur->next;
+            free(cur);
+            cur = next;
+        }
+    }
+    //释放动态数组
+    free(map->table);
+    //释放HashMap结构体
+    free(map);
+}
+```
+
+#### 哈希表的扩容
++ 安全性：在扩容时，更改 `HashSeed`。
+
+![哈希表的安全性](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250429162926.png)
+
++ 扩容方案：
+
+![扩容方案](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250429163122.png)
+
+#### 哈希表的性能
++ 哈希表的性能与所有哈希桶中链表的平均长度有关
+	+ 一般设定负载因子在 0.75
+
+![哈希表的性能](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250429162600.png)
+
+#### 哈希表的应用
++ 存储键值对数据；
++ Redis（C 语言）—— 内存数据库（键值对数据库）—— 缓存；
+	+ Redis 内部大量使用哈希表。
+
+
+
+
+
 
