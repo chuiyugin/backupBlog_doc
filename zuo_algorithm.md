@@ -561,6 +561,43 @@ int main()
 }
 ```
 
+### 题目四
++ 区间和：[58. 区间和（第九期模拟笔试）](https://kamacoder.com/problempage.php?pid=1070)
+	+ 本题主要用于熟悉 ACM 模式的输入输出！
++ 代码如下：
+
+```cpp
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+int main(void)
+{
+    int n,num,sum;
+    int pre,last;
+    scanf("%d",&n);
+    vector<int> vec;
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&num);
+        vec.push_back(num);
+    }
+    //循环输入输出部分
+    while(scanf("%d %d",&pre,&last)!=EOF)
+    {
+        sum = 0;
+        for(int i=pre;i<=last;i++)
+        {
+            sum+=vec[i];
+        }
+        printf("%d\n",sum);
+    }
+    return 0;
+}
+```
+
 ## 链表
 ### 题目一
 + 移除链表元素：[203.移除链表元素](https://leetcode.cn/problems/remove-linked-list-elements/description/)
