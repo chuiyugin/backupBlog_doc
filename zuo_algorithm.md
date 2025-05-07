@@ -346,6 +346,329 @@ int main()
 }
 ```
 
+## 数组
+### 题目一
++ 有序数组的平方：[977.有序数组的平方](https://leetcode.cn/problems/squares-of-a-sorted-array/description/)
++ 思路：
+	+ 能够找到数组 `nums` 中负数与非负数的分界线，那么就可以用类似「**归并排序**」的方法。
+	+ 具体地，设 `index` 为数组 `nums` 中负数与非负数的分界线，也就是说，`nums[0]` 到 `nums[index]` 均为负数，而 `nums[index+1]` 到 `nums[len−1]` 均为非负数。当我们将数组 `nums` 中的数平方后，那么 `nums[0]` 到 `nums[index]` 单调递减，`nums[index+1]` 到 `nums[len−1]` 单调递增。
+	+ 由于我们得到了两个已经有序的子数组，因此就可以使用归并的方法进行排序了。具体地，使用两个指针分别指向位置 `index` 和 `index+1`，每次比较两个指针对应的数，选择较小的那个放入答案并移动指针。当某一指针移至边界时，将另一指针还未遍历到的数依次放入答案。
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+class Solution
+{
+public:
+    vector<int> sortedSquares(vector<int> &nums)
+    {
+        int len = nums.size();
+        if (len == 1)
+        {
+            nums[0] = nums[0] * nums[0];
+            return nums;
+        }
+        int index = -1;
+        for (int i = 0; i < len; i++)
+        {
+            if (nums[i] < 0)
+                index = i;
+            else
+                break;
+        }
+        int left = index;
+        int right = index + 1;
+        vector<int> arr;
+        while (left >= 0 && right <= len - 1)
+        {
+            if (nums[left] * nums[left] <= nums[right] * nums[right])
+            {
+                arr.push_back(nums[left] * nums[left]);
+                left--;
+            }
+            else
+            {
+                arr.push_back(nums[right] * nums[right]);
+                right++;
+            }
+        }
+        while (left >= 0)
+        {
+            arr.push_back(nums[left] * nums[left]);
+            left--;
+        }
+        while (right <= len - 1)
+        {
+            arr.push_back(nums[right] * nums[right]);
+            right++;
+        }
+        return arr;
+    }
+};
+
+int main()
+{
+    Solution mysolution;
+    vector<int> vec = {0, 2};
+    vector<int> ans;
+    int num;
+    ans = mysolution.sortedSquares(vec);
+    num = ans.size();
+    for (int i = 0; i < num; i++)
+    {
+        printf("%d\n", ans[i]);
+    }
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+### 题目二
++ 长度最小的子数组：[209.长度最小的子数组](https://leetcode.cn/problems/minimum-size-subarray-sum/description/)
++ 思路：
+	+ 滑动窗口就是满足总和 `sum` 大于等于 `target` 的长度最小的连续子数组。
+	+ 滑动窗口的起始位置如何移动：如果当前窗口的总和 `sum` 大于等于 `target` 了，窗口就要向前移动了（也就是该缩小 `i++` 了）。
+	+ 滑动窗口的结束位置如何移动：窗口的结束位置就是遍历数组的指针，也就是 `for` 循环里的索引，`j++` 。
+	+ 可以发现滑动窗口的精妙之处在于根据当前子序列和大小的情况，不断调节子序列的起始位置。从而将 $O(n^2)$ 暴力解法降为 $O(n)$ 。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int minSubArrayLen(int target, vector<int>& nums) {
+        int len = nums.size(); //滑动窗口的长度
+        int sum = 0; // 滑动窗口数值之和
+        int i = 0; //滑动窗口的起始位置
+        //j表示移动窗口结束的位置
+        for(int j=0;j<nums.size();j++)
+        {
+            sum+=nums[j];
+            while(sum>=target) //直到滑动窗口中的数值之和小于target
+            {
+                sum-=nums[i];
+                len = min(len,j-i+1);//取长度中的最小值
+                i++;
+            }
+        }
+        if(i==0 && sum<target)
+            return 0;
+        else
+            return len;
+    }
+};
+```
+
+### 题目三
++ 螺旋矩阵 II：[59.螺旋矩阵 II](https://leetcode.cn/problems/spiral-matrix-ii/description/)
++ 思路：
+	+ 这道题就是模拟螺旋矩阵生成的过程，分为四个方向进行循环，同时设定相应的循环边界条件达到模拟的实现。
+	+ 注意在 C++ 代码中 `vector` 的二维动态数组可以定义为：`vector<vector<int>> mat(n,vector<int>(n));`
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+class Solution {
+    public:
+        vector<vector<int>> generateMatrix(int n) {
+            //创建二维数组和下标
+            vector<vector<int>> mat(n,vector<int>(n));
+            int i=0;
+            int j=0;
+            //模拟部分
+            int count = 1;
+            int step = n;
+            int num = 1;
+            while(step>0)
+            {
+                //向右横着
+                for(int k=0;k<step;k++)
+                {
+                    //printf("i=%d j=%d num = %d\n",i,j,num);
+                    mat[i][j++] = num++;
+                }
+                count++;
+                if(count%2 == 0)
+                    step--;
+                i++;
+                j--;
+                //向下竖着
+                for(int k=0;k<step;k++)
+                {
+                    //printf("i=%d j=%d num = %d\n",i,j,num);
+                    mat[i++][j] = num++;
+                }
+                count++;
+                if(count%2 == 0)
+                    step--;
+                j--;
+                i--;
+                //向左横着
+                for(int k=0;k<step;k++)
+                {
+                    //printf("i=%d j=%d num = %d\n",i,j,num);
+                    mat[i][j--] = num++;
+                }
+                count++;
+                if(count%2 == 0)
+                    step--;
+                i--;
+                j++;
+                //向上竖着
+                for(int k=0;k<step;k++)
+                {
+                    //printf("i=%d j=%d num = %d\n",i,j,num);
+                    mat[i--][j] = num++;
+                }
+                count++;
+                if(count%2 == 0)
+                    step--;
+                j++;
+                i++;
+            }
+            return mat;
+        }
+    };
+
+int main()
+{
+    Solution mysolution;
+    vector<vector<int>> ans;
+    int num = 4;
+    ans = mysolution.generateMatrix(num);
+    for (int i = 0; i < num; i++)
+    {
+        for(int j = 0;j < num; j++)
+        {
+            printf("%d\n", ans[i][j]);
+        }
+    }
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+### 题目四
++ 区间和：[58. 区间和（第九期模拟笔试）](https://kamacoder.com/problempage.php?pid=1070)
+	+ 本题主要用于熟悉 ACM 模式的输入输出！
++ 代码如下：
+
+```cpp
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+int main(void)
+{
+    int n,num,sum;
+    int pre,last;
+    scanf("%d",&n);
+    vector<int> vec;
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&num);
+        vec.push_back(num);
+    }
+    //循环输入输出部分
+    while(scanf("%d %d",&pre,&last)!=EOF)
+    {
+        sum = 0;
+        for(int i=pre;i<=last;i++)
+        {
+            sum+=vec[i];
+        }
+        printf("%d\n",sum);
+    }
+    return 0;
+}
+```
+
+### 题目五
++ 开发商购买土地：[44. 开发商购买土地（第五期模拟笔试）](https://kamacoder.com/problempage.php?pid=1044)
++ 思路：
+	+ 前缀和计算
+		+ **横向前缀和**：计算每一行从左到右的累加和，存储在 `heng` 数组中；
+		+ **竖向前缀和**：计算每一列从上到下的累加和，存储在 `shu` 数组中。
+	+ 寻找最小差值：
+		+ **竖向分割**：尝试所有可能的竖向分割线位置，计算左右两部分和的差值，差值计算公式为 `shu[m-1] - 2*shu[i]`（总列和减去两倍左侧和）；
+		+ **横向分割**：尝试所有可能的横向分割线位置，计算上下两部分和的差值，差值计算公式为 `heng[n-1] - 2*heng[i]`（总行和减去两倍上方和）；
+		+ - 记录所有可能分割中的最小绝对差值。
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <vector>
+#include <limits>
+#include <cmath>
+
+using namespace std;
+
+int main(void)
+{
+    int n,m;
+    scanf("%d %d",&n,&m);
+    //创建二维数组
+    vector<vector<int>> mat(n,vector<int>(m));
+    //创建竖向前缀和数组和变量
+    vector<int> shu(m);
+    int sum_shu = 0;
+    //创建横向前缀和数组和变量
+    vector<int> heng(n);
+    int sum_heng = 0;
+    for(int i=0;i<n;i++)
+    {
+        for(int j=0;j<m;j++)
+        {
+            scanf("%d",&mat[i][j]);
+            sum_heng += mat[i][j];
+            heng[i] = sum_heng;
+        }
+    }
+    for(int i=0;i<m;i++)
+    {
+        for(int j=0;j<n;j++)
+        {
+            sum_shu += mat[j][i];
+            shu[i] = sum_shu;
+        }
+    }
+    //定义最小值
+    int min_num = numeric_limits<int>::max();
+    //比较竖向分割
+    int num = 0;
+    for(int i=0;i<m;i++)
+    {
+        num = shu[m-1]-2*shu[i];
+        min_num = min(min_num,abs(num));
+    }
+    //比较横向分割
+    for(int i=0;i<n;i++)
+    {
+        num = heng[n-1]-2*heng[i];
+        min_num = min(min_num,abs(num));
+    }
+
+    printf("%d",min_num);
+
+    return 0;
+}
+```
+
 ## 链表
 ### 题目一
 + 移除链表元素：[203.移除链表元素](https://leetcode.cn/problems/remove-linked-list-elements/description/)
@@ -1426,7 +1749,7 @@ int main()
 		- 输出：`6`  
 		- 解释：  满足条件的逆序对为：`(8,3)`, `(8,1)`, `(8,2)`, `(3,1)`, `(5,1)`, `(5,2)`，共 `6` 对。
 - 思路：
-	- 基于**归并排序的分治框架**，在合并两个有序子数组的过程中，利用**双指针滑动窗口**高效统计满足条件的逆序对。具体步骤如下
+	- 基于**归并排序的分治框架**，在合并两个有序子数组的过程中，利用**双指针滑动窗口**高效统计满足条件的逆序对。具体步骤如下：
 	1. **递归划分**：将数组递归分割为子数组，直到子数组长度为 `1`。
 	2. **合并与统计**：在合并两个已排序的子数组时，遍历左半部分的每个元素，通过滑动窗口找到右半部分中满足 `nums[i] > 2 * nums[j]` 的元素数量。
 	3. **排序保证**：合并完成后，保证当前子数组有序，为后续递归合并提供正确输入。
@@ -1612,4 +1935,84 @@ public:
         }
     }
 };
+```
+
+#### 随机快排
++ 思路：
+	+ 在前面所述的颜色分类问题的基础上，随机快排的 `partition()` 函数将数组分为 `<基准值区域`、`=基准值区域`、`>基准值区域` 三个区域，通过 `pre` 和 `last` 标记边界；
+	+ 快速排序随机选择从 `[L, R-1]` 范围上选择基准值与 `nums[R]` 进行交换，在代码中通过 `swap(nums,R,rand()%(R-L+1))` 体现；
+	+ 随机快排采用递归的方式完成对数组的排序，需要注意随机快排依赖 `qickSort()` 函数中的**递归终止条件**（`L >= R`）。
++ 代码：
+
+```cpp
+class Solution {
+    public:
+	    //交换函数
+        void swap(vector<int>& nums,int a,int b)
+        {
+            int temp = nums[a];
+            nums[a] = nums[b];
+            nums[b] = temp;
+        }
+        
+	    //荷兰国旗问题（颜色分类问题）的变形
+        vector<int> partition(vector<int>& nums,int L,int R)
+        {
+            vector<int> area(2);
+            int pre = L-1; // <区
+            int last = R; // >区
+            int now = L;
+            if(L==R)
+            {
+                area[0] = L;
+                area[1] = R;
+                return area;
+            }
+            else
+            {
+                while(now<last)
+                {
+                    if(nums[now]==nums[R])
+                        now++;
+                    else if(nums[now]<nums[R])
+                    {
+                        swap(nums,now,pre+1);
+                        pre++;
+                        now++;
+                    }
+                    else
+                    {
+                        swap(nums,now,last-1);
+                        last--;
+                    }
+                }
+                swap(nums,last,R);//最后把nums[R]放到=区的末尾
+                area[0] = pre+1;
+                area[1] = last;
+                return area;
+            }
+        }
+
+		//快排递归函数（注意递归边界）
+        void qickSort(vector<int>& nums,int L,int R)
+        {
+            //递归边界（注意）
+            if(L>=R)
+                return;
+
+            //随机选择一个数和nums[R]进行交换
+            srand(time(NULL));
+            swap(nums,R,L+rand()%(R-L+1));
+
+            vector<int> area(2);
+            area = partition(nums,L,R);
+            qickSort(nums,L,area[0]-1);
+            qickSort(nums,area[1]+1,R);
+        }
+    
+        vector<int> sortArray(vector<int>& nums) {
+            qickSort(nums,0,nums.size()-1);
+            return nums;
+        }
+    };
 ```

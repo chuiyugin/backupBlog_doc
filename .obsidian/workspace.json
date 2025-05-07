@@ -44,7 +44,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "文件列表"
+              "title": "Files"
             }
           },
           {
@@ -170,10 +170,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "measurement.md"
+                "file": "zuo_algorithm.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "measurement 的大纲"
+              "title": "Outline of zuo_algorithm"
             }
           },
           {
@@ -190,8 +193,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -206,13 +208,13 @@
   "active": "a9eade74042ea9b5",
   "lastOpenFiles": [
     "C_system.md",
+    "5g_1.md",
     "zuo_algorithm.md",
     "algorithm3.md",
     "Autohotkey.md",
     "RS_code.md",
     "Myexe.md",
     "Myexe - 副本.md",
-    "5g_1.md",
     "algorithm.md",
     "algorithm2.md",
     "exercise2.md",
