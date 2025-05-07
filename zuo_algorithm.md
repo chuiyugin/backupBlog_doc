@@ -1526,6 +1526,43 @@ public:
  */
 ```
 
+### 题目三
++ 删除字符串中的所有相邻重复项：[1047. 删除字符串中的所有相邻重复项](https://leetcode.cn/problems/remove-all-adjacent-duplicates-in-string/description/)
++ 思路：
+	1. **初始化一个空栈**：用于存储字符。
+	2. **遍历字符串**：
+		+ 如果栈为空，或者当前字符与栈顶字符不同，则将当前字符压入栈。 
+		+ 如果当前字符与栈顶字符相同，则弹出栈顶字符（表示删除这对相邻重复字符）。
+	3. **构建结果字符串**：
+		+ 遍历结束后，栈中剩下的字符就是删除所有相邻重复字符后的结果。
+		+ 由于栈是后进先出的，我们需要将栈中的字符**逆序**才能得到正确的顺序。
+		+ 字符串逆序采用 `reverse(res.begin(),res.end());` 函数，需要引入 `#include <algorithm>` 头文件，该函数可以用于翻转数组、字符串和向量（`vector`）。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    string removeDuplicates(string s) {
+        stack<char> stk;
+        for(int i=0;i<s.size();i++)
+        {
+            if(stk.empty() || s[i] != stk.top())
+                stk.push(s[i]);
+            else
+                stk.pop();
+        }
+        string res = "";
+        while(!stk.empty())
+        {
+            res += stk.top();
+            stk.pop();
+        }
+        reverse(res.begin(),res.end());//此时需要反转最终的字符串
+        return res;
+    }
+};
+```
+
 ## 排序问题
 ### 归并排序
 #### 普通归并排序
