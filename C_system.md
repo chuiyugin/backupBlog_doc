@@ -1848,6 +1848,7 @@ void bst_levellorder(BST* tree)
         }
         printf("\n");
     }//队列为空了
+    destroy_queue(q);
 }
 ```
 
@@ -1855,6 +1856,164 @@ void bst_levellorder(BST* tree)
 + 深度优先搜索步骤（前序、中序（二叉排序树）、后序）：
 
 ![深度优先搜索步骤](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507174458.png)
+
++ 代码：
+
+```cpp
+//中序遍历(二叉排序树)
+void bst_inorder(TreeNode* root)
+{
+    //边界条件
+    if(root == NULL)
+        return;
+    //递归公式
+    //遍历左子树
+    bst_inorder(root->left);
+    //遍历根节点
+    printf("%d ",root->key);
+    //遍历右子树
+    bst_inorder(root->right);
+}
+
+//先序遍历
+void bst_preorder(TreeNode* root)
+{
+    //边界条件
+    if(root == NULL)
+        return;
+    //递归公式
+    //遍历根节点
+    printf("%d ",root->key);
+    //遍历左子树
+    bst_preorder(root->left);
+    //遍历右子树
+    bst_preorder(root->right);
+}
+
+//后序遍历
+void bst_backorder(TreeNode* root)
+{
+    //边界条件
+    if(root == NULL)
+        return;
+    //递归公式
+    //遍历左子树
+    bst_backorder(root->left);
+    //遍历右子树
+    bst_backorder(root->right);
+    //遍历根节点
+    printf("%d ",root->key);
+}
+```
+
+###### 删除二叉搜索树节点
++ 删除度为 0 的情况：
+
+![删除度为 0 的情况](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507201313.png)
+
++ 删除度为 1 的情况：
+
+![删除度为 1 的情况](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507201350.png)
+
++ 删除度为 2 的情况：
+	+ 退化成度为 0 或者 1 的情况来处理；
+	+ 采用要删除节点的右子树的最小节点来替代当前节点来实现退化！
+
+![删除度为 2 的情况](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507201559.png)
+
++ 特例：右子树最小节点就是右子树根节点
+
+![特例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507201641.png)
+
++ 代码：
+
+```cpp
+//删除节点
+void bst_delete(BST* tree,K key)
+{
+    // 1.找到要删除的节点
+    TreeNode* parent = NULL;
+    TreeNode* cur = tree->root;
+    K cmp;
+    while(cur != NULL)
+    {
+        cmp = key - cur->key;
+        if(cmp < 0) //key < cur->key,向左边找
+        {
+            parent = cur;
+            cur = cur->left;
+        }
+        else if(cmp > 0)
+        {
+            parent = cur;
+            cur = cur->right;
+        }
+        else
+            break;
+    }//cur == NULL || cur != NULL
+    if(cur == NULL)
+        return;
+    // 2.删除节点
+    if(cur->left && cur->right) // 度为2的情况
+    {
+        //退化成度为0或度为1的情况
+        //先找右子树的最小节点
+        TreeNode* pr_min = cur;
+        TreeNode* r_min = cur->right;
+        while(r_min->left != NULL)
+        {
+            pr_min = r_min;
+            r_min = r_min->left;
+        }
+        //退化过程
+        cur->key = r_min->key;
+        cur = r_min;
+        parent = pr_min;
+    }
+    //度为0或1的情况
+    //找到唯一的孩子
+    TreeNode* child = cur->left ? cur->left : cur->right;
+    if(parent == NULL) // 删除的是根节点
+    {
+        tree->root = child;
+    }
+    else
+    {
+        //将child链接到parent正确的位置
+        //必须重新比较，因为可能出现了退化
+        K cmp = cur->key - parent->key;
+        if(cmp<0)
+        {
+            parent->left = child;
+        }
+        else if(cmp>0)
+        {
+            parent->right = child;
+        }
+        else //注意：特例cmp==0，右子树最小节点就是右子树根节点
+        {
+            parent->right = child;
+        }
+    }
+    free(cur);
+}
+```
+
+#### 二叉搜索树的性能分析
++ 缺陷：不能保证 $O(log(n))$ 时间复杂度的插入，删除和查找。
+
+![二叉搜索树的性能分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507212637.png)
+
+#### 平衡二叉搜索树
++ AVL树和红黑树的对比：
+
+![AVL树和红黑树的对比](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507212757.png)
+
+#### 红黑树
+
+
+
+
 
 
 
