@@ -25,10 +25,9 @@ class Solution {
             int right = nums.size()-1;
             int mid = left + (right-left)/2;
             int ans = -1;
-
-            while(left<right)
+            while(left<=right) //注意点1
             {
-                mid = left + (right-left)/2;
+                mid = left + (right-left)/2; //注意点2
                 if(nums[mid]==target)
                 {
                     ans = mid;
@@ -36,11 +35,11 @@ class Solution {
                 }
                 else if(nums[mid]>target)
                 {
-                    right = mid-1;
+                    right = mid-1; //注意点3
                 }
                 else
                 {
-                    left = mid+1;
+                    left = mid+1; //注意点4
                 }
             }
             printf("%d\n",ans);
@@ -1559,6 +1558,50 @@ public:
         }
         reverse(res.begin(),res.end());//此时需要反转最终的字符串
         return res;
+    }
+};
+```
+
+### 题目四
++ 逆波兰表达式求值：[150. 逆波兰表达式求值](https://leetcode.cn/problems/evaluate-reverse-polish-notation/description/)
++ 注意点：将 `string` 变量转换为 `int` 型、`long` 型、`long long` 型变量可以使用 `std::stoi`、`std::stol` 和 `std::stoll` 函数！
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int evalRPN(vector<string>& tokens) {
+        stack<long long> stk;
+        long long num1,num2;
+        for(int i=0;i<tokens.size();i++)
+        {
+            if(tokens[i]=="+" || tokens[i]=="-" || 
+               tokens[i]=="*" || tokens[i]=="/")
+            {
+                num1 = stk.top();
+                stk.pop();
+                num2 = stk.top();
+                stk.pop();
+                switch(tokens[i][0])
+                {
+                    case '+':
+                        stk.push(num2 + num1);
+                    break;
+                    case '-':
+                        stk.push(num2 - num1);
+                    break;
+                    case '*':
+                        stk.push(num2 * num1);
+                    break;
+                    case '/':
+                        stk.push(num2 / num1);
+                    break;
+                }
+            }
+            else
+                stk.push(stoi(tokens[i]));
+        }
+        return stk.top();;
     }
 };
 ```

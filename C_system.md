@@ -2010,6 +2010,23 @@ void bst_delete(BST* tree,K key)
 ![AVL树和红黑树的对比](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507212757.png)
 
 #### 红黑树
++ 红黑树的基础模型是 **2-3-4树**，基于此在二叉搜索树的基础上实现红黑树。
++ 问题 1：如何表示2-3-4树中的 `3-node` 和 `4-node` ？
+
+![如何表示 2-3-4 树中的 3-node 和 4-node？](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505081108145.png)
+
++ 问题 2：“边”是一种逻辑结构，是不存在的，如何表示“边”的颜色？
+	+ 把颜色放入孩子节点中！
+
+![如何表示“边”的颜色？](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505081110356.png)
+
++ 红黑树的性质：
+	+ 2-3-4树的高度 ≤ 红黑树高度 ≤ 2×(2-3-4树的高度)
+	+ 因为**黑高平衡**的原因！
+
+![红黑树的性质](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505081112194.png)
+
+
 
 
 
