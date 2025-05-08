@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "zuo_algorithm.md",
+                "file": "C_system.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "zuo_algorithm"
+              "title": "C_system"
             }
           }
         ]
@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "0edc808bdabaac2f",
@@ -170,10 +169,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "measurement.md"
+                "file": "C_system.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "measurement 的大纲"
+              "title": "C_system 的大纲"
             }
           },
           {
@@ -190,8 +192,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -205,14 +206,14 @@
   },
   "active": "a9eade74042ea9b5",
   "lastOpenFiles": [
-    "C_system.md",
     "zuo_algorithm.md",
+    "C_system.md",
+    "5g_1.md",
     "algorithm3.md",
     "Autohotkey.md",
     "RS_code.md",
     "Myexe.md",
     "Myexe - 副本.md",
-    "5g_1.md",
     "algorithm.md",
     "algorithm2.md",
     "exercise2.md",

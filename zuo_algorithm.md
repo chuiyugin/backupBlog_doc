@@ -598,6 +598,77 @@ int main(void)
 }
 ```
 
+### 题目五
++ 开发商购买土地：[44. 开发商购买土地（第五期模拟笔试）](https://kamacoder.com/problempage.php?pid=1044)
++ 思路：
+	+ 前缀和计算
+		+ **横向前缀和**：计算每一行从左到右的累加和，存储在 `heng` 数组中；
+		+ **竖向前缀和**：计算每一列从上到下的累加和，存储在 `shu` 数组中。
+	+ 寻找最小差值：
+		+ **竖向分割**：尝试所有可能的竖向分割线位置，计算左右两部分和的差值，差值计算公式为 `shu[m-1] - 2*shu[i]`（总列和减去两倍左侧和）；
+		+ **横向分割**：尝试所有可能的横向分割线位置，计算上下两部分和的差值，差值计算公式为 `heng[n-1] - 2*heng[i]`（总行和减去两倍上方和）；
+		+ 记录所有可能分割中的最小绝对差值。
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <vector>
+#include <limits>
+#include <cmath>
+
+using namespace std;
+
+int main(void)
+{
+    int n,m;
+    scanf("%d %d",&n,&m);
+    //创建二维数组
+    vector<vector<int>> mat(n,vector<int>(m));
+    //创建竖向前缀和数组和变量
+    vector<int> shu(m);
+    int sum_shu = 0;
+    //创建横向前缀和数组和变量
+    vector<int> heng(n);
+    int sum_heng = 0;
+    for(int i=0;i<n;i++)
+    {
+        for(int j=0;j<m;j++)
+        {
+            scanf("%d",&mat[i][j]);
+            sum_heng += mat[i][j];
+            heng[i] = sum_heng;
+        }
+    }
+    for(int i=0;i<m;i++)
+    {
+        for(int j=0;j<n;j++)
+        {
+            sum_shu += mat[j][i];
+            shu[i] = sum_shu;
+        }
+    }
+    //定义最小值
+    int min_num = numeric_limits<int>::max();
+    //比较竖向分割
+    int num = 0;
+    for(int i=0;i<m;i++)
+    {
+        num = shu[m-1]-2*shu[i];
+        min_num = min(min_num,abs(num));
+    }
+    //比较横向分割
+    for(int i=0;i<n;i++)
+    {
+        num = heng[n-1]-2*heng[i];
+        min_num = min(min_num,abs(num));
+    }
+
+    printf("%d",min_num);
+
+    return 0;
+}
+```
+
 ## 链表
 ### 题目一
 + 移除链表元素：[203.移除链表元素](https://leetcode.cn/problems/remove-linked-list-elements/description/)
@@ -1453,6 +1524,87 @@ public:
  * int param_3 = obj->top();
  * bool param_4 = obj->empty();
  */
+```
+
+### 题目三
++ 删除字符串中的所有相邻重复项：[1047. 删除字符串中的所有相邻重复项](https://leetcode.cn/problems/remove-all-adjacent-duplicates-in-string/description/)
++ 思路：
+	1. **初始化一个空栈**：用于存储字符。
+	2. **遍历字符串**：
+		+ 如果栈为空，或者当前字符与栈顶字符不同，则将当前字符压入栈。 
+		+ 如果当前字符与栈顶字符相同，则弹出栈顶字符（表示删除这对相邻重复字符）。
+	3. **构建结果字符串**：
+		+ 遍历结束后，栈中剩下的字符就是删除所有相邻重复字符后的结果。
+		+ 由于栈是后进先出的，我们需要将栈中的字符**逆序**才能得到正确的顺序。
+		+ 字符串逆序采用 `reverse(res.begin(),res.end());` 函数，需要引入 `#include <algorithm>` 头文件，该函数可以用于翻转数组、字符串和向量（`vector`）。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    string removeDuplicates(string s) {
+        stack<char> stk;
+        for(int i=0;i<s.size();i++)
+        {
+            if(stk.empty() || s[i] != stk.top())
+                stk.push(s[i]);
+            else
+                stk.pop();
+        }
+        string res = "";
+        while(!stk.empty())
+        {
+            res += stk.top();
+            stk.pop();
+        }
+        reverse(res.begin(),res.end());//此时需要反转最终的字符串
+        return res;
+    }
+};
+```
+
+### 题目四
++ 逆波兰表达式求值：[150. 逆波兰表达式求值](https://leetcode.cn/problems/evaluate-reverse-polish-notation/description/)
++ 注意点：将 `string` 变量转换为 `int` 型、`long` 型、`long long` 型变量可以使用 `std::stoi`、`std::stol` 和 `std::stoll` 函数！
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int evalRPN(vector<string>& tokens) {
+        stack<long long> stk;
+        long long num1,num2;
+        for(int i=0;i<tokens.size();i++)
+        {
+            if(tokens[i]=="+" || tokens[i]=="-" || 
+               tokens[i]=="*" || tokens[i]=="/")
+            {
+                num1 = stk.top();
+                stk.pop();
+                num2 = stk.top();
+                stk.pop();
+                switch(tokens[i][0])
+                {
+                    case '+':
+                        stk.push(num2 + num1);
+                    break;
+                    case '-':
+                        stk.push(num2 - num1);
+                    break;
+                    case '*':
+                        stk.push(num2 * num1);
+                    break;
+                    case '/':
+                        stk.push(num2 / num1);
+                    break;
+                }
+            }
+            else
+                stk.push(stoi(tokens[i]));
+        }
+        return stk.top();;
+    }
+};
 ```
 
 ## 排序问题
