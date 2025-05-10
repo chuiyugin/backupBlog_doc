@@ -2010,7 +2010,7 @@ void bst_delete(BST* tree,K key)
 ![AVL树和红黑树的对比](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507212757.png)
 
 #### 红黑树
-+ 红黑树的基础模型是 **2-3-4树**，基于此在二叉树的基础上实现红黑树。
++ 红黑树的基础模型是 **2-3-4树**，基于此在二叉搜索树的基础上实现红黑树。
 + 问题 1：如何表示2-3-4树中的 `3-node` 和 `4-node` ？
 
 ![如何表示 2-3-4 树中的 3-node 和 4-node？](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505081108145.png)

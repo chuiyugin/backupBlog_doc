@@ -25,10 +25,9 @@ class Solution {
             int right = nums.size()-1;
             int mid = left + (right-left)/2;
             int ans = -1;
-
-            while(left<right)
+            while(left<=right) //注意点1
             {
-                mid = left + (right-left)/2;
+                mid = left + (right-left)/2; //注意点2
                 if(nums[mid]==target)
                 {
                     ans = mid;
@@ -36,11 +35,11 @@ class Solution {
                 }
                 else if(nums[mid]>target)
                 {
-                    right = mid-1;
+                    right = mid-1; //注意点3
                 }
                 else
                 {
-                    left = mid+1;
+                    left = mid+1; //注意点4
                 }
             }
             printf("%d\n",ans);
@@ -60,6 +59,101 @@ int main()
 
     system("pause"); // 防止运行后自动退出，需头文件stdlib.h
     return 0;
+}
+```
+
++ 变式 1：查找第一个和 `target` 相等的元素
++ 代码如下：
+
+```cpp
+//查找第一个和target相等的元素
+int binary_search2(vector<int>& nums, int target) 
+{
+    int left = 0;
+    int right = nums.size()-1;
+    int mid,cmp;
+    while(left<=right)
+    {
+        mid = left + (right - left)/2;
+        cmp = target - nums[mid];
+        if(cmp < 0) // target < arr[mid]
+        {
+            right = mid - 1;
+        }
+        else if(cmp > 0)
+        {
+            left = mid + 1;
+        }
+        else 
+        {
+            // 注意点：在[left,right]的区间找
+            if(mid == left || nums[mid-1]<target)
+                return mid;
+            else
+                right = mid - 1;
+        }
+    }
+    return -1;
+}
+```
+
++ 变式 2：查找第一个大于等于 `target` 的元素
++ 代码如下：
+
+```cpp
+//查找第一个大于等于target的元素
+int binary_search3(vector<int>& nums, int target) 
+{
+    int left = 0;
+    int right = nums.size()-1;
+    int mid,cmp;
+    while(left<=right)
+    {
+        mid = left + (right - left)/2;
+        cmp = target - nums[mid];
+        if(cmp <= 0) // 注意点：target <= nums[mid]
+        {
+            if( mid == left || nums[mid - 1] < target)
+                return mid;
+            else
+                right = mid - 1;
+        }
+        else
+        {
+            left = mid + 1;
+        }
+    }
+    return -1;
+}
+```
+
++ 变式 3：查找最后一个小于等于 `target` 的值
++ 代码如下：
+
+```cpp
+//查找最后一个小于等于target的元素
+int binary_search4(vector<int>& nums, int target) 
+{
+    int left = 0;
+    int right = nums.size()-1;
+    int mid,cmp;
+    while(left<=right)
+    {
+        mid = left + (right - left)/2;
+        cmp = target - nums[mid];
+        if(cmp <= 0) // target <= nums[mid]
+        {
+            right = mid - 1;
+        }
+        else // 注意点
+        {
+            if(mid == right || nums[mid + 1]>target)
+                return mid;
+            else
+                left = mid + 1;
+        }
+    }
+    return -1;
 }
 ```
 
@@ -1608,6 +1702,146 @@ public:
 ```
 
 ## 排序问题
+### 选择排序
+#### 普通选择排序
++ 选择排序理论：
+
+![选择排序理论](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510160136.png)
+
++ 代码：
+
+```cpp
+// 选择排序
+void choose_sort(vector<int>& nums)
+{
+    if(nums.size()==0 || nums.size()==1)
+        return;
+    int minIndex = 0;
+    for(int i=0; i<nums.size()-1; i++)
+    {
+        minIndex = i;
+        for(int j=i+1; j<nums.size(); j++)
+        {
+            if(nums[j]<nums[minIndex])
+                minIndex = j;
+        }
+        swap(nums[i],nums[minIndex]);
+    }
+}
+```
+
+### 冒泡排序
+#### 普通冒泡排序
++ 冒泡排序理论：
+
+![冒泡排序理论](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510161815.png)
+
+
++ 代码：
+
+```cpp
+// 冒泡排序
+void bubble_sort(vector<int>& nums)
+{
+    if(nums.size()==0 || nums.size()==1)
+        return;
+    int last = nums.size()-1;
+    int flag = 0; // 注意点：当不再发生交换的时候就已经有序了
+    for(int i=0; i<nums.size(); i++)
+    {
+        flag = 0;
+        for(int j=0; j<last; j++)
+        {
+            if(nums[j]>nums[j+1])
+            {
+                swap(nums[j],nums[j+1]);
+                flag++;
+            }
+        }
+        if(flag==0)
+            break;
+    }
+}
+```
+
+### 插入排序
+#### 普通插入排序
++ 插入排序理论：
+
+![插入排序理论](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510164741.png)
+
++ 代码：
+
+```cpp
+// 插入排序
+void insert_sort(vector<int>& nums)
+{
+    if(nums.size()==0 || nums.size()==1)
+        return;
+    int value;
+    for(int i=1; i<nums.size(); i++) // 要插入元素的索引
+    {
+        int value = nums[i];
+        int j = i - 1;
+        while(value < nums[j] && j>=0)
+        {
+            nums[j+1] = nums[j];
+            j--;
+        }
+        nums[j+1] = value;
+    }
+}
+```
+
++ 性质和分析：
+	+ 在原数组有序的最好情况下，算法时间复杂度是 $O(n)$！
+	+ 空间复杂度为 $O(1)$！
+	+ 插入排序算法具有**稳定性**（假定在待排序的记录序列中，存在多个具有相同的关键字的记录，若经过排序后，这些记录的相对次序保持不变）
+
+![插入排序分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510165134.png)
+
++ 使用场景：
+	+ 数组长度比较小；
+	+ 当数组基本有序（离排好序的最终位置很近），插入排序可以在 $O(n)$ 时间内完成排序！
+
+### 希尔排序
+#### 普通希尔排序
++ 希尔排序理论：
+
+![希尔排序理论](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505101858190.png)
+
++ 代码：
+
+```cpp
+// 希尔排序
+void shell_sort(vector<int> &nums)
+{
+    int gap = nums.size() / 2;
+    while (gap)
+    {
+        for (int i = gap; i < nums.size(); i++)
+        {
+            int value = nums[i];
+            int j = i - gap;
+            // 步骤与从插入排序类似
+            while (j >= 0 && nums[j] > value)
+            {
+                nums[j + gap] = nums[j];
+                j -= gap;
+            }
+            nums[j + gap] = value;
+        }
+        // 缩小gap
+        gap /= 2;
+    }
+}
+```
+
++ 分析：
+	+ 时间复杂度和 `gap` 序列相关，一般而言平均情况小于 $O(n^2)$；
+	+ 空间复杂度为 $O(1)$；
+	+ 插入排序算法不具有**稳定性**，因为发生了长距离交换，通过牺牲不稳定性来换取时间。
+
 ### 归并排序
 #### 普通归并排序
 + 递归方法：[912.排序数组](https://leetcode.cn/problems/sort-an-array/description/)
