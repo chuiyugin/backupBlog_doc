@@ -1730,6 +1730,11 @@ void choose_sort(vector<int>& nums)
 }
 ```
 
++ 分析：
+
+![选择排序的分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510210721.png)
+
+
 ### 冒泡排序
 #### 普通冒泡排序
 + 冒泡排序理论：
@@ -1763,6 +1768,11 @@ void bubble_sort(vector<int>& nums)
     }
 }
 ```
+
++ 分析：
+
+![冒泡排序的分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510210853.png)
+
 
 ### 插入排序
 #### 普通插入排序
@@ -1804,6 +1814,44 @@ void insert_sort(vector<int>& nums)
 	+ 数组长度比较小；
 	+ 当数组基本有序（离排好序的最终位置很近），插入排序可以在 $O(n)$ 时间内完成排序！
 
+### 希尔排序
+#### 普通希尔排序
++ 希尔排序理论：
+
+![希尔排序理论](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505101858190.png)
+
++ 代码：
+
+```cpp
+// 希尔排序
+void shell_sort(vector<int> &nums)
+{
+    int gap = nums.size() / 2;
+    while (gap)
+    {
+        for (int i = gap; i < nums.size(); i++)
+        {
+            int value = nums[i];
+            int j = i - gap;
+            // 步骤与从插入排序类似
+            while (j >= 0 && nums[j] > value)
+            {
+                nums[j + gap] = nums[j];
+                j -= gap;
+            }
+            nums[j + gap] = value;
+        }
+        // 缩小gap
+        gap /= 2;
+    }
+}
+```
+
++ 分析：
+	+ 时间复杂度和 `gap` 序列相关，一般而言平均情况小于 $O(n^2)$；
+	+ 空间复杂度为 $O(1)$；
+	+ 插入排序算法不具有**稳定性**，因为发生了长距离交换，通过牺牲不稳定性来换取时间。
+
 ### 归并排序
 #### 普通归并排序
 + 递归方法：[912.排序数组](https://leetcode.cn/problems/sort-an-array/description/)
@@ -1813,7 +1861,6 @@ void insert_sort(vector<int>& nums)
 ```cpp
 class Solution {
 public:
-    
     void merge(vector<int>& nums,int L,int M,int R)
     {
         vector<int> temp(R-L+1);
@@ -1849,6 +1896,11 @@ public:
     }
 };
 ```
+
++ 分析：
+	+ 归并排序算法是稳定的，但是空间复杂度比较高；
+
+![归并排序的分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510211156.png)
 
 #### 小和问题
 + 问题描述：
@@ -2179,7 +2231,6 @@ class Solution {
 ```cpp
 class Solution {
 public:
-
     void swap(vector<int>& nums,int a,int b)
     {
         int temp = nums[a];
@@ -2293,3 +2344,6 @@ class Solution {
         }
     };
 ```
+
++ 分析：
+	+ 快排的空间复杂度是 $O(logn)$，并且快排算法是不稳定的。
