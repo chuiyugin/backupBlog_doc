@@ -1731,7 +1731,7 @@ void choose_sort(vector<int>& nums)
 ```
 
 ### 冒泡排序
-#### 冒泡排序
+#### 普通冒泡排序
 + 冒泡排序理论：
 
 ![冒泡排序理论](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510161815.png)
@@ -1765,7 +1765,7 @@ void bubble_sort(vector<int>& nums)
 ```
 
 ### 插入排序
-#### 插入排序
+#### 普通插入排序
 + 插入排序理论：
 
 ![插入排序理论](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510164741.png)
