@@ -2026,6 +2026,83 @@ void bst_delete(BST* tree,K key)
 
 ![红黑树的性质](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505081112194.png)
 
+## 文件流
+### 流模型
++ 流模型：
+
+![流模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111548187.png)
+
++ 优点：
+	+ 程序员读写文件时，不需要关心文件的位置；
+	+ 数据源（`data source` ）和数据汇（`data sink` ）是解耦的。
+
++ 程序员视角的文件：
+
+![程序员视角的文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111553800.png)
+
+### 前置知识
+#### 缓冲区类型
++ 缓冲区是以**先进先出**的方式管理数据的，缓冲区分为三种类型：
+	+ 满缓冲：当缓冲区为空时，从输入流中读取数据；当缓冲区满时，向输出流写入数据。
+	+ 行缓冲：每次从输入流中读取一行数据；每次向输出流中写入一行数据（`stdin`、`stdout`）。
+	+ 无缓冲：顾名思义，就是没有缓冲区（`stderr`，输出错误信息）。
+
+![缓冲区](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111559381.png)
+
+#### 标准流
++ 标准流不需要手动创建，也不需要手动关闭（即其它文件流都是需要手动操作的）。
+
+![标准流](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111600959.png)
+
+#### 二进制文件和文本文件
++ 二进制文件：字节
+
+![二进制文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111602043.png)
+
++ 文本文件：字符
+
+![文本文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111602529.png)
+
++ 二进制文件和文本文件的区别举例：
+
+![二进制文件和文本文件的区别举例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111605481.png)
+
+### 文件流接口（API）
+#### 文件流操作步骤
++ 文件流操作步骤如下：
+	+ 打开文件流：`fopen()`；
+	+ 读/写文件：统计、转换、加密、解密......
+	+ 关闭文件流：`fclose()`。
+
+#### 打开文件流
++ 打开文件流的函数：
+
+![打开文件流的函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111612301.png)
+
++ 文件的路径（`filename` ）
+	+ 绝对路径和相对路径
+
+![文件的路径](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111614706.png)
+
++ 打开文件的模式
+	+ 文件的类型
+	+ 对文件的操作（`r`, `w`）
+	+ 写模式和追加模式是不一样的，如果文件存在，写模式会清空原有数据，而追加模式会在原有数据的后面写入新的内容。
++ 以文本形式打开文件的模式：
+
+![以文本形式打开文件的模式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111619785.png)
+
++ 以二进制形式打开文件的模式：
+
+![以二进制形式打开文件的模式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111621104.png)
+
+#### 关闭文件流
++ 关闭文件流的函数：
+
+![关闭文件流的函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111624460.png)
+
+
+
 
 
 

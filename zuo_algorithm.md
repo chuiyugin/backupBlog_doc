@@ -1730,6 +1730,11 @@ void choose_sort(vector<int>& nums)
 }
 ```
 
++ 分析：
+
+![选择排序的分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510210721.png)
+
+
 ### 冒泡排序
 #### 普通冒泡排序
 + 冒泡排序理论：
@@ -1763,6 +1768,11 @@ void bubble_sort(vector<int>& nums)
     }
 }
 ```
+
++ 分析：
+
+![冒泡排序的分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510210853.png)
+
 
 ### 插入排序
 #### 普通插入排序
@@ -1851,7 +1861,6 @@ void shell_sort(vector<int> &nums)
 ```cpp
 class Solution {
 public:
-    
     void merge(vector<int>& nums,int L,int M,int R)
     {
         vector<int> temp(R-L+1);
@@ -1887,6 +1896,11 @@ public:
     }
 };
 ```
+
++ 分析：
+	+ 归并排序算法是稳定的，但是空间复杂度比较高；
+
+![归并排序的分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510211156.png)
 
 #### 小和问题
 + 问题描述：
@@ -2217,7 +2231,6 @@ class Solution {
 ```cpp
 class Solution {
 public:
-
     void swap(vector<int>& nums,int a,int b)
     {
         int temp = nums[a];
@@ -2331,3 +2344,6 @@ class Solution {
         }
     };
 ```
+
++ 分析：
+	+ 快排的空间复杂度是 $O(logn)$，并且快排算法是不稳定的。
