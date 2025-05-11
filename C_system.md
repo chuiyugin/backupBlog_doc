@@ -1738,7 +1738,7 @@ void destroy_hashmap(HashMap* map)
 
 + 代码：
 
-```cpp
+```c
 //添加一个结点
 //1、如果key存在则什么也不做
 //2、如果key不存在，则添加一个结点
@@ -1786,7 +1786,7 @@ void bst_insert(BST* tree,K key)
 ##### 查找节点
 + 查找结点与添加节点逻辑类似，代码如下：
 
-```cpp
+```c
 //查找一个结点
 TreeNode* bst_search(BST* tree,K key)
 {
@@ -1819,7 +1819,7 @@ TreeNode* bst_search(BST* tree,K key)
 
 + 代码：
 
-```cpp
+```c
 //层次遍历BST，广度优先搜索
 void bst_levellorder(BST* tree)
 {
@@ -1859,7 +1859,7 @@ void bst_levellorder(BST* tree)
 
 + 代码：
 
-```cpp
+```c
 //中序遍历(二叉排序树)
 void bst_inorder(TreeNode* root)
 {
@@ -1927,7 +1927,7 @@ void bst_backorder(TreeNode* root)
 
 + 代码：
 
-```cpp
+```c
 //删除节点
 void bst_delete(BST* tree,K key)
 {
@@ -2027,14 +2027,14 @@ void bst_delete(BST* tree,K key)
 ![红黑树的性质](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505081112194.png)
 
 ## 文件流
-### 流模型
-+ 流模型：
+### 流的模型
++ 流的模型：
 
 ![流模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111548187.png)
 
 + 优点：
 	+ 程序员读写文件时，不需要关心文件的位置；
-	+ 数据源（`data source` ）和数据汇（`data sink` ）是解耦的。
+	+ 数据源（ `data source` ）和数据汇（ `data sink` ）是解耦的。
 
 + 程序员视角的文件：
 
@@ -2101,15 +2101,253 @@ void bst_delete(BST* tree,K key)
 
 ![关闭文件流的函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111624460.png)
 
+#### 打开和关闭文件流的程序
++ 打开和关闭文件流的程序示例：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void)
+{
+    // 1.打开文件流
+    FILE *stream = fopen("a.txt", "w");//可以调整路径和模式
+    if (stream == NULL)
+    {
+        fprintf(stderr, "Open a.txt failed\n");
+    }
+    // 2.读写文件(统计，转换，加密，解密等业务逻辑)
+
+    // 3.关闭文件流
+    fclose(stream);
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+#### 读写文本文件
+##### 一个字符一个字符地读写
++ 一个字符一个字符地读写：
+
+![一个字符一个字符地读写](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112042697.png)
++ 代码：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+int main(int argc, char *argv[])
+{
+    // xxx.exe src dst
+    //  1.参数校验
+    if (argc != 3)
+    {
+        fprintf(stderr, "Usage: %s src dst\n", argv[0]);
+        exit(1);
+    }
+
+    // 2.打开文件流
+    FILE *src = fopen(argv[1], "r");
+    if (src == NULL)
+    {
+        fprintf(stderr, "Open %s failed\n", argv[1]);
+        exit(1);
+    }
+
+    FILE *dst = fopen(argv[2], "w");
+    if (src == NULL)
+    {
+        fprintf(stderr, "Open %s failed\n", argv[2]);
+        fclose(src);
+        exit(1);
+    }
+
+    // 3.读写文件
+    // a.一个字符一个字符地读写: fgetc, fputc
+    // 把大写转换为小写
+    int c;
+    while ((c = fgetc(src)) != EOF)
+    {
+        fputc(tolower(c), dst);
+    }
+
+    // 4.关闭文件流
+    fclose(src);
+    fclose(dst);
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+##### 一行一行地读写
++ 一行一行地读写：
+
+![一行一行地读写](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112302826.png)
+
++ 代码：
+
+```c
+// b.一行一行地读写字符
+    char line[MAXLINE];
+    char buffer[MAXLINE];
+    int line_num = 1;
+    while (fgets(buffer, MAXLINE, src) != NULL)
+    {
+        sprintf(line, "%d. %s", line_num, buffer);
+        fputs(line, dst);
+        line_num++;
+    }
+```
+
+##### 格式化地读写
++ 格式化地读写：
+
+![格式化地读写](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112307531.png)
+
+#### 读写二进制文件
++ 读二进制文件：
+
+![读二进制文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112326481.png)
+
++ 写二进制文件：
+
+![写二进制文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112327687.png)
+
++ 代码示例：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define BUFSIZE 4096
+
+int main(int argc, char *argv[])
+{
+    // xxx.exe src dst
+    //  1.参数校验
+    if (argc != 3)
+    {
+        fprintf(stderr, "Usage: %s src dst\n", argv[0]);
+        exit(1);
+    }
+
+    // 2.打开文件流
+    FILE *src = fopen(argv[1], "rb");// 读二进制文件模式后面要加b
+    if (src == NULL)
+    {
+        fprintf(stderr, "Open %s failed\n", argv[1]);
+        exit(1);
+    }
+
+    FILE *dst = fopen(argv[2], "wb");
+    if (src == NULL)
+    {
+        fprintf(stderr, "Open %s failed\n", argv[2]);// 读二进制文件模式后面要加b
+        fclose(src);
+        exit(1);
+    }
+
+    // 3.复制二进制文件
+    char buffer[BUFSIZE];
+    int bytes_num;
+    while ((bytes_num = fread(buffer, 1, BUFSIZE, src)) > 0)
+    {
+        fwrite(buffer, 1, BUFSIZE, dst);
+    }
+
+    // 4.关闭文件流
+    fclose(src);
+    fclose(dst);
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+#### 移动文件位置
++ `fseek()` 函数：可以改变与 stream 相关联的文件位置。
+
+![fseek()函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112346021.png)
+
++ 使用示例：
+
+![fseek()函数使用示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112347849.png)
+
++ `ftell()` 函数：
+
+![ftell()函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112348073.png)
+
++ `rewind()` 函数：
+
+![rewind()函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112349584.png)
+
++ 代码示例：
+
+![代码实现示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112351024.png)
 
 
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 
+char *readFILE(const char *path)
+{
+    // 2.打开文件流
+    FILE *src = fopen(path, "rb"); // 以二进制形式
+    if (src == NULL)
+    {
+        fprintf(stderr, "Open %s failed\n", path);
+        exit(1);
+    }
 
+    // 3.确定文件大小
+    fseek(src, 0, SEEK_END);
+    long n = ftell(src);
+    char *content = malloc(n + 1); // 1 for '\0'
 
+    // 读文件内容，填充content数组
+    rewind(src); // 回到文件开头
+    int bytes_num = fread(content, 1, n, src);
+    content[bytes_num] = '\0';
 
+    // 4.关闭文件流
+    fclose(src);
 
+    return content;
+}
 
+int main(int argc, char *argv[])
+{
+    // xxx.exe src
+    //  1.参数校验
+    if (argc != 2)
+    {
+        fprintf(stderr, "Usage: %s filename\n", argv[0]);
+        exit(1);
+    }
 
+    char *content = readFILE(argv[1]);
+
+    // 输出内容
+    puts(content);
+
+    free(content);
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+#### 错误处理
++ 需要引入 `#include <errno.h>` 和 `#include <string.h>` 两个头文件。
++ 错误处理示例：
+
+![错误处理示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505120008076.png)
 
 
 
