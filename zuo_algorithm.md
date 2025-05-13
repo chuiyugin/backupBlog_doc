@@ -1464,6 +1464,61 @@ public:
 };
 ```
 
+## 字符串
+### 题目一
++ 替换数字：[54. 替换数字（第八期模拟笔试）](https://kamacoder.com/problempage.php?pid=1064)
++ 思路：首先扩充数组到每个数字字符替换成 `number` 之后的大小，再从后向前进行填充。**其实很多数组填充类的问题，其做法都是先预先给数组扩容带填充后的大小，然后在从后向前进行操作。**
+	+ 好处如下：
+		+ 1. 不用申请新数组。
+		+ 2. 从后向前填充元素，避免了从前向后填充元素时，每次添加元素都要将添加元素之后的所有元素向后移动的问题。
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <string>
+#include <iostream>
+
+using namespace std;
+
+int main(void)
+{
+    string s;
+    cin >> s;
+    int count = 0;
+    int num = s.size();
+    for(int i=0; i<num; i++)
+    {
+        if(s[i]>='0' && s[i]<='9')
+        {
+            count++;
+        }
+    }
+    //扩容
+    s.resize(s.size() + count * 5);
+    //从后往前调整字符串数组
+    int j = s.size()-1;
+    for(int i=num-1; i>=0; i--)
+    {
+        if(!(s[i]>='0' && s[i]<='9'))
+        {
+            s[j] = s[i];
+            j--;
+        }
+        else
+        {
+            s[j--] = 'r';
+            s[j--] = 'e';
+            s[j--] = 'b';
+            s[j--] = 'm';
+            s[j--] = 'u';
+            s[j--] = 'n';
+        }
+    }
+    cout << s;
+    return 0;
+}
+```
+
 ## 队列和栈
 ### 题目一
 + 用栈实现队列：[232.用栈实现队列](https://leetcode.cn/problems/implement-queue-using-stacks/description/)
