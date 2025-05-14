@@ -1464,6 +1464,125 @@ public:
 };
 ```
 
+## 字符串
+### 题目一
++ 替换数字：[54. 替换数字（第八期模拟笔试）](https://kamacoder.com/problempage.php?pid=1064)
++ 思路：首先扩充数组到每个数字字符替换成 `number` 之后的大小，再从后向前进行填充。**其实很多数组填充类的问题，其做法都是先预先给数组扩容带填充后的大小，然后在从后向前进行操作。**
+	+ 好处如下：
+		1. 不用申请新数组。
+		2. 从后向前填充元素，避免了从前向后填充元素时，每次添加元素都要将添加元素之后的所有元素向后移动的问题。
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <string>
+#include <iostream>
+
+using namespace std;
+
+int main(void)
+{
+    string s;
+    cin >> s;
+    int count = 0;
+    int num = s.size();
+    for(int i=0; i<num; i++)
+    {
+        if(s[i]>='0' && s[i]<='9')
+        {
+            count++;
+        }
+    }
+    //扩容
+    s.resize(s.size() + count * 5);
+    //从后往前调整字符串数组
+    int j = s.size()-1;
+    for(int i=num-1; i>=0; i--)
+    {
+        if(!(s[i]>='0' && s[i]<='9'))
+        {
+            s[j] = s[i];
+            j--;
+        }
+        else
+        {
+            s[j--] = 'r';
+            s[j--] = 'e';
+            s[j--] = 'b';
+            s[j--] = 'm';
+            s[j--] = 'u';
+            s[j--] = 'n';
+        }
+    }
+    cout << s;
+    return 0;
+}
+```
+
+### 题目二
++ 反转字符串中的单词：[151.反转字符串中的单词](https://leetcode.cn/problems/reverse-words-in-a-string/description/)
++ 思路：
+	+ 移除单词中多余的空格->整体反转字符串->逐个单词反转
+	+ 这道题目需要注意的是自己写 `string deleteExtraSpaces(string s)` 函数代码来移除单词中多余的空格。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    //删除单词之间多余的空格
+    string deleteExtraSpaces(string s)
+    {
+        int slow = 0;
+        for(int fast=0; fast<s.size(); fast++)
+        {
+            //不等于空格就处理
+            if(s[fast]!=' ')
+            {
+                //补上空格
+                if(slow!=0)
+                    s[slow++] = ' ';
+                //把单词填上去
+                while(s[fast]!=' ' && fast<s.size())
+                    s[slow++] = s[fast++];
+            }
+        }
+        s.resize(slow);
+        return s;
+    }
+
+    string reverseWords(string s) {
+        s = deleteExtraSpaces(s);
+        //将字符串整体翻转
+        int i=0;
+        int j=s.size()-1;
+        while(i<j)
+        {
+            swap(s[i],s[j]);
+            i++;
+            j--;
+        }
+        //逐个将单词翻转
+        int m,n,record=0;
+        for(int i=0; i<=s.size(); i++)
+        {
+            if(s[i]==' ' || i==s.size())
+            {
+                m = record;
+                record = i+1;
+                n = i-1;
+                while(m<n)
+                {
+                    swap(s[m],s[n]);
+                    m++;
+                    n--;
+                }
+            }
+        }
+        return s;
+    }
+};
+```
+
 ## 队列和栈
 ### 题目一
 + 用栈实现队列：[232.用栈实现队列](https://leetcode.cn/problems/implement-queue-using-stacks/description/)
