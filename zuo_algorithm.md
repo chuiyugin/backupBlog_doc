@@ -1519,6 +1519,70 @@ int main(void)
 }
 ```
 
+### 题目二
++ 反转字符串中的单词：[151.反转字符串中的单词](https://leetcode.cn/problems/reverse-words-in-a-string/description/)
++ 思路：
+	+ 移除单词中多余的空格->整体反转字符串->逐个单词反转
+	+ 这道题目需要注意的是自己写 `string deleteExtraSpaces(string s)` 函数代码来移除单词中多余的空格。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    //删除单词之间多余的空格
+    string deleteExtraSpaces(string s)
+    {
+        int slow = 0;
+        for(int fast=0; fast<s.size(); fast++)
+        {
+            //不等于空格就处理
+            if(s[fast]!=' ')
+            {
+                //补上空格
+                if(slow!=0)
+                    s[slow++] = ' ';
+                //把单词填上去
+                while(s[fast]!=' ' && fast<s.size())
+                    s[slow++] = s[fast++];
+            }
+        }
+        s.resize(slow);
+        return s;
+    }
+
+    string reverseWords(string s) {
+        s = deleteExtraSpaces(s);
+        //将字符串整体翻转
+        int i=0;
+        int j=s.size()-1;
+        while(i<j)
+        {
+            swap(s[i],s[j]);
+            i++;
+            j--;
+        }
+        //逐个将单词翻转
+        int m,n,record=0;
+        for(int i=0; i<=s.size(); i++)
+        {
+            if(s[i]==' ' || i==s.size())
+            {
+                m = record;
+                record = i+1;
+                n = i-1;
+                while(m<n)
+                {
+                    swap(s[m],s[n]);
+                    m++;
+                    n--;
+                }
+            }
+        }
+        return s;
+    }
+};
+```
+
 ## 队列和栈
 ### 题目一
 + 用栈实现队列：[232.用栈实现队列](https://leetcode.cn/problems/implement-queue-using-stacks/description/)
