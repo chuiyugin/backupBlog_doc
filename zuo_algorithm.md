@@ -1583,6 +1583,149 @@ public:
 };
 ```
 
+### KMP 算法
++ 字符串的前缀：不包含最后一个字符的所有以第一个字符开头的连续子串。
++ 字符串的后缀：不包含第一个字符的所有以最后一个字符结尾的连续子串。
+	+ 举例：字符串 `"aab"`
+		+ 其前缀有：`“a”` 、`"aa"`
+		+  其后缀有：`“b”` 、`"ab"`
++ 前缀表：前缀表要求的就是相同前后缀的长度。
+	+ 字符串 `"aab"` 的最长**公共前后缀**的长度为 1。
+	+ 前缀 `"aa"` 和后缀 `"ab"` 重合的部分。
++ KMP 算法在的 `next[]` 数组储存的就是前缀表。
+	+ 前缀表是用来回退的，它记录了模式串与主串 (文本串) 不匹配的时候，模式串应该从哪里开始重新匹配。
++ `next[]` 数组的计算方式：
+	+ 初始化：注意初始化 `i=1`
+	+ 不相等的清空：使用 `while()` 循环持续回退
+	+ 相等的情况
++ 代码：
+
+```cpp
+void getNext(vector<int> &next, string s)
+    {
+        // 初始化
+        int j = 0;
+        next[j] = 0;
+        for (int i = 1; i < s.size(); i++) //注意初始化 i=1
+        {
+            // 不相等的情况
+            while (j > 0 && s[i] != s[j])
+            {
+                // 回退
+                j = next[j - 1];
+            }
+            // 相等的情况
+            if (s[i] == s[j])
+            {
+                j++;
+            }
+            next[i] = j;
+        }
+    }
+```
+
+### 题目三
++ 找出字符串中第一个匹配的下标：[28.找出字符串中第一个匹配的下标](https://leetcode.cn/problems/find-the-index-of-the-first-occurrence-in-a-string/description/)
++ 思路：KMP 算法的最重要应用，使用前缀表 `next[]` 数组当出现字符串不匹配时，可以记录一部分之前已经匹配的文本内容，利用这些信息避免从头再去做匹配。
++ 代码：
+
+```cpp
+class Solution
+{
+public:
+    void getNext(vector<int> &next, string s)
+    {
+        // 初始化
+        int j = 0;
+        next[j] = 0;
+        for (int i = 1; i < s.size(); i++)
+        {
+            // 不相等的情况
+            while (j > 0 && s[i] != s[j])
+            {
+                // 回退
+                j = next[j - 1];
+            }
+            // 相等的情况
+            if (s[i] == s[j])
+            {
+                j++;
+            }
+            next[i] = j;
+        }
+    }
+
+    int strStr(string haystack, string needle)
+    {
+        vector<int> next(needle.size());
+        getNext(next, needle);
+        int j = 0;
+        for (int i = 0; i < haystack.size(); i++)
+        {
+            // 不相等
+            while (j > 0 && haystack[i] != needle[j])
+            {
+                j = next[j - 1];
+            }
+            // 相等但不是末尾,i和j都向后移动
+            if (haystack[i] == needle[j] && (j != needle.size() - 1))
+            {
+                j++;
+            }
+            // 相等而且是末尾
+            else if (haystack[i] == needle[j] && (j == needle.size() - 1))
+            {
+                return (i - needle.size() + 1);
+            }
+        }
+        return -1;
+    }
+};
+```
+
+### 题目四
++ 重复的子字符串：[459.重复的子字符串](https://leetcode.cn/problems/repeated-substring-pattern/description/)
++ 思路：
+	+ 如果 `s.size() % (s.size()-next[s.size()-1]) == 0` ，则说明数组的长度正好可以被最长相等前后缀不包含的子串的长度整除，说明该字符串有重复的子字符串。
+	+ 具体思路和证明：[459.重复的子字符串思路](https://programmercarl.com/0459.%E9%87%8D%E5%A4%8D%E7%9A%84%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
++ 代码：
+
+```cpp
+class Solution {
+public:
+    void getNext(vector<int>& next,string s)
+    {
+        //初始化
+        int j=0;
+        next[j] = 0;
+        for(int i=1; i<s.size(); i++)
+        {
+            //如果不相等，回退
+            while(j>0 && s[i]!=s[j])
+            {
+                j = next[j-1];//回退
+            }
+            //如果相等，则i和j都增加
+            if(s[i]==s[j])
+            {
+                j++;
+            }
+            next[i] = j;
+        }
+    }
+    
+    bool repeatedSubstringPattern(string s) {
+        vector<int> next(s.size());
+        getNext(next,s);
+        int ans = s.size() % (s.size()-next[s.size()-1]);
+        if(ans || next[s.size()-1]==0)
+            return false;
+        else
+            return true;
+    }
+};
+```
+
 ## 队列和栈
 ### 题目一
 + 用栈实现队列：[232.用栈实现队列](https://leetcode.cn/problems/implement-queue-using-stacks/description/)
