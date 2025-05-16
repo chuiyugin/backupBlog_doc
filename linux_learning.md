@@ -194,4 +194,51 @@ echo "hello world!" > text1 # 重定向到text1这个文件
 
 ![less ( more )命令单页浏览文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250515192112.png)
 
+#### 重定向
++ 重定向：
+
+![重定向](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161600421.png)
+
++ 常见用法：
+
+![重定向常见用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161605070.png)
+
+#### 搜索文件内容
++ `grep` 命令可以用于搜索文件内容，功能非常强大！
++ `grep` 命令按照正则表达式去搜索文件，如果文件中某一项匹配指定的正则表达式，`grep` 命令则会显示这一项。
+
+![grep命令搜索文件内容](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161614234.png)
+
+#### 正则表达式
++ 常用的正则表达式语法规则：
+
+![常用的正则表达式语法规则](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161641348.png)
+
+#### 命令的组合
++ 命令的组合主要有以下三种方式：
+
+![命令的组合](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161715567.png)
+
++ 第一种组合用法：
+
+![第一种组合用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161728972.png)
+
++ 第二种组合用法：管道
+
+![第二种组合用法：管道](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161729102.png)
+
++ 第三种组合用法：`xargs`
+
+![第三种组合用法：xargs](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161731637.png)
+
+#### 文件权限
++ 普通文件：
+
+![普通文件的权限](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161741009.png)
+
++ 目录文件：
+
+![目录文件的权限](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161742598.png)
+
+
 
