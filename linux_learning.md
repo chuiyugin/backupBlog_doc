@@ -194,4 +194,160 @@ echo "hello world!" > text1 # 重定向到text1这个文件
 
 ![less ( more )命令单页浏览文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250515192112.png)
 
+#### 重定向
++ 重定向：
 
+![重定向](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161600421.png)
+
++ 常见用法：
+
+![重定向常见用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161605070.png)
+
+#### 搜索文件内容
++ `grep` 命令可以用于搜索文件内容，功能非常强大！
++ `grep` 命令按照正则表达式去搜索文件，如果文件中某一项匹配指定的正则表达式，`grep` 命令则会显示这一项。
+
+![grep命令搜索文件内容](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161614234.png)
+
+#### 正则表达式
++ 常用的正则表达式语法规则：
+
+![常用的正则表达式语法规则](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161641348.png)
+
+#### 命令的组合
++ 命令的组合主要有以下三种方式：
+
+![命令的组合](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161715567.png)
+
++ 第一种组合用法：
+
+![第一种组合用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161728972.png)
+
++ 第二种组合用法：管道
+
+![第二种组合用法：管道](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161729102.png)
+
++ 第三种组合用法：`xargs`
+
+![第三种组合用法：xargs](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161731637.png)
+
+#### 文件权限
++ 普通文件：
+
+![普通文件的权限](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161741009.png)
+
++ 目录文件：
+
+![目录文件的权限](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161742598.png)
+
++ `chmod` 命令改变文件权限：
+
+![chmod 命令改变文件权限](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517131757.png)
+
++ `umask` 命令文件创建掩码：
+	+ 文件和目录在创建的时候都有一个默认的权限，该权限是由文件创建掩码 `umask` 决定的。
+	+ 表示想去掉的权限。
+
+![umask 命令的工作原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517132729.png)
+
++ `umask` 命令的用法：
+
+![umask 命令文件创建掩码](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517132408.png)
+
+#### 链接
++ 硬链接的原理：
+
+![硬链接的原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517134338.png)
+
+
++ 硬链接的用法：
+
+![硬链接的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517134308.png)
+
++ 符号链接（软链接）的原理：
+
+![符号链接（软链接）的原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517135740.png)
+
++ 符号链接（软链接）的用法：
+	+ 对于大多数命令（ `rm` 命令除外 ），如果参数是符号链接，其实操作的是符号链接指向的文件（类似指针的解引用操作）。
+
+![符号链接（软链接）的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517135119.png)
+
+#### 远程复制
++ `scp` 命令远程复制：
+
+![scp 命令远程复制](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517140244.png)
+
+#### 打包和压缩
++ `tar` 命令打包和压缩的经典用法：
+
+![tar 命令打包和压缩的经典用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517140459.png)
+
+## 编译工具链
++ 编译工具链，又称为软件开发工具包（SDK）。
+### 编译
+#### 生成可执行程序的流程
++ 生成可执行程序的流程：
+
+![生成可执行程序的流程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517144432.png)
+
++ 对应的 `gcc` 命令如下：
+
+![对应的 gcc 命令如下](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517144540.png)
+
++ `gcc` 的其它选项：
+
+![gcc 的其它选项](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517151223.png)
+
++ `gcc` 的其它选项补充说明：
+
+![补充说明](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517151321.png)
+
+#### 条件编译
+##### 条件编译的用法
++ 条件编译，就是在**预处理**阶段决定包含还是排除某些程序片段。
+
+![条件编译](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517153501.png)
+
++ 用法一：
+
+![用法一](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517153546.png)
+
++ 用法二和三：
+
+![用法二和三](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517153700.png)
+
++ 用法四：
+
+![用法四](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517153750.png)
+
+##### 条件编译的作用
++ 编写可移植程序
+
+![编写可移植程序](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517153938.png)
+
++ 为宏提供默认定义
+
+![为宏提供默认定义](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517154028.png)
+
++ 避免头文件重复包含
+
+![避免头文件重复包含](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517154115.png)
+
++ 临时屏蔽包含注释的代码
+
+![临时屏蔽包含注释的代码](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517154240.png)
+
+### 调试
+#### 运行 gdb 调试
++ 运行 gdb 调试的一些命令：
+
+![运行 gdb 调试的一些命令](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517155846.png)
+
++ 设置断点：
+
+![设置断点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517160317.png)
+
++ 查看断点、删除断点和运行：
+
+![查看断点、删除断点和运行](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517161220.png)
