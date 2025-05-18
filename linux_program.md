@@ -44,6 +44,7 @@ rebuild: clean all
 ```c
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int main()
 {
@@ -77,6 +78,7 @@ int main()
 #include <error.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int main()
 {
@@ -96,4 +98,53 @@ int main()
 
 ![test_error 运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518172857.png)
 
+### 改变当前工作目录
++ 我们可以调用库函数 `chdir()` 改变当前工作目录的绝对路径：
 
+![库函数 chdir()](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518201356.png)
+
++ 代码：
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <error.h>
+#include <errno.h>
+#include <stdlib.h>
+
+int main(int argc,char* argv[])
+{
+    if(argc != 2)
+    {
+        error(1, errno, "Usage: %s path",argv[0]);
+    }
+    
+    char* cwd;
+    if((cwd = getcwd(NULL,0)) == NULL)
+    {
+        error(1, errno, "getcwd");   
+    }
+    puts(cwd);
+    free(cwd);
+    
+    //改变目录的惯用法
+    if(chdir(argv[1]) == -1)
+    {
+        error(1, errno, "chdir %s",argv[1]);
+    }
+    
+    if((cwd = getcwd(NULL,0)) == NULL)
+    {
+        error(1, errno, "getcwd");   
+    }
+    puts(cwd);
+    free(cwd);
+    
+    return 0;
+}
+```
+
++ 注意：当前工作目录是进程的属性，也就是说每一个进程都有自己的当前工作目录。且父进程创建 ( `fork` )子进程的时候，子进程会继承父进程的当前工作目录。
++ 运行结果：
+
+![chdir() 运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518205754.png)

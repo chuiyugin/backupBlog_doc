@@ -417,6 +417,28 @@ echo "hello world!" > text1 # 重定向到text1这个文件
 
 ![所对应的有向无环图](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518153604.png)
 
+#### 通用 Makefile 文件
++ 通用 Makefile 文件的代码如下：
+
+```shell
+SRCS := $(wildcard *.c)
+Outs := $(patsubst %.c, %, $(SRCS))
+
+CC := gcc
+CFLAGS = -Wall -g
+
+all: $(Outs)
+
+%: %.c
+	 $(CC) $< -o $@ $(CFLAGS)
+
+.PHONY: clean rebuild ALL
+
+clean:
+	$(RM) $(Outs)
+rebuild: clean all
+```
+
 ### 库文件
 + 什么是库文件：
 
