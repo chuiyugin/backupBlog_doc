@@ -1,5 +1,5 @@
 ---
-title: Linux 学习笔记
+title: Linux 基础学习
 tags:
   - Linux
   - ubuntu
@@ -8,7 +8,7 @@ categories:
 date: 2025-5-14 16:00:00
 excerpt: Linux 学习笔记
 ---
-# Linux 学习笔记
+# Linux 基础学习
 ## Linux 模型
 + Linux 模型图：
 
@@ -351,3 +351,89 @@ echo "hello world!" > text1 # 重定向到text1这个文件
 + 查看断点、删除断点和运行：
 
 ![查看断点、删除断点和运行](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517161220.png)
+
++ 监视变量：
+
+![监视变量_1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518142640.png)
+
+![监视变量_2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518142708.png)
+
++ 查看内存：
+
+![查看内存](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518142809.png)
+
+#### 查看 core 文件
++ core 文件：程序异常终止时的内存快照（堆、栈、寄存器...）
++ 用于错误复现和恢复场景
+##### 配置系统能够生成 core 文件
++ 配置系统能够生成 core 文件：
+
+![配置系统能够生成 core 文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518144224.png)
+
+##### 生成 core 文件
++ 生成 core 文件：
+
+![生成 core 文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518144337.png)
+
+##### 查看 core 文件
++ 用 gdb 查看 core 文件，并复现错误：
+
+![用 gdb 查看 core 文件，并复现错误](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518144442.png)
+
++ 查看栈帧和寄存器信息：
+
+![查看栈帧和寄存器信息](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518144516.png)
+
+### Makefile
++ Makefile 是一个脚本文件，使用 make 工具来解释执行。
++ Makefile 的作用：
+	+ 实现自动编译
+	+ 实现增量编译（只编译新增和修改过的 `.c` 文件，得到新的 `.o` 文件）
+
+#### 书写 Makefile
++ 特点：Makefile 的语法要求非常严格，写好之后使用 `make` 命令即可构建整个项目。
+
+![书写 Makefile](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518151014.png)
+
++ 自动编译：
+
+![自动编译](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518151208.png)
+
++ 增量编译：
+
+![增量编译](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518151230.png)
+
+#### Makefile 的工作原理
++ Makefile 的工作原理
+
+![Makefile 的工作原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518153001.png)
+
+#### 伪目标
++ 伪目标的代码书写格式：
+
+![伪目标的代码书写格式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518153459.png)
+
++ 所对应的有向无环图：
+
+![所对应的有向无环图](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518153604.png)
+
+### 库文件
++ 什么是库文件：
+
+![库文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518154020.png)
+
++ 静态库：
+
+![静态库](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518154059.png)
+
++ 动态库：
+
+![动态库](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518154145.png)
+
++ 生成静态库：
+
+![生成静态库](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518155134.png)
+
++ 生成动态库：
+
+![生成动态库](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518155553.png)
