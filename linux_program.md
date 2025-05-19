@@ -22,12 +22,13 @@ CFLAGS = -Wall -g
 all: $(Outs)
 
 %: %.c
-	 $(CC) $< -o $@ $(CFLAGS)
+	$(CC) $(CFLAGS) $< -o $@
 
-.PHONY: clean rebuild ALL
+.PHONY: clean rebuild all
 
 clean:
 	$(RM) $(Outs)
+
 rebuild: clean all
 ```
 
@@ -148,3 +149,85 @@ int main(int argc,char* argv[])
 + 运行结果：
 
 ![chdir() 运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518205754.png)
+
+### 创建目录
++ `mkdir()` 函数可以用来创建目录。
+
+![创建目录](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519164757.png)
+
++ 代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_mkdir dir mode(八进制)
+    //参数校验
+    if(argc != 3)
+    {
+        error(1, 0, "Usage %s dir mode",argv[0]);
+    }
+    
+    //参数类型转换
+    mode_t mode;
+    sscanf(argv[2], "%o", &mode);
+    int err = mkdir(argv[1], mode);
+    if(err == -1)
+    {
+        error(1, errno, "mkdir %s",argv[1]);
+    }
+    return 0;
+}
+```
+
++ 当不知道 `mode_t` 的类型是什么的时候，可以使用以下方法来查看：
+
+```sh
+gcc -E test_mkdir.c -o test_mkdir.i
+grep -nE "mode_t" test_mkdir.i
+```
+
++ 运行结果：
+
+![运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519165619.png)
+
+### 删除空目录
++ `rmdir()` 可以删除空目录。
+
+![删除空目录](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519171201.png)
+
++ 代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_rmdir dir 
+    //参数校验
+    if(argc != 2)
+    {
+        error(1, 0, "Usage %s dir",argv[0]);
+    }
+    //功能实现
+    if(rmdir(argv[1]) == -1)
+    {
+        error(1, errno, "rmdir %s",argv[1]);
+    }
+    
+    return 0;
+}
+```

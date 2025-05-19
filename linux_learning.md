@@ -430,12 +430,13 @@ CFLAGS = -Wall -g
 all: $(Outs)
 
 %: %.c
-	 $(CC) $< -o $@ $(CFLAGS)
+	$(CC) $(CFLAGS) $< -o $@
 
-.PHONY: clean rebuild ALL
+.PHONY: clean rebuild all
 
 clean:
 	$(RM) $(Outs)
+
 rebuild: clean all
 ```
 
