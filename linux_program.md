@@ -231,3 +231,127 @@ int main(int argc, char* argv[])
     return 0;
 }
 ```
+
+### 目录流
++ 使用目录流，可以查看目录中的内容。
+	+ 流模型："流"类似"水流"，顺序访问流中的数据时，是不需要关注位置的。
+	+ 目录流与文件流相比，文件流中的基本单位是字符或字节。而目录流中的基本单位是目录项。如下图所示：
+
+![目录流模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519195922.png)
+
+#### 打开目录流
++ `opendir()` 可以打开一个目录，得到一个指向目录流的指针 `DIR*` 。
+
+![打开一个目录](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519200055.png)
+
+#### 关闭目录流
++ `closedir()` 关闭目录流。
+
+![关闭目录流](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519200152.png)
+
+#### 读取目录流
++ `readdir()` 读目录流，得到指向下一个目录项的指针。
+
+![读取目录流](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519200337.png)
+
++ 结构体 `dirent` 的定义：
+
+![结构体 dirent 的定义](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519200424.png)
+
++ 读取一个目录内的内容并打印的代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <dirent.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_dirent dir
+    //参数校验
+    if(argc != 2)
+    {
+        error(1, 0, "Usage %s dir",argv[0]);
+    }
+    //打开目录流
+    DIR* stream = opendir(argv[1]);
+    if(!stream)
+    {
+        error(1, errno, "opendir %s",argv[1]);
+    }
+    //处理目录流
+    errno = 0; // 等于0表示没出错
+    struct dirent* pdirent;
+    //readdir():读目录流，得到指向下一个目录项的指针。
+    while((pdirent = readdir(stream)) != NULL)
+    {
+        printf("d_info=%ld, d_off=%ld, d_reclen=%hu, d_type=%d, d_name=%s\n",
+        pdirent->d_ino,
+        pdirent->d_off,
+        pdirent->d_reclen,
+        pdirent->d_type,
+        pdirent->d_name);
+    }
+    if(errno != 0)
+    {
+        error(1, errno, "readdir %s",argv[1]);
+    }
+    //关闭目录流
+    closedir(stream);
+    
+    return 0;
+}
+```
+
+## 文件相关操作
+### 打开文件
++ `open()` 打开文件。
+
+![open() 函数的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519204706.png)
+
++ 部分 `flags` 的含义：
+
+![部分 flags 的含义](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519204812.png)
+
++ 代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_open file
+    //参数校验
+    if(argc != 2)
+    {
+        error(1, 0, "Usage %s file",argv[0]);
+    }
+    //打开文件，获取文件描述符
+    int fd = open(argv[1], O_RDWR | O_CREAT);
+    if(fd == -1)
+    {
+        error(1, errno, "Usage %s", argv[1]);
+    }
+    //打印获取到的文件描述符
+    printf("%d\n",fd);
+    
+    return 0;
+}
+```
+
+### 内核管理文件的数据结构
++ 通过库函数 `open()` 的过程介绍内核管理文件的数据结构：
+
+![内核管理文件的数据结构](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519210649.png)
