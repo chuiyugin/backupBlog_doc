@@ -1507,6 +1507,61 @@ public:
 };
 ```
 
+### 题目二
++ 三数之和：[15. 三数之和](https://leetcode.cn/problems/3sum/description/)
++ 思路：
+	1. 这道题目与上一**两数之和**不同之处在于采用**双指针法**进行处理。
+	2. 排序预处理：将数组排序，使相同的元素相邻，便于后续跳过重复元素，同时为双指针法创造条件。
+	3. 遍历固定第一个数（`a`）：遍历数组，固定当前元素作为三元组的第一个数 `a`。若 `a > 0`，由于数组已排序，后续元素无法使三数之和为 `0`，直接返回结果。
+	4. 去重处理（`a` 的去重）：若当前 `a` 与前一个元素相同（`i > 0 && nums[i] == nums[i-1]`），跳过该元素，避免重复的三元组。
+	5. 双指针寻找后两个数（`b`, `c`）：
+		+ 定义左右指针 `left` 和 `right`，初始分别指向 `i+1` 和数组末尾。
+		+ 计算三数之和 `temp`：
+			+ 若 `temp > 0`：右指针左移（减小总和）。
+			+ 若 `temp < 0`：左指针右移（增大总和）。
+			+ 若 `temp == 0`：找到有效三元组，加入结果，并对 `b` 和 `c` 去重。
+	6. 去重处理（`b` 和 `c` 的去重）：找到有效三元组后，跳过所有与当前 `b`（`nums[left]`）和 `c`（`nums[right]`）相同的元素，避免重复。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        vector<vector<int>> result;
+        sort(nums.begin(),nums.end());
+        for(int i=0; i<nums.size()-1; i++){
+            if(nums[i]>0)
+                return result;
+            //对a进行去重
+            if(i>0 && nums[i] == nums[i-1])
+                continue;
+            //定义左右指针
+            int left = i+1;
+            int right = nums.size()-1;
+            while(left < right){
+                int temp = nums[i]+nums[left]+nums[right];
+                if(temp>0) //偏大
+                    right--;
+                else if(temp<0) //偏小
+                    left++;
+                else{ //找到结果
+                    result.push_back({nums[i],nums[left],nums[right]});
+                    //对a和b去重
+                    while(left < right && nums[left] == nums[left+1])
+                        left++;
+                    while(left < right && nums[right] == nums[right-1])
+                        right--;
+                    //去重后指向的数值与加进去的结果一样，需要左右指针再移动一次
+                    left++;
+                    right--;
+                } 
+            }
+        }
+        return result;
+    }
+};
+```
+
 ## 字符串
 ### 题目一
 + 替换数字：[54. 替换数字（第八期模拟笔试）](https://kamacoder.com/problempage.php?pid=1064)
