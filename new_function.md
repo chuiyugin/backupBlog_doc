@@ -87,8 +87,8 @@ public:
 ```
 
 + 从这题可以学到两种用法：
-	+ 注意 `map` 的插入用法，`mp.insert({nums[i],i});` 和 `mp.insert(pair<int, int>(nums[i], i));`，前者需要 C++11 或更高的版本，而后者适用于所有 C++ 版本。
-	+ 注意 map 的迭代器用法：其中 `unordered_map<int,int>::iterator` 也可以换成 `auto`，同样后者需要 C++11 或更高的版本，而前者适用于所有 C++ 版本。
+	+ 注意 `map` 的插入用法，`mp.insert({nums[i],i});` 和 `mp.insert(pair<int, int>(nums[i], i));`，前者需要 `C++11` 或更高的版本，而后者适用于所有 `C++` 版本。
+	+ 注意 `map` 的迭代器用法：其中 `unordered_map<int,int>::iterator` 也可以换成 `auto`，同样后者需要 `C++11` 或更高的版本，而前者适用于所有 `C++` 版本。
 
 ```cpp
 unordered_map<int,int>::iterator it = mp.find(target-nums[i]);

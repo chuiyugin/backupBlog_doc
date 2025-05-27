@@ -1464,6 +1464,49 @@ public:
 };
 ```
 
+## 哈希表
+### 题目一
++ 四数相加 II：[454. 四数相加 II](https://leetcode.cn/problems/4sum-ii/description/)
++ 思路：
+	1. 哈希表的构建：通过双层循环遍历 `nums1` 和 `nums2` ，计算所有可能的和 `a + b`，并使用哈希表 ` unordered_map<int,int> mp1;` 记录每个和出现的次数（key：`a + b`，value：`a + b` 出现的次数）。
+	2. 补数查找：遍历 `nums3` 和 `nums4`，计算每对元素的和 `c + d`，并查找其相反数 `-(c + d)` 是否存在于哈希表中。若存在，则说明找到了一组满足条件的四元组，累加对应的次数到结果 `ans` 中。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int fourSumCount(vector<int>& nums1, vector<int>& nums2, vector<int>& nums3, vector<int>& nums4) 
+    {
+        unordered_map<int,int> mp1;
+        for(int i=0; i<nums1.size(); i++)
+        {
+            for(int j=0; j<nums2.size(); j++){
+                unordered_map<int,int>::iterator it = mp1.find(nums1[i]+nums2[j]);
+                //没找到
+                if(it == mp1.end()){
+                    mp1.insert({nums1[i]+nums2[j],1});
+                }
+                //找到了
+                else{
+                    it->second++;
+                }
+            }
+        }  
+        int ans = 0;
+        for(int i=0; i<nums3.size(); i++)
+        {
+            for(int j=0; j<nums4.size(); j++){
+                unordered_map<int,int>::iterator it = mp1.find(0-nums3[i]-nums4[j]);
+                if(it != mp1.end()){
+                    ans += it->second; 
+                }
+            }
+        }
+        return ans;
+    }
+};
+```
+
 ## 字符串
 ### 题目一
 + 替换数字：[54. 替换数字（第八期模拟笔试）](https://kamacoder.com/problempage.php?pid=1064)
