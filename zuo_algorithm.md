@@ -1531,7 +1531,7 @@ public:
         sort(nums.begin(),nums.end());
         for(int i=0; i<nums.size()-1; i++){
             if(nums[i]>0)
-                return result;
+				break;
             //对a进行去重
             if(i>0 && nums[i] == nums[i-1])
                 continue;
@@ -1555,6 +1555,63 @@ public:
                     left++;
                     right--;
                 } 
+            }
+        }
+        return result;
+    }
+};
+```
+
+### 题目三
++ 四数之和：[18. 四数之和](https://leetcode.cn/problems/4sum/)
++ 思路：
+	+ 与前一题的三数之和类似，主要差距仅在外层再加一次循环。
+	+ 需要注意一下**一级提前终止**（ `nums[i]>target && nums[i]>0` ）和**二级提前终止**（ `twoSum > target && twoSum > 0` ）的条件！
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        vector<vector<int>> result;
+        sort(nums.begin(),nums.end());
+        //定义左右指针和临时变量
+        int left,right;
+        long temp,twoSum;
+        for(int i=0; i<nums.size()-1; i++){
+	        //一级提前终止
+            if(nums[i]>target && nums[i]>0)
+                break;
+            //去重
+            if(i>0 && nums[i] == nums[i-1])
+                continue;
+            for(int j=i+1; j<nums.size(); j++){
+                //二级提前终止
+                twoSum = (long) nums[i] + nums[j];
+                if (twoSum > target && twoSum > 0) 
+                    break;
+                //去重
+                if(j>i+1 && nums[j] == nums[j-1])
+                    continue;
+                left = j+1;
+                right = nums.size()-1;
+                while(left < right){
+                    temp = (long) nums[i] + (long) nums[j] + (long) nums[left] + (long) nums[right];
+                    if(temp>target)
+                        right--;
+                    else if(temp<target)
+                        left++;
+                    else{
+                        result.push_back({nums[i],nums[j],nums[left],nums[right]});
+                        //去重
+                        while(left<right && nums[left] == nums[left+1])
+                            left++;
+                        while(left<right && nums[right] == nums[right-1])
+                            right--;
+                        left++;
+                        right--;
+                    }
+                }
             }
         }
         return result;
