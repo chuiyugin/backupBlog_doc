@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "linux_learning.md",
+                "file": "new_function.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "linux_learning"
+              "title": "new_function"
             }
           }
         ]
@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "0edc808bdabaac2f",
@@ -170,13 +169,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "linux_learning.md",
+                "file": "new_function.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "linux_learning 的大纲"
+              "title": "new_function 的大纲"
             }
           },
           {
@@ -207,16 +206,20 @@
   },
   "active": "a9eade74042ea9b5",
   "lastOpenFiles": [
-    "zuo_algorithm.md",
+    "linux_program.md",
     "linux_learning.md",
+    "zuo_algorithm.md",
+    "new_function.md",
+    "houjie_cpp.md",
+    "Josephus.md",
+    "5g_1.md",
+    "Assembly_language.md",
     "Deep_laerning.md",
     "Myexe - 副本.md",
     "algorithm2.md",
-    "new_function.md",
     "Fliplt - 副本.md",
     "C_system.md",
     "exercise1.md",
-    "5g_1.md",
     "algorithm3.md",
     "Autohotkey.md",
     "RS_code.md",
@@ -229,10 +232,6 @@
     "Fliplt.md",
     "houjie_cpp_1.md",
     "hello-world.md",
-    "houjie_cpp_2.md",
-    "houjie_cpp_2 - 副本.md",
-    "houjie_cpp_1 - 副本.md",
-    "houjie_cpp.md",
     "Untitled.canvas",
     "日记和待办",
     "未命名.canvas"

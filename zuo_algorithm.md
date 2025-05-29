@@ -1464,6 +1464,161 @@ public:
 };
 ```
 
+## 哈希表
+### 题目一
++ 四数相加 II：[454. 四数相加 II](https://leetcode.cn/problems/4sum-ii/description/)
++ 思路：
+	1. 哈希表的构建：通过双层循环遍历 `nums1` 和 `nums2` ，计算所有可能的和 `a + b`，并使用哈希表 ` unordered_map<int,int> mp1;` 记录每个和出现的次数（key：`a + b`，value：`a + b` 出现的次数）。
+	2. 补数查找：遍历 `nums3` 和 `nums4`，计算每对元素的和 `c + d`，并查找其相反数 `-(c + d)` 是否存在于哈希表中。若存在，则说明找到了一组满足条件的四元组，累加对应的次数到结果 `ans` 中。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int fourSumCount(vector<int>& nums1, vector<int>& nums2, vector<int>& nums3, vector<int>& nums4) 
+    {
+        unordered_map<int,int> mp1;
+        for(int i=0; i<nums1.size(); i++)
+        {
+            for(int j=0; j<nums2.size(); j++){
+                unordered_map<int,int>::iterator it = mp1.find(nums1[i]+nums2[j]);
+                //没找到
+                if(it == mp1.end()){
+                    mp1.insert({nums1[i]+nums2[j],1});
+                }
+                //找到了
+                else{
+                    it->second++;
+                }
+            }
+        }  
+        int ans = 0;
+        for(int i=0; i<nums3.size(); i++)
+        {
+            for(int j=0; j<nums4.size(); j++){
+                unordered_map<int,int>::iterator it = mp1.find(0-nums3[i]-nums4[j]);
+                if(it != mp1.end()){
+                    ans += it->second; 
+                }
+            }
+        }
+        return ans;
+    }
+};
+```
+
+### 题目二
++ 三数之和：[15. 三数之和](https://leetcode.cn/problems/3sum/description/)
++ 思路：
+	1. 这道题目与上一**两数之和**不同之处在于采用**双指针法**进行处理。
+	2. 排序预处理：将数组排序，使相同的元素相邻，便于后续跳过重复元素，同时为双指针法创造条件。
+	3. 遍历固定第一个数（`a`）：遍历数组，固定当前元素作为三元组的第一个数 `a`。若 `a > 0`，由于数组已排序，后续元素无法使三数之和为 `0`，直接返回结果。
+	4. 去重处理（`a` 的去重）：若当前 `a` 与前一个元素相同（`i > 0 && nums[i] == nums[i-1]`），跳过该元素，避免重复的三元组。
+	5. 双指针寻找后两个数（`b`, `c`）：
+		+ 定义左右指针 `left` 和 `right`，初始分别指向 `i+1` 和数组末尾。
+		+ 计算三数之和 `temp`：
+			+ 若 `temp > 0`：右指针左移（减小总和）。
+			+ 若 `temp < 0`：左指针右移（增大总和）。
+			+ 若 `temp == 0`：找到有效三元组，加入结果，并对 `b` 和 `c` 去重。
+	6. 去重处理（`b` 和 `c` 的去重）：找到有效三元组后，跳过所有与当前 `b`（`nums[left]`）和 `c`（`nums[right]`）相同的元素，避免重复。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        vector<vector<int>> result;
+        sort(nums.begin(),nums.end());
+        for(int i=0; i<nums.size()-1; i++){
+            if(nums[i]>0)
+				break;
+            //对a进行去重
+            if(i>0 && nums[i] == nums[i-1])
+                continue;
+            //定义左右指针
+            int left = i+1;
+            int right = nums.size()-1;
+            while(left < right){
+                int temp = nums[i]+nums[left]+nums[right];
+                if(temp>0) //偏大
+                    right--;
+                else if(temp<0) //偏小
+                    left++;
+                else{ //找到结果
+                    result.push_back({nums[i],nums[left],nums[right]});
+                    //对a和b去重
+                    while(left < right && nums[left] == nums[left+1])
+                        left++;
+                    while(left < right && nums[right] == nums[right-1])
+                        right--;
+                    //去重后指向的数值与加进去的结果一样，需要左右指针再移动一次
+                    left++;
+                    right--;
+                } 
+            }
+        }
+        return result;
+    }
+};
+```
+
+### 题目三
++ 四数之和：[18. 四数之和](https://leetcode.cn/problems/4sum/)
++ 思路：
+	+ 与前一题的三数之和类似，主要差距仅在外层再加一次循环。
+	+ 需要注意一下**一级提前终止**（ `nums[i]>target && nums[i]>0` ）和**二级提前终止**（ `twoSum > target && twoSum > 0` ）的条件！
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        vector<vector<int>> result;
+        sort(nums.begin(),nums.end());
+        //定义左右指针和临时变量
+        int left,right;
+        long temp,twoSum;
+        for(int i=0; i<nums.size()-1; i++){
+	        //一级提前终止
+            if(nums[i]>target && nums[i]>0)
+                break;
+            //去重
+            if(i>0 && nums[i] == nums[i-1])
+                continue;
+            for(int j=i+1; j<nums.size(); j++){
+                //二级提前终止
+                twoSum = (long) nums[i] + nums[j];
+                if (twoSum > target && twoSum > 0) 
+                    break;
+                //去重
+                if(j>i+1 && nums[j] == nums[j-1])
+                    continue;
+                left = j+1;
+                right = nums.size()-1;
+                while(left < right){
+                    temp = (long) nums[i] + (long) nums[j] + (long) nums[left] + (long) nums[right];
+                    if(temp>target)
+                        right--;
+                    else if(temp<target)
+                        left++;
+                    else{
+                        result.push_back({nums[i],nums[j],nums[left],nums[right]});
+                        //去重
+                        while(left<right && nums[left] == nums[left+1])
+                            left++;
+                        while(left<right && nums[right] == nums[right-1])
+                            right--;
+                        left++;
+                        right--;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+};
+```
+
 ## 字符串
 ### 题目一
 + 替换数字：[54. 替换数字（第八期模拟笔试）](https://kamacoder.com/problempage.php?pid=1064)

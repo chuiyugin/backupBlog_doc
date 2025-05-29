@@ -1,5 +1,5 @@
 ---
-title: Linux 学习笔记
+title: Linux 基础学习
 tags:
   - Linux
   - ubuntu
@@ -8,7 +8,7 @@ categories:
 date: 2025-5-14 16:00:00
 excerpt: Linux 学习笔记
 ---
-# Linux 学习笔记
+# Linux 基础学习
 ## Linux 模型
 + Linux 模型图：
 
@@ -240,5 +240,223 @@ echo "hello world!" > text1 # 重定向到text1这个文件
 
 ![目录文件的权限](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505161742598.png)
 
++ `chmod` 命令改变文件权限：
+
+![chmod 命令改变文件权限](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517131757.png)
+
++ `umask` 命令文件创建掩码：
+	+ 文件和目录在创建的时候都有一个默认的权限，该权限是由文件创建掩码 `umask` 决定的。
+	+ 表示想去掉的权限。
+
+![umask 命令的工作原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517132729.png)
+
++ `umask` 命令的用法：
+
+![umask 命令文件创建掩码](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517132408.png)
+
+#### 链接
++ 硬链接的原理：
+
+![硬链接的原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517134338.png)
 
 
++ 硬链接的用法：
+
+![硬链接的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517134308.png)
+
++ 符号链接（软链接）的原理：
+
+![符号链接（软链接）的原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517135740.png)
+
++ 符号链接（软链接）的用法：
+	+ 对于大多数命令（ `rm` 命令除外 ），如果参数是符号链接，其实操作的是符号链接指向的文件（类似指针的解引用操作）。
+
+![符号链接（软链接）的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517135119.png)
+
+#### 远程复制
++ `scp` 命令远程复制：
+
+![scp 命令远程复制](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517140244.png)
+
+#### 打包和压缩
++ `tar` 命令打包和压缩的经典用法：
+
+![tar 命令打包和压缩的经典用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517140459.png)
+
+## 编译工具链
++ 编译工具链，又称为软件开发工具包（SDK）。
+### 编译
+#### 生成可执行程序的流程
++ 生成可执行程序的流程：
+
+![生成可执行程序的流程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517144432.png)
+
++ 对应的 `gcc` 命令如下：
+
+![对应的 gcc 命令如下](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517144540.png)
+
++ `gcc` 的其它选项：
+
+![gcc 的其它选项](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517151223.png)
+
++ `gcc` 的其它选项补充说明：
+
+![补充说明](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517151321.png)
+
+#### 条件编译
+##### 条件编译的用法
++ 条件编译，就是在**预处理**阶段决定包含还是排除某些程序片段。
+
+![条件编译](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517153501.png)
+
++ 用法一：
+
+![用法一](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517153546.png)
+
++ 用法二和三：
+
+![用法二和三](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517153700.png)
+
++ 用法四：
+
+![用法四](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517153750.png)
+
+##### 条件编译的作用
++ 编写可移植程序
+
+![编写可移植程序](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517153938.png)
+
++ 为宏提供默认定义
+
+![为宏提供默认定义](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517154028.png)
+
++ 避免头文件重复包含
+
+![避免头文件重复包含](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517154115.png)
+
++ 临时屏蔽包含注释的代码
+
+![临时屏蔽包含注释的代码](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517154240.png)
+
+### 调试
+#### 运行 gdb 调试
++ 运行 gdb 调试的一些命令：
+
+![运行 gdb 调试的一些命令](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517155846.png)
+
++ 设置断点：
+
+![设置断点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517160317.png)
+
++ 查看断点、删除断点和运行：
+
+![查看断点、删除断点和运行](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250517161220.png)
+
++ 监视变量：
+
+![监视变量_1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518142640.png)
+
+![监视变量_2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518142708.png)
+
++ 查看内存：
+
+![查看内存](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518142809.png)
+
+#### 查看 core 文件
++ core 文件：程序异常终止时的内存快照（堆、栈、寄存器...）
++ 用于错误复现和恢复场景
+##### 配置系统能够生成 core 文件
++ 配置系统能够生成 core 文件：
+
+![配置系统能够生成 core 文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518144224.png)
+
+##### 生成 core 文件
++ 生成 core 文件：
+
+![生成 core 文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518144337.png)
+
+##### 查看 core 文件
++ 用 gdb 查看 core 文件，并复现错误：
+
+![用 gdb 查看 core 文件，并复现错误](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518144442.png)
+
++ 查看栈帧和寄存器信息：
+
+![查看栈帧和寄存器信息](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518144516.png)
+
+### Makefile
++ Makefile 是一个脚本文件，使用 make 工具来解释执行。
++ Makefile 的作用：
+	+ 实现自动编译
+	+ 实现增量编译（只编译新增和修改过的 `.c` 文件，得到新的 `.o` 文件）
+
+#### 书写 Makefile
++ 特点：Makefile 的语法要求非常严格，写好之后使用 `make` 命令即可构建整个项目。
+
+![书写 Makefile](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518151014.png)
+
++ 自动编译：
+
+![自动编译](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518151208.png)
+
++ 增量编译：
+
+![增量编译](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518151230.png)
+
+#### Makefile 的工作原理
++ Makefile 的工作原理
+
+![Makefile 的工作原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518153001.png)
+
+#### 伪目标
++ 伪目标的代码书写格式：
+
+![伪目标的代码书写格式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518153459.png)
+
++ 所对应的有向无环图：
+
+![所对应的有向无环图](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518153604.png)
+
+#### 通用 Makefile 文件
++ 通用 Makefile 文件的代码如下：
+
+```shell
+SRCS := $(wildcard *.c)
+Outs := $(patsubst %.c, %, $(SRCS))
+
+CC := gcc
+CFLAGS = -Wall -g
+
+all: $(Outs)
+
+%: %.c
+	$(CC) $(CFLAGS) $< -o $@
+
+.PHONY: clean rebuild all
+
+clean:
+	$(RM) $(Outs)
+
+rebuild: clean all
+```
+
+### 库文件
++ 什么是库文件：
+
+![库文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518154020.png)
+
++ 静态库：
+
+![静态库](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518154059.png)
+
++ 动态库：
+
+![动态库](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518154145.png)
+
++ 生成静态库：
+
+![生成静态库](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518155134.png)
+
++ 生成动态库：
+
+![生成动态库](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250518155553.png)
