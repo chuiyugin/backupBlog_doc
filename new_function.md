@@ -17,7 +17,6 @@ excerpt: Some useful C++ function!
 ![string::resize()](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250513151409.png)
 
 ## 哈希表相关
-
 ### set
 + 在 C++中，`set` 提供以下三种数据结构，其底层实现以及优劣如下表所示：
 
@@ -94,3 +93,6 @@ public:
 unordered_map<int,int>::iterator it = mp.find(target-nums[i]);
 ans.push_back(it->second);
 ```
+
+## 栈和队列相关
+### 双端队列（deque）
