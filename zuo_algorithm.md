@@ -2146,7 +2146,6 @@ public:
             que.pop_back();
         }
         que.push_back(value);
-
     }
     // 查询当前队列里的最大值 直接返回队列前端也就是front就可以了。
     int front() {
@@ -2177,7 +2176,6 @@ private:
                 que.pop_back();
             }
             que.push_back(value);
-
         }
         // 查询当前队列里的最大值 直接返回队列前端也就是front就可以了。
         int front() {
