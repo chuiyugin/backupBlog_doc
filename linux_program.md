@@ -390,9 +390,11 @@ void dfs_print(const char* path, int width){
 
 ## 文件相关操作
 ### 打开文件
-+ `open()` 打开文件。
++ 系统调用 `open()` 打开文件。
+	+ 打开成功：返回新的文件描述符（最小可用的文件描述符）；
+	+ 打开失败：返回 `-1`，设置 `errno` 。
 
-![open() 函数的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519204706.png)
+![open() 系统调用的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519204706.png)
 
 + 部分 `flags` 的含义：
 
@@ -431,7 +433,58 @@ int main(int argc, char* argv[])
 }
 ```
 
-### 内核管理文件的数据结构
-+ 通过库函数 `open()` 的过程介绍内核管理文件的数据结构：
++ 通过系统调用 `open()` 的过程介绍内核管理文件的数据结构：
+	+ 文件描述符表的数组长度默认是 1024，并且可以进行设置： 
 
-![内核管理文件的数据结构](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519210649.png)
+![文件描述符表的数组长度默认是 1024](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250603171236.png)
+
++ 系统调用 `open()` 的内核管理文件流程：
+
+![open()系统调用内核管理文件流程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250519210649.png)
+
+### 关闭文件
++ 系统调用 `close()` 关闭文件。
+	+ 关闭成功：返回 `0` ；
+	+ 关闭失败：返回 `-1`，设置 `errno` 。
++ 系统调用 `close()` 的内核管理文件流程：
+
+![close()系统调用内核管理文件流程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250603195205.png)
+
+### 读取文件
++ 系统调用 `read()` 读取文件。
+	+ 读取成功：返回实际读取的字节数目（`0`，表示读取的起始位置在文件末尾）；
+	+ 读取失败：返回 `-1`，设置 `errno` 。
+
+![系统调用read()读取文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250603195627.png)
+
++ 系统调用 `read()` 的内核管理文件流程：
+
+![read()系统调用内核管理文件流程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250603195750.png)
+
+### 写入文件
++ 系统调用 `write()` 读取文件。
+	+ 写入成功：返回实际写入字节数目（其中 `n≤count` ）；
+	+ 写入失败：返回 `-1`，设置 `errno` 。
+
+![write()系统调用](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250603200844.png)
+
++ 系统调用 `write()` 的内核管理文件流程：
+
+![write()系统调用内核管理文件流程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250603200953.png)
+
+### 修改文件偏移量
++ 系统调用 `lseek()` 修改文件偏移量，本质上就是修改 `current file offset (pos)` 的数值。
+	+ 修改成功：返回文件的位置（距离文件开头的字节数目）；
+	+ 修改失败：返回 `-1`，设置 `errno` 。
+
+![系统调用 lseek() 修改文件偏移量](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250603205059.png)
+
++ 系统调用 `lseek()` 的内核管理文件流程：
+
+![系统调用 lseek() 的内核管理文件流程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250603205158.png)
+
++ 文件库函数和文件系统调用之间的关系：
+
+![文件库函数和文件系统调用之间的关系](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250603205358.png)
+
+
