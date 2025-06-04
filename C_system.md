@@ -1725,6 +1725,632 @@ void destroy_hashmap(HashMap* map)
 
 ![二叉搜索树（BST）](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250430170529.png)
 
+#### 二叉搜索树的实现
+##### 结构
++ 二叉搜索树的结构（ `bst.h` ）:
+
+![二叉搜索树的结构](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507163651.png)
+
+##### 添加节点
++ 添加节点：
+
+![添加节点](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507163814.png)
+
++ 代码：
+
+```c
+//添加一个结点
+//1、如果key存在则什么也不做
+//2、如果key不存在，则添加一个结点
+void bst_insert(BST* tree,K key)
+{
+    TreeNode* parent = NULL;
+    TreeNode* cur = tree->root;
+    int cmp;//用于比较，只需要比较一次
+    while(cur!=NULL)
+    {
+        //比较
+        cmp = key - cur->key;
+        if(cmp < 0) //key < cur->key
+        {
+            parent = cur;
+            cur = cur->left;
+        }
+        else if(cmp > 0) //key > cur->key
+        {
+            parent = cur;
+            cur = cur->right;
+        }
+        else //key == cur->key，什么也不做
+            return;
+    }//此时cur == NULL
+    //创建树结点
+    TreeNode* new_node = calloc(1,sizeof(TreeNode));
+    if(new_node == NULL)
+    {
+        printf("calloc failed in bst_insert!");
+        exit(1);
+    }
+    //初始化树节点
+    new_node->key = key;
+    //链接到树中
+    if(parent == NULL)
+        tree->root = new_node;
+    else if(cmp < 0) //在左边插入
+        parent->left = new_node;
+    else //在右边插入
+    parent->right = new_node;
+}
+```
+
+##### 查找节点
++ 查找结点与添加节点逻辑类似，代码如下：
+
+```c
+//查找一个结点
+TreeNode* bst_search(BST* tree,K key)
+{
+    TreeNode* cur = tree->root;
+    int cmp;//用于比较，只需要比较一次
+    while(cur != NULL)
+    {
+        //比较
+        cmp = key - cur->key;
+        if(cmp < 0) //key < cur->key
+        {
+            cur = cur->left;
+        }
+        else if(cmp > 0) //key > cur->key
+        {
+            cur = cur->right;
+        }
+        else //key == cur->key
+            return cur;
+    }
+    return NULL;
+}
+```
+
+##### 遍历节点
+###### 广度优先搜索遍历
++ 广度优先搜索步骤（层次遍历）：
+
+![广度优先搜索步骤](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507174224.png)
+
++ 代码：
+
+```c
+//层次遍历BST，广度优先搜索
+void bst_levellorder(BST* tree)
+{
+    LinkedListQueue* q = create_queue(); 
+    //将根节点入队列
+    enqueue(q,tree->root);
+    //判断队列是否为空
+    while(!is_empty(q))
+    {
+        int level_size = q->size;
+        for(int i=0;i<level_size;i++)
+        {
+            //出队列，遍历这个节点
+            TreeNode* node = dequeue(q);
+            printf("%d ",node->key);
+            //判断是否有左孩子
+            if(node->left)
+            {
+                enqueue(q,node->left);
+            }
+            //判断是否有右孩子
+            if(node->right)
+            {
+                enqueue(q,node->right);
+            }
+        }
+        printf("\n");
+    }//队列为空了
+    destroy_queue(q);
+}
+```
+
+###### 深度优先搜索遍历
++ 深度优先搜索步骤（前序、中序（二叉排序树）、后序）：
+
+![深度优先搜索步骤](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507174458.png)
+
++ 代码：
+
+```c
+//中序遍历(二叉排序树)
+void bst_inorder(TreeNode* root)
+{
+    //边界条件
+    if(root == NULL)
+        return;
+    //递归公式
+    //遍历左子树
+    bst_inorder(root->left);
+    //遍历根节点
+    printf("%d ",root->key);
+    //遍历右子树
+    bst_inorder(root->right);
+}
+
+//先序遍历
+void bst_preorder(TreeNode* root)
+{
+    //边界条件
+    if(root == NULL)
+        return;
+    //递归公式
+    //遍历根节点
+    printf("%d ",root->key);
+    //遍历左子树
+    bst_preorder(root->left);
+    //遍历右子树
+    bst_preorder(root->right);
+}
+
+//后序遍历
+void bst_backorder(TreeNode* root)
+{
+    //边界条件
+    if(root == NULL)
+        return;
+    //递归公式
+    //遍历左子树
+    bst_backorder(root->left);
+    //遍历右子树
+    bst_backorder(root->right);
+    //遍历根节点
+    printf("%d ",root->key);
+}
+```
+
+###### 删除二叉搜索树节点
++ 删除度为 0 的情况：
+
+![删除度为 0 的情况](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507201313.png)
+
++ 删除度为 1 的情况：
+
+![删除度为 1 的情况](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507201350.png)
+
++ 删除度为 2 的情况：
+	+ 退化成度为 0 或者 1 的情况来处理；
+	+ 采用要删除节点的右子树的最小节点来替代当前节点来实现退化！
+
+![删除度为 2 的情况](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507201559.png)
+
++ 特例：右子树最小节点就是右子树根节点
+
+![特例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507201641.png)
+
++ 代码：
+
+```c
+//删除节点
+void bst_delete(BST* tree,K key)
+{
+    // 1.找到要删除的节点
+    TreeNode* parent = NULL;
+    TreeNode* cur = tree->root;
+    K cmp;
+    while(cur != NULL)
+    {
+        cmp = key - cur->key;
+        if(cmp < 0) //key < cur->key,向左边找
+        {
+            parent = cur;
+            cur = cur->left;
+        }
+        else if(cmp > 0)
+        {
+            parent = cur;
+            cur = cur->right;
+        }
+        else
+            break;
+    }//cur == NULL || cur != NULL
+    if(cur == NULL)
+        return;
+    // 2.删除节点
+    if(cur->left && cur->right) // 度为2的情况
+    {
+        //退化成度为0或度为1的情况
+        //先找右子树的最小节点
+        TreeNode* pr_min = cur;
+        TreeNode* r_min = cur->right;
+        while(r_min->left != NULL)
+        {
+            pr_min = r_min;
+            r_min = r_min->left;
+        }
+        //退化过程
+        cur->key = r_min->key;
+        cur = r_min;
+        parent = pr_min;
+    }
+    //度为0或1的情况
+    //找到唯一的孩子
+    TreeNode* child = cur->left ? cur->left : cur->right;
+    if(parent == NULL) // 删除的是根节点
+    {
+        tree->root = child;
+    }
+    else
+    {
+        //将child链接到parent正确的位置
+        //必须重新比较，因为可能出现了退化
+        K cmp = cur->key - parent->key;
+        if(cmp<0)
+        {
+            parent->left = child;
+        }
+        else if(cmp>0)
+        {
+            parent->right = child;
+        }
+        else //注意：特例cmp==0，右子树最小节点就是右子树根节点
+        {
+            parent->right = child;
+        }
+    }
+    free(cur);
+}
+```
+
+#### 二叉搜索树的性能分析
++ 缺陷：不能保证 $O(log(n))$ 时间复杂度的插入，删除和查找。
+
+![二叉搜索树的性能分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507212637.png)
+
+#### 平衡二叉搜索树
++ AVL树和红黑树的对比：
+
+![AVL树和红黑树的对比](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250507212757.png)
+
+#### 红黑树
++ 红黑树的基础模型是 **2-3-4树**，基于此在二叉搜索树的基础上实现红黑树。
++ 问题 1：如何表示2-3-4树中的 `3-node` 和 `4-node` ？
+
+![如何表示 2-3-4 树中的 3-node 和 4-node？](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505081108145.png)
+
++ 问题 2：“边”是一种逻辑结构，是不存在的，如何表示“边”的颜色？
+	+ 把颜色放入孩子节点中！
+
+![如何表示“边”的颜色？](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505081110356.png)
+
++ 红黑树的性质：
+	+ 2-3-4树的高度 ≤ 红黑树高度 ≤ 2×(2-3-4树的高度)
+	+ 因为**黑高平衡**的原因！
+
+![红黑树的性质](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505081112194.png)
+
+## 文件流
+### 流的模型
++ 流的模型：
+
+![流模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111548187.png)
+
++ 优点：
+	+ 程序员读写文件时，不需要关心文件的位置；
+	+ 数据源（ `data source` ）和数据汇（ `data sink` ）是解耦的。
+
++ 程序员视角的文件：
+
+![程序员视角的文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111553800.png)
+
+### 前置知识
+#### 缓冲区类型
++ 缓冲区是以**先进先出**的方式管理数据的，缓冲区分为三种类型：
+	+ 满缓冲：当缓冲区为空时，从输入流中读取数据；当缓冲区满时，向输出流写入数据。
+	+ 行缓冲：每次从输入流中读取一行数据；每次向输出流中写入一行数据（`stdin`、`stdout`）。
+	+ 无缓冲：顾名思义，就是没有缓冲区（`stderr`，输出错误信息）。
+
+![缓冲区](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111559381.png)
+
+#### 标准流
++ 标准流不需要手动创建，也不需要手动关闭（即其它文件流都是需要手动操作的）。
+
+![标准流](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111600959.png)
+
+#### 二进制文件和文本文件
++ 二进制文件：字节
+
+![二进制文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111602043.png)
+
++ 文本文件：字符
+
+![文本文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111602529.png)
+
++ 二进制文件和文本文件的区别举例：
+
+![二进制文件和文本文件的区别举例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111605481.png)
+
+### 文件流接口（API）
+#### 文件流操作步骤
++ 文件流操作步骤如下：
+	+ 打开文件流：`fopen()`；
+	+ 读/写文件：统计、转换、加密、解密......
+	+ 关闭文件流：`fclose()`。
+
+#### 打开文件流
++ 打开文件流的函数：
+
+![打开文件流的函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111612301.png)
+
++ 文件的路径（`filename` ）
+	+ 绝对路径和相对路径
+
+![文件的路径](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111614706.png)
+
++ 打开文件的模式
+	+ 文件的类型
+	+ 对文件的操作（`r`, `w`）
+	+ 写模式和追加模式是不一样的，如果文件存在，写模式会清空原有数据，而追加模式会在原有数据的后面写入新的内容。
++ 以文本形式打开文件的模式：
+
+![以文本形式打开文件的模式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111619785.png)
+
++ 以二进制形式打开文件的模式：
+
+![以二进制形式打开文件的模式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111621104.png)
+
+#### 关闭文件流
++ 关闭文件流的函数：
+
+![关闭文件流的函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505111624460.png)
+
+#### 打开和关闭文件流的程序
++ 打开和关闭文件流的程序示例：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void)
+{
+    // 1.打开文件流
+    FILE *stream = fopen("a.txt", "w");//可以调整路径和模式
+    if (stream == NULL)
+    {
+        fprintf(stderr, "Open a.txt failed\n");
+    }
+    // 2.读写文件(统计，转换，加密，解密等业务逻辑)
+
+    // 3.关闭文件流
+    fclose(stream);
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+#### 读写文本文件
+##### 一个字符一个字符地读写
++ 一个字符一个字符地读写：
+
+![一个字符一个字符地读写](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112042697.png)
++ 代码：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+int main(int argc, char *argv[])
+{
+    // xxx.exe src dst
+    //  1.参数校验
+    if (argc != 3)
+    {
+        fprintf(stderr, "Usage: %s src dst\n", argv[0]);
+        exit(1);
+    }
+
+    // 2.打开文件流
+    FILE *src = fopen(argv[1], "r");
+    if (src == NULL)
+    {
+        fprintf(stderr, "Open %s failed\n", argv[1]);
+        exit(1);
+    }
+
+    FILE *dst = fopen(argv[2], "w");
+    if (src == NULL)
+    {
+        fprintf(stderr, "Open %s failed\n", argv[2]);
+        fclose(src);
+        exit(1);
+    }
+
+    // 3.读写文件
+    // a.一个字符一个字符地读写: fgetc, fputc
+    // 把大写转换为小写
+    int c;
+    while ((c = fgetc(src)) != EOF)
+    {
+        fputc(tolower(c), dst);
+    }
+
+    // 4.关闭文件流
+    fclose(src);
+    fclose(dst);
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+##### 一行一行地读写
++ 一行一行地读写：
+
+![一行一行地读写](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112302826.png)
+
++ 代码：
+
+```c
+// b.一行一行地读写字符
+    char line[MAXLINE];
+    char buffer[MAXLINE];
+    int line_num = 1;
+    while (fgets(buffer, MAXLINE, src) != NULL)
+    {
+        sprintf(line, "%d. %s", line_num, buffer);
+        fputs(line, dst);
+        line_num++;
+    }
+```
+
+##### 格式化地读写
++ 格式化地读写：
+
+![格式化地读写](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112307531.png)
+
+#### 读写二进制文件
++ 读二进制文件：
+
+![读二进制文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112326481.png)
+
++ 写二进制文件：
+
+![写二进制文件](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112327687.png)
+
++ 代码示例：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define BUFSIZE 4096
+
+int main(int argc, char *argv[])
+{
+    // xxx.exe src dst
+    //  1.参数校验
+    if (argc != 3)
+    {
+        fprintf(stderr, "Usage: %s src dst\n", argv[0]);
+        exit(1);
+    }
+
+    // 2.打开文件流
+    FILE *src = fopen(argv[1], "rb");// 读二进制文件模式后面要加b
+    if (src == NULL)
+    {
+        fprintf(stderr, "Open %s failed\n", argv[1]);
+        exit(1);
+    }
+
+    FILE *dst = fopen(argv[2], "wb");
+    if (src == NULL)
+    {
+        fprintf(stderr, "Open %s failed\n", argv[2]);// 读二进制文件模式后面要加b
+        fclose(src);
+        exit(1);
+    }
+
+    // 3.复制二进制文件
+    char buffer[BUFSIZE];
+    int bytes_num;
+    while ((bytes_num = fread(buffer, 1, BUFSIZE, src)) > 0)
+    {
+        fwrite(buffer, 1, BUFSIZE, dst);
+    }
+
+    // 4.关闭文件流
+    fclose(src);
+    fclose(dst);
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+#### 移动文件位置
++ `fseek()` 函数：可以改变与 stream 相关联的文件位置。
+
+![fseek()函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112346021.png)
+
++ 使用示例：
+
+![fseek()函数使用示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112347849.png)
+
++ `ftell()` 函数：
+
+![ftell()函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112348073.png)
+
++ `rewind()` 函数：
+
+![rewind()函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112349584.png)
+
++ 代码示例：
+
+![代码实现示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505112351024.png)
+
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+char *readFILE(const char *path)
+{
+    // 2.打开文件流
+    FILE *src = fopen(path, "rb"); // 以二进制形式
+    if (src == NULL)
+    {
+        fprintf(stderr, "Open %s failed\n", path);
+        exit(1);
+    }
+
+    // 3.确定文件大小
+    fseek(src, 0, SEEK_END);
+    long n = ftell(src);
+    char *content = malloc(n + 1); // 1 for '\0'
+
+    // 读文件内容，填充content数组
+    rewind(src); // 回到文件开头
+    int bytes_num = fread(content, 1, n, src);
+    content[bytes_num] = '\0';
+
+    // 4.关闭文件流
+    fclose(src);
+
+    return content;
+}
+
+int main(int argc, char *argv[])
+{
+    // xxx.exe src
+    //  1.参数校验
+    if (argc != 2)
+    {
+        fprintf(stderr, "Usage: %s filename\n", argv[0]);
+        exit(1);
+    }
+
+    char *content = readFILE(argv[1]);
+
+    // 输出内容
+    puts(content);
+
+    free(content);
+
+    system("pause"); // 防止运行后自动退出，需头文件stdlib.h
+    return 0;
+}
+```
+
+#### 错误处理
++ 需要引入 `#include <errno.h>` 和 `#include <string.h>` 两个头文件。
++ 错误处理示例：
+
+![错误处理示例](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505120008076.png)
+
+
+
 
 
 

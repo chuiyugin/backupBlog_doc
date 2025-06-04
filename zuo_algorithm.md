@@ -25,10 +25,9 @@ class Solution {
             int right = nums.size()-1;
             int mid = left + (right-left)/2;
             int ans = -1;
-
-            while(left<right)
+            while(left<=right) //注意点1
             {
-                mid = left + (right-left)/2;
+                mid = left + (right-left)/2; //注意点2
                 if(nums[mid]==target)
                 {
                     ans = mid;
@@ -36,11 +35,11 @@ class Solution {
                 }
                 else if(nums[mid]>target)
                 {
-                    right = mid-1;
+                    right = mid-1; //注意点3
                 }
                 else
                 {
-                    left = mid+1;
+                    left = mid+1; //注意点4
                 }
             }
             printf("%d\n",ans);
@@ -60,6 +59,101 @@ int main()
 
     system("pause"); // 防止运行后自动退出，需头文件stdlib.h
     return 0;
+}
+```
+
++ 变式 1：查找第一个和 `target` 相等的元素
++ 代码如下：
+
+```cpp
+//查找第一个和target相等的元素
+int binary_search2(vector<int>& nums, int target) 
+{
+    int left = 0;
+    int right = nums.size()-1;
+    int mid,cmp;
+    while(left<=right)
+    {
+        mid = left + (right - left)/2;
+        cmp = target - nums[mid];
+        if(cmp < 0) // target < arr[mid]
+        {
+            right = mid - 1;
+        }
+        else if(cmp > 0)
+        {
+            left = mid + 1;
+        }
+        else 
+        {
+            // 注意点：在[left,right]的区间找
+            if(mid == left || nums[mid-1]<target)
+                return mid;
+            else
+                right = mid - 1;
+        }
+    }
+    return -1;
+}
+```
+
++ 变式 2：查找第一个大于等于 `target` 的元素
++ 代码如下：
+
+```cpp
+//查找第一个大于等于target的元素
+int binary_search3(vector<int>& nums, int target) 
+{
+    int left = 0;
+    int right = nums.size()-1;
+    int mid,cmp;
+    while(left<=right)
+    {
+        mid = left + (right - left)/2;
+        cmp = target - nums[mid];
+        if(cmp <= 0) // 注意点：target <= nums[mid]
+        {
+            if( mid == left || nums[mid - 1] < target)
+                return mid;
+            else
+                right = mid - 1;
+        }
+        else
+        {
+            left = mid + 1;
+        }
+    }
+    return -1;
+}
+```
+
++ 变式 3：查找最后一个小于等于 `target` 的值
++ 代码如下：
+
+```cpp
+//查找最后一个小于等于target的元素
+int binary_search4(vector<int>& nums, int target) 
+{
+    int left = 0;
+    int right = nums.size()-1;
+    int mid,cmp;
+    while(left<=right)
+    {
+        mid = left + (right - left)/2;
+        cmp = target - nums[mid];
+        if(cmp <= 0) // target <= nums[mid]
+        {
+            right = mid - 1;
+        }
+        else // 注意点
+        {
+            if(mid == right || nums[mid + 1]>target)
+                return mid;
+            else
+                left = mid + 1;
+        }
+    }
+    return -1;
 }
 ```
 
@@ -1370,6 +1464,423 @@ public:
 };
 ```
 
+## 哈希表
+### 题目一
++ 四数相加 II：[454. 四数相加 II](https://leetcode.cn/problems/4sum-ii/description/)
++ 思路：
+	1. 哈希表的构建：通过双层循环遍历 `nums1` 和 `nums2` ，计算所有可能的和 `a + b`，并使用哈希表 ` unordered_map<int,int> mp1;` 记录每个和出现的次数（key：`a + b`，value：`a + b` 出现的次数）。
+	2. 补数查找：遍历 `nums3` 和 `nums4`，计算每对元素的和 `c + d`，并查找其相反数 `-(c + d)` 是否存在于哈希表中。若存在，则说明找到了一组满足条件的四元组，累加对应的次数到结果 `ans` 中。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int fourSumCount(vector<int>& nums1, vector<int>& nums2, vector<int>& nums3, vector<int>& nums4) 
+    {
+        unordered_map<int,int> mp1;
+        for(int i=0; i<nums1.size(); i++)
+        {
+            for(int j=0; j<nums2.size(); j++){
+                unordered_map<int,int>::iterator it = mp1.find(nums1[i]+nums2[j]);
+                //没找到
+                if(it == mp1.end()){
+                    mp1.insert({nums1[i]+nums2[j],1});
+                }
+                //找到了
+                else{
+                    it->second++;
+                }
+            }
+        }  
+        int ans = 0;
+        for(int i=0; i<nums3.size(); i++)
+        {
+            for(int j=0; j<nums4.size(); j++){
+                unordered_map<int,int>::iterator it = mp1.find(0-nums3[i]-nums4[j]);
+                if(it != mp1.end()){
+                    ans += it->second; 
+                }
+            }
+        }
+        return ans;
+    }
+};
+```
+
+### 题目二
++ 三数之和：[15. 三数之和](https://leetcode.cn/problems/3sum/description/)
++ 思路：
+	1. 这道题目与上一**两数之和**不同之处在于采用**双指针法**进行处理。
+	2. 排序预处理：将数组排序，使相同的元素相邻，便于后续跳过重复元素，同时为双指针法创造条件。
+	3. 遍历固定第一个数（`a`）：遍历数组，固定当前元素作为三元组的第一个数 `a`。若 `a > 0`，由于数组已排序，后续元素无法使三数之和为 `0`，直接返回结果。
+	4. 去重处理（`a` 的去重）：若当前 `a` 与前一个元素相同（`i > 0 && nums[i] == nums[i-1]`），跳过该元素，避免重复的三元组。
+	5. 双指针寻找后两个数（`b`, `c`）：
+		+ 定义左右指针 `left` 和 `right`，初始分别指向 `i+1` 和数组末尾。
+		+ 计算三数之和 `temp`：
+			+ 若 `temp > 0`：右指针左移（减小总和）。
+			+ 若 `temp < 0`：左指针右移（增大总和）。
+			+ 若 `temp == 0`：找到有效三元组，加入结果，并对 `b` 和 `c` 去重。
+	6. 去重处理（`b` 和 `c` 的去重）：找到有效三元组后，跳过所有与当前 `b`（`nums[left]`）和 `c`（`nums[right]`）相同的元素，避免重复。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        vector<vector<int>> result;
+        sort(nums.begin(),nums.end());
+        for(int i=0; i<nums.size()-1; i++){
+            if(nums[i]>0)
+				break;
+            //对a进行去重
+            if(i>0 && nums[i] == nums[i-1])
+                continue;
+            //定义左右指针
+            int left = i+1;
+            int right = nums.size()-1;
+            while(left < right){
+                int temp = nums[i]+nums[left]+nums[right];
+                if(temp>0) //偏大
+                    right--;
+                else if(temp<0) //偏小
+                    left++;
+                else{ //找到结果
+                    result.push_back({nums[i],nums[left],nums[right]});
+                    //对a和b去重
+                    while(left < right && nums[left] == nums[left+1])
+                        left++;
+                    while(left < right && nums[right] == nums[right-1])
+                        right--;
+                    //去重后指向的数值与加进去的结果一样，需要左右指针再移动一次
+                    left++;
+                    right--;
+                } 
+            }
+        }
+        return result;
+    }
+};
+```
+
+### 题目三
++ 四数之和：[18. 四数之和](https://leetcode.cn/problems/4sum/)
++ 思路：
+	+ 与前一题的三数之和类似，主要差距仅在外层再加一次循环。
+	+ 需要注意一下**一级提前终止**（ `nums[i]>target && nums[i]>0` ）和**二级提前终止**（ `twoSum > target && twoSum > 0` ）的条件！
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        vector<vector<int>> result;
+        sort(nums.begin(),nums.end());
+        //定义左右指针和临时变量
+        int left,right;
+        long temp,twoSum;
+        for(int i=0; i<nums.size()-1; i++){
+	        //一级提前终止
+            if(nums[i]>target && nums[i]>0)
+                break;
+            //去重
+            if(i>0 && nums[i] == nums[i-1])
+                continue;
+            for(int j=i+1; j<nums.size(); j++){
+                //二级提前终止
+                twoSum = (long) nums[i] + nums[j];
+                if (twoSum > target && twoSum > 0) 
+                    break;
+                //去重
+                if(j>i+1 && nums[j] == nums[j-1])
+                    continue;
+                left = j+1;
+                right = nums.size()-1;
+                while(left < right){
+                    temp = (long) nums[i] + (long) nums[j] + (long) nums[left] + (long) nums[right];
+                    if(temp>target)
+                        right--;
+                    else if(temp<target)
+                        left++;
+                    else{
+                        result.push_back({nums[i],nums[j],nums[left],nums[right]});
+                        //去重
+                        while(left<right && nums[left] == nums[left+1])
+                            left++;
+                        while(left<right && nums[right] == nums[right-1])
+                            right--;
+                        left++;
+                        right--;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+};
+```
+
+## 字符串
+### 题目一
++ 替换数字：[54. 替换数字（第八期模拟笔试）](https://kamacoder.com/problempage.php?pid=1064)
++ 思路：首先扩充数组到每个数字字符替换成 `number` 之后的大小，再从后向前进行填充。**其实很多数组填充类的问题，其做法都是先预先给数组扩容带填充后的大小，然后在从后向前进行操作。**
+	+ 好处如下：
+		1. 不用申请新数组。
+		2. 从后向前填充元素，避免了从前向后填充元素时，每次添加元素都要将添加元素之后的所有元素向后移动的问题。
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <string>
+#include <iostream>
+
+using namespace std;
+
+int main(void)
+{
+    string s;
+    cin >> s;
+    int count = 0;
+    int num = s.size();
+    for(int i=0; i<num; i++)
+    {
+        if(s[i]>='0' && s[i]<='9')
+        {
+            count++;
+        }
+    }
+    //扩容
+    s.resize(s.size() + count * 5);
+    //从后往前调整字符串数组
+    int j = s.size()-1;
+    for(int i=num-1; i>=0; i--)
+    {
+        if(!(s[i]>='0' && s[i]<='9'))
+        {
+            s[j] = s[i];
+            j--;
+        }
+        else
+        {
+            s[j--] = 'r';
+            s[j--] = 'e';
+            s[j--] = 'b';
+            s[j--] = 'm';
+            s[j--] = 'u';
+            s[j--] = 'n';
+        }
+    }
+    cout << s;
+    return 0;
+}
+```
+
+### 题目二
++ 反转字符串中的单词：[151.反转字符串中的单词](https://leetcode.cn/problems/reverse-words-in-a-string/description/)
++ 思路：
+	+ 移除单词中多余的空格->整体反转字符串->逐个单词反转
+	+ 这道题目需要注意的是自己写 `string deleteExtraSpaces(string s)` 函数代码来移除单词中多余的空格。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    //删除单词之间多余的空格
+    string deleteExtraSpaces(string s)
+    {
+        int slow = 0;
+        for(int fast=0; fast<s.size(); fast++)
+        {
+            //不等于空格就处理
+            if(s[fast]!=' ')
+            {
+                //补上空格
+                if(slow!=0)
+                    s[slow++] = ' ';
+                //把单词填上去
+                while(s[fast]!=' ' && fast<s.size())
+                    s[slow++] = s[fast++];
+            }
+        }
+        s.resize(slow);
+        return s;
+    }
+
+    string reverseWords(string s) {
+        s = deleteExtraSpaces(s);
+        //将字符串整体翻转
+        int i=0;
+        int j=s.size()-1;
+        while(i<j)
+        {
+            swap(s[i],s[j]);
+            i++;
+            j--;
+        }
+        //逐个将单词翻转
+        int m,n,record=0;
+        for(int i=0; i<=s.size(); i++)
+        {
+            if(s[i]==' ' || i==s.size())
+            {
+                m = record;
+                record = i+1;
+                n = i-1;
+                while(m<n)
+                {
+                    swap(s[m],s[n]);
+                    m++;
+                    n--;
+                }
+            }
+        }
+        return s;
+    }
+};
+```
+
+### KMP 算法
++ 字符串的前缀：不包含最后一个字符的所有以第一个字符开头的连续子串。
++ 字符串的后缀：不包含第一个字符的所有以最后一个字符结尾的连续子串。
+	+ 举例：字符串 `"aab"`
+		+ 其前缀有：`“a”` 、`"aa"`
+		+  其后缀有：`“b”` 、`"ab"`
++ 前缀表：前缀表要求的就是相同前后缀的长度。
+	+ 字符串 `"aab"` 的最长**公共前后缀**的长度为 1。
+	+ 前缀 `"aa"` 和后缀 `"ab"` 重合的部分。
++ KMP 算法在的 `next[]` 数组储存的就是前缀表。
+	+ 前缀表是用来回退的，它记录了模式串与主串 (文本串) 不匹配的时候，模式串应该从哪里开始重新匹配。
++ `next[]` 数组的计算方式：
+	+ 初始化：注意初始化 `i=1`
+	+ 不相等的清空：使用 `while()` 循环持续回退
+	+ 相等的情况
++ 代码：
+
+```cpp
+void getNext(vector<int> &next, string s)
+    {
+        // 初始化
+        int j = 0;
+        next[j] = 0;
+        for (int i = 1; i < s.size(); i++) //注意初始化 i=1
+        {
+            // 不相等的情况
+            while (j > 0 && s[i] != s[j])
+            {
+                // 回退
+                j = next[j - 1];
+            }
+            // 相等的情况
+            if (s[i] == s[j])
+            {
+                j++;
+            }
+            next[i] = j;
+        }
+    }
+```
+
+### 题目三
++ 找出字符串中第一个匹配的下标：[28.找出字符串中第一个匹配的下标](https://leetcode.cn/problems/find-the-index-of-the-first-occurrence-in-a-string/description/)
++ 思路：KMP 算法的最重要应用，使用前缀表 `next[]` 数组当出现字符串不匹配时，可以记录一部分之前已经匹配的文本内容，利用这些信息避免从头再去做匹配。
++ 代码：
+
+```cpp
+class Solution
+{
+public:
+    void getNext(vector<int> &next, string s)
+    {
+        // 初始化
+        int j = 0;
+        next[j] = 0;
+        for (int i = 1; i < s.size(); i++)
+        {
+            // 不相等的情况
+            while (j > 0 && s[i] != s[j])
+            {
+                // 回退
+                j = next[j - 1];
+            }
+            // 相等的情况
+            if (s[i] == s[j])
+            {
+                j++;
+            }
+            next[i] = j;
+        }
+    }
+
+    int strStr(string haystack, string needle)
+    {
+        vector<int> next(needle.size());
+        getNext(next, needle);
+        int j = 0;
+        for (int i = 0; i < haystack.size(); i++)
+        {
+            // 不相等
+            while (j > 0 && haystack[i] != needle[j])
+            {
+                j = next[j - 1];
+            }
+            // 相等但不是末尾,i和j都向后移动
+            if (haystack[i] == needle[j] && (j != needle.size() - 1))
+            {
+                j++;
+            }
+            // 相等而且是末尾
+            else if (haystack[i] == needle[j] && (j == needle.size() - 1))
+            {
+                return (i - needle.size() + 1);
+            }
+        }
+        return -1;
+    }
+};
+```
+
+### 题目四
++ 重复的子字符串：[459.重复的子字符串](https://leetcode.cn/problems/repeated-substring-pattern/description/)
++ 思路：
+	+ 如果 `s.size() % (s.size()-next[s.size()-1]) == 0` ，则说明数组的长度正好可以被最长相等前后缀不包含的子串的长度整除，说明该字符串有重复的子字符串。
+	+ 具体思路和证明：[459.重复的子字符串思路](https://programmercarl.com/0459.%E9%87%8D%E5%A4%8D%E7%9A%84%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
++ 代码：
+
+```cpp
+class Solution {
+public:
+    void getNext(vector<int>& next,string s)
+    {
+        //初始化
+        int j=0;
+        next[j] = 0;
+        for(int i=1; i<s.size(); i++)
+        {
+            //如果不相等，回退
+            while(j>0 && s[i]!=s[j])
+            {
+                j = next[j-1];//回退
+            }
+            //如果相等，则i和j都增加
+            if(s[i]==s[j])
+            {
+                j++;
+            }
+            next[i] = j;
+        }
+    }
+    
+    bool repeatedSubstringPattern(string s) {
+        vector<int> next(s.size());
+        getNext(next,s);
+        int ans = s.size() % (s.size()-next[s.size()-1]);
+        if(ans || next[s.size()-1]==0)
+            return false;
+        else
+            return true;
+    }
+};
+```
+
 ## 队列和栈
 ### 题目一
 + 用栈实现队列：[232.用栈实现队列](https://leetcode.cn/problems/implement-queue-using-stacks/description/)
@@ -1563,7 +2074,665 @@ public:
 };
 ```
 
+### 题目四
++ 逆波兰表达式求值：[150. 逆波兰表达式求值](https://leetcode.cn/problems/evaluate-reverse-polish-notation/description/)
++ 注意点：将 `string` 变量转换为 `int` 型、`long` 型、`long long` 型变量可以使用 `std::stoi`、`std::stol` 和 `std::stoll` 函数！
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int evalRPN(vector<string>& tokens) {
+        stack<long long> stk;
+        long long num1,num2;
+        for(int i=0;i<tokens.size();i++)
+        {
+            if(tokens[i]=="+" || tokens[i]=="-" || 
+               tokens[i]=="*" || tokens[i]=="/")
+            {
+                num1 = stk.top();
+                stk.pop();
+                num2 = stk.top();
+                stk.pop();
+                switch(tokens[i][0])
+                {
+                    case '+':
+                        stk.push(num2 + num1);
+                    break;
+                    case '-':
+                        stk.push(num2 - num1);
+                    break;
+                    case '*':
+                        stk.push(num2 * num1);
+                    break;
+                    case '/':
+                        stk.push(num2 / num1);
+                    break;
+                }
+            }
+            else
+                stk.push(stoi(tokens[i]));
+        }
+        return stk.top();;
+    }
+};
+```
+
+### 题目五
++ 滑动窗口最大值：[239. 滑动窗口最大值](https://leetcode.cn/problems/sliding-window-maximum/)
++ 思路：
+	+ 实现单调队列，并且该队列没有必要维护窗口里的所有元素，只需要维护有可能成为窗口里最大值的元素就可以了，同时保证队列里的元素数值是由大到小的。
+	+ 设计单调队列的时候，`pop`，和 `push` 操作要保持如下规则：
+		 1. `pop(value)`：如果窗口移除的元素 `value` 等于单调队列的出口元素，那么队列弹出元素，否则不用任何操作；
+		 2. `push(value)`：如果 `push` 的元素 `value` 大于入口元素的数值，那么就将队列入口的元素弹出，直到 `push` 元素的数值小于等于队列入口元素的数值为止。
+		 3. 保持如上规则，每次窗口移动的时候，只要问 `que.front()` 就可以返回当前窗口的最大值。
++ 单调队列实现代码：
+
+```cpp
+class MyQueue { //单调队列（从大到小）
+public:
+    deque<int> que; // 使用deque来实现单调队列
+    // 每次弹出的时候，比较当前要弹出的数值是否等于队列出口元素的数值，如果相等则弹出。
+    // 同时pop之前判断队列当前是否为空。
+    void pop(int value) {
+        if (!que.empty() && value == que.front()) {
+            que.pop_front();
+        }
+    }
+    // 如果push的数值大于入口元素的数值，那么就将队列后端的数值弹出，直到push的数值小于等于队列入口元素的数值为止。
+    // 这样就保持了队列里的数值是单调从大到小的了。
+    void push(int value) {
+        while (!que.empty() && value > que.back()) {
+            que.pop_back();
+        }
+        que.push_back(value);
+    }
+    // 查询当前队列里的最大值 直接返回队列前端也就是front就可以了。
+    int front() {
+        return que.front();
+    }
+};
+```
+
++ 代码：
+
+```cpp
+class Solution {
+private:
+    class MyQueue { //单调队列（从大到小）
+    public:
+        deque<int> que; // 使用deque来实现单调队列
+        // 每次弹出的时候，比较当前要弹出的数值是否等于队列出口元素的数值，如果相等则弹出。
+        // 同时pop之前判断队列当前是否为空。
+        void pop(int value) {
+            if (!que.empty() && value == que.front()) {
+                que.pop_front();
+            }
+        }
+        // 如果push的数值大于入口元素的数值，那么就将队列后端的数值弹出，直到push的数值小于等于队列入口元素的数值为止。
+        // 这样就保持了队列里的数值是单调从大到小的了。
+        void push(int value) {
+            while (!que.empty() && value > que.back()) {
+                que.pop_back();
+            }
+            que.push_back(value);
+        }
+        // 查询当前队列里的最大值 直接返回队列前端也就是front就可以了。
+        int front() {
+            return que.front();
+        }
+    };
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        MyQueue que;
+        vector<int> result;
+        for (int i = 0; i < k; i++) { // 先将前k的元素放进队列
+            que.push(nums[i]);
+        }
+        result.push_back(que.front()); // result 记录前k的元素的最大值
+        for (int i = k; i < nums.size(); i++) {
+            que.pop(nums[i - k]); // 滑动窗口移除最前面元素
+            que.push(nums[i]); // 滑动窗口前加入最后面的元素
+            result.push_back(que.front()); // 记录对应的最大值
+        }
+        return result;
+    }
+};
+```
+
++ 时间复杂度: $O(n)$，空间复杂度: $O(k)$。
+
+## 二叉树
+### 二叉树的递归遍历
++ 前序遍历：[144. 二叉树的前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    //前序遍历
+    void Traversal(TreeNode* root, vector<int>& ans){
+        //终止条件
+        if(root == nullptr)
+            return;
+        ans.push_back(root->val); 
+        Traversal(root->left, ans); // 遍历左节点
+        Traversal(root->right, ans); // 遍历右节点
+    }
+
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> result;
+        Traversal(root, result);
+        return result;
+    }
+};
+```
+
++ 中序遍历：[94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 中序遍历
+    void Traversal(TreeNode* root, vector<int>& ans){
+        //终止条件
+        if(root == nullptr)
+            return;
+        Traversal(root->left, ans);
+        ans.push_back(root->val);
+        Traversal(root->right, ans);
+    }
+
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> result;
+        Traversal(root, result);
+        return result;
+    }
+};
+```
+
++ 后序遍历：[145. 二叉树的后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 后序遍历
+    void Traversal(TreeNode* root, vector<int>& ans){
+        //终止条件
+        if(root == nullptr)
+            return;
+        Traversal(root->left, ans);// 左节点
+        Traversal(root->right, ans);// 右节点
+        ans.push_back(root->val);
+    }
+
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> result;
+        Traversal(root, result);
+        return result;
+    }
+};
+```
+
+### 二叉树的迭代遍历
+ + 前序遍历迭代法：[144. 二叉树的前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    //前序遍历迭代法
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> result;
+        // 根节点为空
+        if(root == nullptr)
+            return result;
+        stack<TreeNode*> st;
+        st.push(root);
+        while(!st.empty()){
+            TreeNode* node = st.top();
+            st.pop();
+            result.push_back(node->val);
+            if(node->right)
+                st.push(node->right);
+            if(node->left)
+                st.push(node->left);
+        }
+        return result;
+    }
+};
+```
+
++ 中序遍历迭代法：[94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/description/)
+	+ 由于在中序遍历的过程中，要访问的元素和要处理的元素顺序不一致，在使用迭代法写中序遍历，就需要借用指针的遍历来帮助访问节点，栈则用来处理节点上的元素。
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 中序遍历迭代法
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> result;
+        if(root == nullptr)
+            return result;
+        stack<TreeNode*> st;
+        TreeNode* cur = root; // 借用指针来区分访问和处理节点的不一致
+        while(cur != nullptr || !st.empty()){
+            if(cur != nullptr){ // 指针来访问节点，访问到最底层
+                st.push(cur);
+                cur = cur->left; //持续往左节点访问直到最底层
+            }
+            else{
+                cur = st.top();
+                st.pop();
+                result.push_back(cur->val); // 中
+                cur = cur->right; // 右
+            }
+        }
+        return result;
+    }
+};
+```
+
++ 后序遍历迭代法：[145. 二叉树的后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/description/)
+	+ 前序遍历顺序：**中左右**；
+	+ 后序遍历顺序：**左右中**；
+	+ 那么可以简单修改前序遍历顺序实现**中右左**，然后再**反转答案数组**即可。
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 后序遍历迭代法
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> result;
+        // 根节点为空
+        if(root == nullptr)
+            return result;
+        stack<TreeNode*> st;
+        st.push(root);
+        while(!st.empty()){
+            TreeNode* node = st.top();
+            st.pop();
+            result.push_back(node->val);
+            //因为栈后进先出，以中右左的顺序
+            if(node->left)
+                st.push(node->left);
+            if(node->right)
+                st.push(node->right);
+        }
+        //反转结果，变为左右中的顺序
+        reverse(result.begin(), result.end());
+        return result;
+    }
+};
+```
+
+### 二叉树的统一迭代遍历
++ 空指针标记法：就是要处理的节点放入栈之后，紧接着放入一个空指针作为标记，三种不同的遍历方式只需修改少量代码。
++  中序遍历迭代法：[94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 中序遍历统一迭代法
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> result;
+        stack<TreeNode*> st;
+        if(root == nullptr)
+            return result;
+        else
+            st.push(root);
+        while(!st.empty()){
+            TreeNode* node = st.top(); // 取出栈顶节点
+            if(node != nullptr){ // node 不是空节点
+                st.pop(); // 节点先要弹出，避免后续重复操作
+                // 先入右节点，符合栈的顺序
+                if(node->right)
+                    st.push(node->right);
+                // 中间节点，加上 null 表示访问过但是没处理
+                st.push(node);
+                st.push(nullptr);
+                //再入左节点，符合栈的顺序
+                if(node->left)
+                    st.push(node->left);
+            }
+            else{ // 遇到空节点表示将下一个节点加到结果向量中
+                st.pop();
+                node = st.top(); //重新取出栈顶元素
+                st.pop();
+                result.push_back(node->val);
+            }
+        }
+        return result;
+    }
+};
+```
+
++ 前序遍历迭代法：[144. 二叉树的前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    //前序遍历统一迭代法
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> result;
+        stack<TreeNode*> st;
+        if(root == nullptr)
+            return result;
+        else
+            st.push(root);
+        while(!st.empty()){
+            TreeNode* node = st.top(); // 取出栈顶节点
+            if(node != nullptr){ // node 不是空节点
+                st.pop(); // 节点先要弹出，避免后续重复操作
+                // 先入右节点，符合栈的顺序
+                if(node->right)
+                    st.push(node->right);
+                //再入左节点，符合栈的顺序
+                if(node->left)
+                    st.push(node->left);
+                // 中间节点，加上 null 表示访问过但是没处理
+                st.push(node);
+                st.push(nullptr);
+            }
+            else{ // 遇到空节点表示将下一个节点加到结果向量中
+                st.pop();
+                node = st.top(); //重新取出栈顶元素
+                st.pop();
+                result.push_back(node->val);
+            }
+        }
+        return result;
+    }
+};
+```
+
++ 后序遍历迭代法：[145. 二叉树的后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 后序遍历统一迭代法
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> result;
+        stack<TreeNode*> st;
+        if(root == nullptr)
+            return result;
+        else
+            st.push(root);
+        while(!st.empty()){
+            TreeNode* node = st.top(); // 取出栈顶节点
+            if(node != nullptr){ // node 不是空节点
+                st.pop(); // 节点先要弹出，避免后续重复操作
+                // 中间节点，加上 null 表示访问过但是没处理
+                st.push(node);
+                st.push(nullptr);
+                // 先入右节点，符合栈的顺序
+                if(node->right)
+                    st.push(node->right);
+                //再入左节点，符合栈的顺序
+                if(node->left)
+                    st.push(node->left);
+            }
+            else{ // 遇到空节点表示将下一个节点加到结果向量中
+                st.pop();
+                node = st.top(); //重新取出栈顶元素
+                st.pop();
+                result.push_back(node->val);
+            }
+        }
+        return result;
+    }
+};
+```
+
 ## 排序问题
+### 选择排序
+#### 普通选择排序
++ 选择排序理论：
+
+![选择排序理论](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510160136.png)
+
++ 代码：
+
+```cpp
+// 选择排序
+void choose_sort(vector<int>& nums)
+{
+    if(nums.size()==0 || nums.size()==1)
+        return;
+    int minIndex = 0;
+    for(int i=0; i<nums.size()-1; i++)
+    {
+        minIndex = i;
+        for(int j=i+1; j<nums.size(); j++)
+        {
+            if(nums[j]<nums[minIndex])
+                minIndex = j;
+        }
+        swap(nums[i],nums[minIndex]);
+    }
+}
+```
+
++ 分析：
+
+![选择排序的分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510210721.png)
+
+
+### 冒泡排序
+#### 普通冒泡排序
++ 冒泡排序理论：
+
+![冒泡排序理论](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510161815.png)
+
+
++ 代码：
+
+```cpp
+// 冒泡排序
+void bubble_sort(vector<int>& nums)
+{
+    if(nums.size()==0 || nums.size()==1)
+        return;
+    int last = nums.size()-1;
+    int flag = 0; // 注意点：当不再发生交换的时候就已经有序了
+    for(int i=0; i<nums.size(); i++)
+    {
+        flag = 0;
+        for(int j=0; j<last; j++)
+        {
+            if(nums[j]>nums[j+1])
+            {
+                swap(nums[j],nums[j+1]);
+                flag++;
+            }
+        }
+        if(flag==0)
+            break;
+    }
+}
+```
+
++ 分析：
+
+![冒泡排序的分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510210853.png)
+
+
+### 插入排序
+#### 普通插入排序
++ 插入排序理论：
+
+![插入排序理论](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510164741.png)
+
++ 代码：
+
+```cpp
+// 插入排序
+void insert_sort(vector<int>& nums)
+{
+    if(nums.size()==0 || nums.size()==1)
+        return;
+    int value;
+    for(int i=1; i<nums.size(); i++) // 要插入元素的索引
+    {
+        int value = nums[i];
+        int j = i - 1;
+        while(value < nums[j] && j>=0)
+        {
+            nums[j+1] = nums[j];
+            j--;
+        }
+        nums[j+1] = value;
+    }
+}
+```
+
++ 性质和分析：
+	+ 在原数组有序的最好情况下，算法时间复杂度是 $O(n)$！
+	+ 空间复杂度为 $O(1)$！
+	+ 插入排序算法具有**稳定性**（假定在待排序的记录序列中，存在多个具有相同的关键字的记录，若经过排序后，这些记录的相对次序保持不变）
+
+![插入排序分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510165134.png)
+
++ 使用场景：
+	+ 数组长度比较小；
+	+ 当数组基本有序（离排好序的最终位置很近），插入排序可以在 $O(n)$ 时间内完成排序！
+
+### 希尔排序
+#### 普通希尔排序
++ 希尔排序理论：
+
+![希尔排序理论](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202505101858190.png)
+
++ 代码：
+
+```cpp
+// 希尔排序
+void shell_sort(vector<int> &nums)
+{
+    int gap = nums.size() / 2;
+    while (gap)
+    {
+        for (int i = gap; i < nums.size(); i++)
+        {
+            int value = nums[i];
+            int j = i - gap;
+            // 步骤与从插入排序类似
+            while (j >= 0 && nums[j] > value)
+            {
+                nums[j + gap] = nums[j];
+                j -= gap;
+            }
+            nums[j + gap] = value;
+        }
+        // 缩小gap
+        gap /= 2;
+    }
+}
+```
+
++ 分析：
+	+ 时间复杂度和 `gap` 序列相关，一般而言平均情况小于 $O(n^2)$；
+	+ 空间复杂度为 $O(1)$；
+	+ 插入排序算法不具有**稳定性**，因为发生了长距离交换，通过牺牲不稳定性来换取时间。
+
 ### 归并排序
 #### 普通归并排序
 + 递归方法：[912.排序数组](https://leetcode.cn/problems/sort-an-array/description/)
@@ -1573,7 +2742,6 @@ public:
 ```cpp
 class Solution {
 public:
-    
     void merge(vector<int>& nums,int L,int M,int R)
     {
         vector<int> temp(R-L+1);
@@ -1609,6 +2777,11 @@ public:
     }
 };
 ```
+
++ 分析：
+	+ 归并排序算法是稳定的，但是空间复杂度比较高；
+
+![归并排序的分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510211156.png)
 
 #### 小和问题
 + 问题描述：
@@ -1939,7 +3112,6 @@ class Solution {
 ```cpp
 class Solution {
 public:
-
     void swap(vector<int>& nums,int a,int b)
     {
         int temp = nums[a];
@@ -2053,3 +3225,6 @@ class Solution {
         }
     };
 ```
+
++ 分析：
+	+ 快排的空间复杂度是 $O(logn)$，并且快排算法是不稳定的。
