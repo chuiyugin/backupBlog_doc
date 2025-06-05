@@ -2582,6 +2582,53 @@ public:
 };
 ```
 
+### 二叉树的层序遍历
++ 二叉树的层序遍历需要借用一个辅助数据结构即队列来实现：
+	+ **队列先进先出，符合一层一层遍历的逻辑**，而用栈先进后出适合模拟深度优先遍历也就是递归的逻辑。
++ 思路：
+	+ 首先要记录这一层中有多少个结点，因此要定义一个确定的 `size`。
+	+ 使用 `for` 循环来遍历 `size` 数量个结点，将每个结点弹出，并将其数值传入结果数组中，将其左右孩子入队列，作为下一层的遍历内容。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> result;
+        queue<TreeNode*> que;
+        if(root == nullptr)
+            return result;
+        que.push(root);
+        while(!que.empty()){
+            vector<int> ans; // 一层中的内容
+            int size = que.size(); //  size 用于确定这一层中的节点数量
+            for(int i=0; i<size; i++){
+                TreeNode* node = que.front();
+                que.pop();
+                ans.push_back(node->val);
+                if(node->left)
+                    que.push(node->left);
+                if(node->right)
+                    que.push(node->right);
+            }
+            result.push_back(ans);
+        }
+        return result;
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
