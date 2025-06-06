@@ -610,8 +610,89 @@ int main(int argc, char* argv[])
 ![打印结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250605165347.png)
 
 ### 文件描述符的复制
++ 系统调用 `dup()` 用于对文件描述符的复制。
+	+ 复制成功：返回新的文件描述符；
+	+ 复制失败：返回 `-1`，设置 `errno`。
++ 其具体用法如下，分为 `dup()` 和 `dup2()` 两个系统调用：
 
+![两个文件描述符系统调用的具体用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250606173642.png)
 
++ 系统调用 `dup()` 的内核管理文件流程：
 
+![系统调用 dup() 的内核管理文件流程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250606174115.png)
 
++ 使用 `dup()` 函数实现重定向：
 
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char* argv[])
+{
+    // 对 stderr 重定向
+    int fd = open("application.log", O_RDWR | O_CREAT | O_APPEND, 0664);
+    if (fd == -1){
+        error(1, errno, "open application.log");
+    }
+    
+    // STDERR_FILENO 标准错误输出的文件描述符
+    write(STDERR_FILENO, "The first error massage\n", 24);
+    
+    //对 stderr 进行重定向
+    close(STDERR_FILENO);
+    dup(fd);
+    
+    write(STDERR_FILENO, "The second error massage\n", 25);
+    
+    return 0;
+}
+```
+
++ 使用 `dup2()` 函数实现重定向：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char* argv[])
+{
+    // 对 stderr 重定向
+    int fd = open("application.log", O_RDWR | O_CREAT | O_APPEND, 0664);
+    if (fd == -1){
+        error(1, errno, "open application.log");
+    }
+    
+    // STDERR_FILENO 标准错误输出的文件描述符
+    write(STDERR_FILENO, "The first error massage\n", 24);
+    
+    //对 stderr 进行重定向
+    //close(STDERR_FILENO);
+    if(dup2(fd, STDERR_FILENO) == -1){
+        error(1, errno, "dup2 %d %d", fd, STDERR_FILENO);
+    }
+    
+    write(STDERR_FILENO, "The second error massage\n", 25);
+    
+    return 0;
+}
+```
+
++ 分别执行完两个代码的运行结果：
+	+ 第一个代码重定向 `STDERR_FILENO` 文件描述符到 `application.log` 文件，写入一段语句；
+	+ 第二个代码同样重定向 `STDERR_FILENO` 文件描述符到 `application.log` 文件，写入一段语句。
+
+![分别执行完两个代码的运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250606174455.png)
+
+### 零拷贝（mmap）
