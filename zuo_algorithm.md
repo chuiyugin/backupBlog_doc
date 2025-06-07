@@ -2118,6 +2118,517 @@ public:
 };
 ```
 
+### 题目五
++ 滑动窗口最大值：[239. 滑动窗口最大值](https://leetcode.cn/problems/sliding-window-maximum/)
++ 思路：
+	+ 实现单调队列，并且该队列没有必要维护窗口里的所有元素，只需要维护有可能成为窗口里最大值的元素就可以了，同时保证队列里的元素数值是由大到小的。
+	+ 设计单调队列的时候，`pop`，和 `push` 操作要保持如下规则：
+		 1. `pop(value)`：如果窗口移除的元素 `value` 等于单调队列的出口元素，那么队列弹出元素，否则不用任何操作；
+		 2. `push(value)`：如果 `push` 的元素 `value` 大于入口元素的数值，那么就将队列入口的元素弹出，直到 `push` 元素的数值小于等于队列入口元素的数值为止。
+		 3. 保持如上规则，每次窗口移动的时候，只要问 `que.front()` 就可以返回当前窗口的最大值。
++ 单调队列实现代码：
+
+```cpp
+class MyQueue { //单调队列（从大到小）
+public:
+    deque<int> que; // 使用deque来实现单调队列
+    // 每次弹出的时候，比较当前要弹出的数值是否等于队列出口元素的数值，如果相等则弹出。
+    // 同时pop之前判断队列当前是否为空。
+    void pop(int value) {
+        if (!que.empty() && value == que.front()) {
+            que.pop_front();
+        }
+    }
+    // 如果push的数值大于入口元素的数值，那么就将队列后端的数值弹出，直到push的数值小于等于队列入口元素的数值为止。
+    // 这样就保持了队列里的数值是单调从大到小的了。
+    void push(int value) {
+        while (!que.empty() && value > que.back()) {
+            que.pop_back();
+        }
+        que.push_back(value);
+    }
+    // 查询当前队列里的最大值 直接返回队列前端也就是front就可以了。
+    int front() {
+        return que.front();
+    }
+};
+```
+
++ 代码：
+
+```cpp
+class Solution {
+private:
+    class MyQueue { //单调队列（从大到小）
+    public:
+        deque<int> que; // 使用deque来实现单调队列
+        // 每次弹出的时候，比较当前要弹出的数值是否等于队列出口元素的数值，如果相等则弹出。
+        // 同时pop之前判断队列当前是否为空。
+        void pop(int value) {
+            if (!que.empty() && value == que.front()) {
+                que.pop_front();
+            }
+        }
+        // 如果push的数值大于入口元素的数值，那么就将队列后端的数值弹出，直到push的数值小于等于队列入口元素的数值为止。
+        // 这样就保持了队列里的数值是单调从大到小的了。
+        void push(int value) {
+            while (!que.empty() && value > que.back()) {
+                que.pop_back();
+            }
+            que.push_back(value);
+        }
+        // 查询当前队列里的最大值 直接返回队列前端也就是front就可以了。
+        int front() {
+            return que.front();
+        }
+    };
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        MyQueue que;
+        vector<int> result;
+        for (int i = 0; i < k; i++) { // 先将前k的元素放进队列
+            que.push(nums[i]);
+        }
+        result.push_back(que.front()); // result 记录前k的元素的最大值
+        for (int i = k; i < nums.size(); i++) {
+            que.pop(nums[i - k]); // 滑动窗口移除最前面元素
+            que.push(nums[i]); // 滑动窗口前加入最后面的元素
+            result.push_back(que.front()); // 记录对应的最大值
+        }
+        return result;
+    }
+};
+```
+
++ 时间复杂度: $O(n)$，空间复杂度: $O(k)$。
+
+## 二叉树
+### 二叉树的递归遍历
++ 前序遍历：[144. 二叉树的前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    //前序遍历
+    void Traversal(TreeNode* root, vector<int>& ans){
+        //终止条件
+        if(root == nullptr)
+            return;
+        ans.push_back(root->val); 
+        Traversal(root->left, ans); // 遍历左节点
+        Traversal(root->right, ans); // 遍历右节点
+    }
+
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> result;
+        Traversal(root, result);
+        return result;
+    }
+};
+```
+
++ 中序遍历：[94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 中序遍历
+    void Traversal(TreeNode* root, vector<int>& ans){
+        //终止条件
+        if(root == nullptr)
+            return;
+        Traversal(root->left, ans);
+        ans.push_back(root->val);
+        Traversal(root->right, ans);
+    }
+
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> result;
+        Traversal(root, result);
+        return result;
+    }
+};
+```
+
++ 后序遍历：[145. 二叉树的后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 后序遍历
+    void Traversal(TreeNode* root, vector<int>& ans){
+        //终止条件
+        if(root == nullptr)
+            return;
+        Traversal(root->left, ans);// 左节点
+        Traversal(root->right, ans);// 右节点
+        ans.push_back(root->val);
+    }
+
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> result;
+        Traversal(root, result);
+        return result;
+    }
+};
+```
+
+### 二叉树的迭代遍历
+ + 前序遍历迭代法：[144. 二叉树的前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    //前序遍历迭代法
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> result;
+        // 根节点为空
+        if(root == nullptr)
+            return result;
+        stack<TreeNode*> st;
+        st.push(root);
+        while(!st.empty()){
+            TreeNode* node = st.top();
+            st.pop();
+            result.push_back(node->val);
+            if(node->right)
+                st.push(node->right);
+            if(node->left)
+                st.push(node->left);
+        }
+        return result;
+    }
+};
+```
+
++ 中序遍历迭代法：[94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/description/)
+	+ 由于在中序遍历的过程中，要访问的元素和要处理的元素顺序不一致，在使用迭代法写中序遍历，就需要借用指针的遍历来帮助访问节点，栈则用来处理节点上的元素。
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 中序遍历迭代法
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> result;
+        if(root == nullptr)
+            return result;
+        stack<TreeNode*> st;
+        TreeNode* cur = root; // 借用指针来区分访问和处理节点的不一致
+        while(cur != nullptr || !st.empty()){
+            if(cur != nullptr){ // 指针来访问节点，访问到最底层
+                st.push(cur);
+                cur = cur->left; //持续往左节点访问直到最底层
+            }
+            else{
+                cur = st.top();
+                st.pop();
+                result.push_back(cur->val); // 中
+                cur = cur->right; // 右
+            }
+        }
+        return result;
+    }
+};
+```
+
++ 后序遍历迭代法：[145. 二叉树的后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/description/)
+	+ 前序遍历顺序：**中左右**；
+	+ 后序遍历顺序：**左右中**；
+	+ 那么可以简单修改前序遍历顺序实现**中右左**，然后再**反转答案数组**即可。
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 后序遍历迭代法
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> result;
+        // 根节点为空
+        if(root == nullptr)
+            return result;
+        stack<TreeNode*> st;
+        st.push(root);
+        while(!st.empty()){
+            TreeNode* node = st.top();
+            st.pop();
+            result.push_back(node->val);
+            //因为栈后进先出，以中右左的顺序
+            if(node->left)
+                st.push(node->left);
+            if(node->right)
+                st.push(node->right);
+        }
+        //反转结果，变为左右中的顺序
+        reverse(result.begin(), result.end());
+        return result;
+    }
+};
+```
+
+### 二叉树的统一迭代遍历
++ 空指针标记法：就是要处理的节点放入栈之后，紧接着放入一个空指针作为标记，三种不同的遍历方式只需修改少量代码。
++  中序遍历迭代法：[94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 中序遍历统一迭代法
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> result;
+        stack<TreeNode*> st;
+        if(root == nullptr)
+            return result;
+        else
+            st.push(root);
+        while(!st.empty()){
+            TreeNode* node = st.top(); // 取出栈顶节点
+            if(node != nullptr){ // node 不是空节点
+                st.pop(); // 节点先要弹出，避免后续重复操作
+                // 先入右节点，符合栈的顺序
+                if(node->right)
+                    st.push(node->right);
+                // 中间节点，加上 null 表示访问过但是没处理
+                st.push(node);
+                st.push(nullptr);
+                //再入左节点，符合栈的顺序
+                if(node->left)
+                    st.push(node->left);
+            }
+            else{ // 遇到空节点表示将下一个节点加到结果向量中
+                st.pop();
+                node = st.top(); //重新取出栈顶元素
+                st.pop();
+                result.push_back(node->val);
+            }
+        }
+        return result;
+    }
+};
+```
+
++ 前序遍历迭代法：[144. 二叉树的前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    //前序遍历统一迭代法
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> result;
+        stack<TreeNode*> st;
+        if(root == nullptr)
+            return result;
+        else
+            st.push(root);
+        while(!st.empty()){
+            TreeNode* node = st.top(); // 取出栈顶节点
+            if(node != nullptr){ // node 不是空节点
+                st.pop(); // 节点先要弹出，避免后续重复操作
+                // 先入右节点，符合栈的顺序
+                if(node->right)
+                    st.push(node->right);
+                //再入左节点，符合栈的顺序
+                if(node->left)
+                    st.push(node->left);
+                // 中间节点，加上 null 表示访问过但是没处理
+                st.push(node);
+                st.push(nullptr);
+            }
+            else{ // 遇到空节点表示将下一个节点加到结果向量中
+                st.pop();
+                node = st.top(); //重新取出栈顶元素
+                st.pop();
+                result.push_back(node->val);
+            }
+        }
+        return result;
+    }
+};
+```
+
++ 后序遍历迭代法：[145. 二叉树的后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/description/)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 后序遍历统一迭代法
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> result;
+        stack<TreeNode*> st;
+        if(root == nullptr)
+            return result;
+        else
+            st.push(root);
+        while(!st.empty()){
+            TreeNode* node = st.top(); // 取出栈顶节点
+            if(node != nullptr){ // node 不是空节点
+                st.pop(); // 节点先要弹出，避免后续重复操作
+                // 中间节点，加上 null 表示访问过但是没处理
+                st.push(node);
+                st.push(nullptr);
+                // 先入右节点，符合栈的顺序
+                if(node->right)
+                    st.push(node->right);
+                //再入左节点，符合栈的顺序
+                if(node->left)
+                    st.push(node->left);
+            }
+            else{ // 遇到空节点表示将下一个节点加到结果向量中
+                st.pop();
+                node = st.top(); //重新取出栈顶元素
+                st.pop();
+                result.push_back(node->val);
+            }
+        }
+        return result;
+    }
+};
+```
+
+### 二叉树的层序遍历
++ 二叉树的层序遍历需要借用一个辅助数据结构即队列来实现：
+	+ **队列先进先出，符合一层一层遍历的逻辑**，而用栈先进后出适合模拟深度优先遍历也就是递归的逻辑。
++ 思路：
+	+ 首先要记录这一层中有多少个结点，因此要定义一个确定的 `size`。
+	+ 使用 `for` 循环来遍历 `size` 数量个结点，将每个结点弹出，并将其数值传入结果数组中，将其左右孩子入队列，作为下一层的遍历内容。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> result;
+        queue<TreeNode*> que;
+        if(root == nullptr)
+            return result;
+        que.push(root);
+        while(!que.empty()){
+            vector<int> ans; // 一层中的内容
+            int size = que.size(); //  size 用于确定这一层中的节点数量
+            for(int i=0; i<size; i++){
+                TreeNode* node = que.front();
+                que.pop();
+                ans.push_back(node->val);
+                if(node->left)
+                    que.push(node->left);
+                if(node->right)
+                    que.push(node->right);
+            }
+            result.push_back(ans);
+        }
+        return result;
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
