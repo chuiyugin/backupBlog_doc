@@ -696,3 +696,233 @@ int main(int argc, char* argv[])
 ![分别执行完两个代码的运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250606174455.png)
 
 ### 零拷贝（mmap）
++ 系统调用零拷贝（ `mmap()` ）能够省去内核态和用户态的内存拷贝。
+
+![零拷贝](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202506071540394.png)
+
++ 系统调用零拷贝（ `mmap()` ）的工作原理：
+	+ 相当于将文件的一部分内存通过 `I/O` 操作拷贝到物理内存中，并且内核态和用户态共用这部分内存，不再需要重复拷贝。
+
+![image.png](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202506071542883.png)
+
++ 系统调用零拷贝（ `mmap()` 和 `munmap()` ）的使用方法：
+
+![系统调用零拷贝 mmap() 和 munmap() 的使用方法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202506071600326.png)
+
++ 系统调用零拷贝（ `mmap()` 和 `munmap()` ）的返回值：
+
+![系统调用零拷贝 mmap() 和 munmap() 的返回值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202506071602492.png)
+
++ 系统调用零拷贝（ `mmap()` 和 `munmap()` ）的复制大文件使用场景：
+
+![系统调用零拷贝 mmap() 和 munmap() 的复制大文件使用场景](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202506071651605.png)
+
++ 代码示例：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <sys/mman.h>
+
+// offset 应该是页大小的整数倍
+#define MMAP_SIZE (4096 * 10)
+
+int main(int argc, char *argv[])
+{
+    // ./mmap_cp src dst
+    if (argc != 3){
+        error(1, 0, "Usage: %s src dst", argv[0]);
+    }
+    
+    int srcfd = open(argv[1], O_RDONLY);
+    if (srcfd == -1){
+        error(1, errno, "open %s", argv[1]);
+    }
+    // 需要读写权限
+    int dstfd = open(argv[2], O_RDWR | O_CREAT | O_TRUNC, 0666);
+    if (dstfd == -1){
+        close(srcfd);
+        error(1, errno, "open %s", argv[2]);
+    }
+    // 1.需要事先知道文件大小
+    // 获取src大小
+    struct stat sb;
+    fstat(srcfd, &sb);
+    off_t fsize = sb.st_size;
+    // 将dst文件大小设置为fsize
+    ftruncate(dstfd, fsize); // 目标文件大小需要事先固定
+    // 设置初始偏移量，表示已经复制的数据
+    off_t offset = 0;
+    while (offset < fsize)
+    {
+        // 计算映射区长度
+        off_t length;
+        if (fsize - offset >= MMAP_SIZE)
+            length = MMAP_SIZE;
+        else
+            length = fsize - offset;
+        // 映射
+        void *addr1 = mmap(NULL, length, PROT_READ, MAP_SHARED, srcfd, offset);
+        if (addr1 == MAP_FAILED){
+            error(1, errno, "mmap %s", argv[1]);
+        }
+        
+        void *addr2 = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, dstfd, offset);
+        if (addr2 == MAP_FAILED){
+            error(1, errno, "mmap %s", argv[2]);
+        }
+        // 通过将addr1的内容复制到addr2中实现文件的复制
+        memcpy(addr2, addr1, length);
+        offset += length;
+        // 解除映射
+        int err = munmap(addr1, length);
+        if (err == -1){
+            error(1, errno, "munmap %s", argv[1]);
+        }
+        
+        err = munmap(addr2, length);
+        if (err == -1){
+            error(1, errno, "munmap %s", argv[2]);
+        }
+    } // offset == fsize
+    return 0;
+}
+```
+
+## CPU 的虚拟化
+### 前置知识
++ 内核的职责：管理硬件资源
++ 共享资源的方式：
+	+ 时分共享（CPU）
+	+ 空分共享（内存）
++ 操作系统通过让一个进程运行一段时间，然后切换到其它进程，缺点是会造成性能损失（需要进行上下文切换）。
++ 如何实现 CPU 的时分共享？
+	+ 底层机制：如何进行上下文切换
+	+ 上层策略：调度策略
+
+### 认识进程
++ 用户角度：进程就是正在执行的程序
++ 内核角度：要执行的任务（ `struct task_t` ）
+	+ 进程之间必须隔离，进程之间是相互看不到的，感知不到另外的进程存在。
+	+ 以进程的角度看，就像它独占计算机的所有资源（抽象机制：CPU 的虚拟化）。
++ `xv6` 操作系统的进程相关结构体：
+
+![xv6 操作系统的进程相关结构体](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608162423.png)
+
+### 底层机制：实现上下文切换的三种方式及优缺点
++ 指标：
+	+ 性能：不应该增加太多的系统开销
+	+ 控制权：操作系统应该保留控制权
+
+#### 方式一：直接运行（无限制）
++ 优点：简单、快
++ 缺点：没有控制权、不安全。
+
+![直接运行（无限制）](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608170100.png)
+
++ 如何限制应用程序的权限？
+	+ 不能让用户态应用程序访问非法的内存空间和执行一些特权指令。
+	+ 需要硬件的协助即 CPU 的模态（模式）：
+		+ 用户态：应用程序（不能访问非法的内存空间和执行一些特权指令）
+		+ 内核态：操作系统（可以访问机器的所有资源）
+#### 方式二：受限直接运行协议
++ 应用程序如何执行特权操作？
+	+ 通过系统调用！
+
+![应用程序通过系统调用执行特权操作](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608170707.png)
+
++ 通过特殊指令 `trap` 来切换用户态和内核态：
+	+ 缺点在于控制权不是主动掌握在操作系统上。
+
+![受限直接运行协议](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608171106.png)
+
+#### 方式三：受限直接运行协议（时钟中断）
++ 方式二采用协作（ `yield()` ）的方式，等待系统调用。
++ 方式三采用非协作方式（抢占方式），操作系统能够主动进行控制。
++ 时钟中断的方式：
+
+![时钟中断的方式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608171600.png)
+
++ 受限直接运行协议（时钟中断）：
+
+![受限直接运行协议（时钟中断）](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608171645.png)
+
++ 进程之间是隔离的（感知不到内核和其他进程的存在）。
++ 进程是资源分配的最小单位（任务<-分配资源）。
++ 上下文切换：
+	+ 调用系统调用
+	+ 切换进程
+
+### 和进程相关的常用命令
+#### 显示进程
++ `ps` 命令显示和终端关联的进程：
+
+![ps 命令显示和终端关联的进程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608200539.png)
+
++ `ps x` 显示和用户关联的进程：
+
+![ps x 显示和用户关联的进程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608200642.png)
+
++ `ps aux` 显示所有用户相关的进程：
+
+![ps aux 显示所有用户相关的进程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608200744.png)
+
++ `top` 每 3 秒统计一次进程信息：
+
+![top 每 3 秒统计一次进程信息](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608200852.png)
+
++ `pstree` 打印进程树：
+
+![pstree 打印进程树](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608200946.png)
+
++ 前台进程：
+
+![前台进程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608201022.png)
+
++ 后台进程：
+
+![后台进程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608201050.png)
+
+### 获取进程的标识
++ 获取进程的标识的用法：
+
+![获取进程的标识的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608202024.png)
+
++ 代码示例：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_getpid
+    printf("pid=%d\n",getpid());
+    printf("ppid=%d\n",getppid());
+
+    sleep(10);
+    return 0;
+}
+```
+
++ 运行结果：
+
+![运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608202612.png)
+
+ + `Linux` 进程 `id` 的分配策略：
+
+![image.png](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608202721.png)
+
+### 进程的基本操作
++ 创建进程：`fork()`
++ 终止进程：`exit()` 、`_exit()`、`abort()`、`wait()`、`waitpid()`
++ 执行程序：`exec` 函数簇
+
+#### 创建进程：fork()
