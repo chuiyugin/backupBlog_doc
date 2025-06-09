@@ -2629,6 +2629,246 @@ public:
 };
 ```
 
+### 翻转二叉树
++ 翻转二叉树：[226. 翻转二叉树](https://leetcode.cn/problems/invert-binary-tree/)
++ 思路：
+	+ 递归法：采用**前序、后序递归比较合适**，中序会造成左孩子翻转两次。
+	+ 层序遍历法也可以。
++ 递归法前序遍历代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+        if(root == nullptr)
+            return root;
+        swap(root->left, root->right);
+        invertTree(root->left);
+        invertTree(root->right);
+        return root;
+    }
+};
+```
+
++ 递归法后序遍历代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+        if(root == nullptr)
+            return root;
+        invertTree(root->left);
+        invertTree(root->right);
+        swap(root->left, root->right);
+        return root;
+    }
+};
+```
+
++ 层序遍历法：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+        queue<TreeNode*> que;
+        if (root != NULL) que.push(root);
+        while (!que.empty()) {
+            int size = que.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                swap(node->left, node->right); // 节点处理
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+            }
+        }
+        return root;
+    }
+};
+```
+
+### 对称二叉树
++ 对称二叉树：[101. 对称二叉树](https://leetcode.cn/problems/symmetric-tree/description/)
++ 思路：[代码随想录思路](https://programmercarl.com/0101.%E5%AF%B9%E7%A7%B0%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E6%80%9D%E8%B7%AF)
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 递归判断
+    bool compare(TreeNode* left, TreeNode* right){
+        if(left == nullptr && right != nullptr)
+            return false;
+        else if(left != nullptr && right == nullptr)
+            return false;
+        else if(left == nullptr && right == nullptr)
+            return true;
+        else if(left->val != right->val)
+            return false;
+        else // 分为子树内侧和外侧
+            return (compare(left->left, right->right) && compare(left->right, right->left));
+    }
+
+    bool isSymmetric(TreeNode* root) {
+        if(root == nullptr)
+            return true;
+        return compare(root->left, root->right);
+    }
+};
+```
+
+### 另一棵树的子树
++ 对称二叉树：[101. 对称二叉树](https://leetcode.cn/problems/symmetric-tree/description/)
++ 思路：与上一题类似，先写好递归判断两颗子树是否相等 `compare` 函数，再使用层序遍历法逐个遍历主树的节点，并调用 `compare` 函数。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool compare(TreeNode* root, TreeNode* subRoot){
+        if(root == nullptr && subRoot == nullptr)
+            return true;
+        else if(root != nullptr && subRoot == nullptr)
+            return false;
+        else if(root == nullptr && subRoot != nullptr)
+            return false;
+        else if(root->val != subRoot->val)
+            return false;
+        else{
+            return (compare(root->left, subRoot->left) && compare(root->right, subRoot->right));
+        }
+    }
+	//层序遍历寻找子树
+    bool isSubtree(TreeNode* root, TreeNode* subRoot) {
+        if(root == nullptr && subRoot == nullptr)
+            return true;
+        else if(root == nullptr && subRoot != nullptr)
+            return false;
+        queue<TreeNode*> que;
+        que.push(root);
+        while(!que.empty()){
+            TreeNode* node = que.front();
+            int size = que.size();
+            bool ans;
+            for(int i=0; i<size; i++){
+                node = que.front();
+                que.pop();
+                ans = compare(node, subRoot);
+                if(ans)
+                    return true;
+                if(node->left)
+                    que.push(node->left);
+                if(node->right)
+                    que.push(node->right);
+            }
+        }
+        return false;
+    }
+};
+```
+
++ 递归遍历法代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool compare(TreeNode* root, TreeNode* subRoot){
+        if(root == nullptr && subRoot == nullptr)
+            return true;
+        else if(root != nullptr && subRoot == nullptr)
+            return false;
+        else if(root == nullptr && subRoot != nullptr)
+            return false;
+        else if(root->val != subRoot->val)
+            return false;
+        else{
+            return (compare(root->left, subRoot->left) && compare(root->right, subRoot->right));
+        }
+    }
+
+    bool isSubtree(TreeNode* root, TreeNode* subRoot) {
+        if (subRoot == nullptr) {
+            return root == nullptr;
+        }
+        if (root == nullptr) {
+            return false;
+        }
+        if (compare(root, subRoot)) {
+            return true;
+        }
+        return isSubtree(root->left, subRoot) || isSubtree(root->right, subRoot);
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序

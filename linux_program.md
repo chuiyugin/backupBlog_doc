@@ -926,3 +926,368 @@ int main(int argc, char* argv[])
 + 执行程序：`exec` 函数簇
 
 #### 创建进程：fork()
++ 系统调用 `fork()` 的用法：
+
+![系统调用 fork() 的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609155511.png)
+
++ 系统调用 `fork()` 的返回值：
+	+ 成功：
+		+ 父进程：子进程的 `pid`
+		+ 子进程：`0`
+	+ 失败：
+		+ 父进程：`-1`，并且不会创建子进程，设置 `errno`。
+
++ 惯用法代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_fork1 
+    printf("BEGIN:\n");
+    
+    //惯用法
+    //父子进程都是从fork()返回
+    //子进程不会执行前面的代码
+    pid_t pid = fork(); 
+    
+    switch(pid){
+        case -1:
+            //出错
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            printf("I am a baby\n");
+            printf("child:pid = %d, ppid = %d\n", getpid(), getppid());
+            break;
+        default:
+            //父进程
+            printf("Who's your daddy?\n");
+            printf("parent:pid = %d, chilpid = %d\n", getpid(), pid);
+            break;
+    }
+    printf("BYE BYE!\n"); // 父子进程
+    
+    return 0;
+}
+```
+
++ 测试结果：
+	+ 到底是父进程先执行还是子进程先执行是不确定的（不能假定到底是谁先执行）。
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609155956.png)
+
++  系统调用 `fork()` 的原理：
+
+![系统调用 fork() 的原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609160153.png)
+
+##### 代码段：父子进程共享（不能修改）
++ 栈、堆、数据段（父子进程私有）
++ 测试代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+
+int g_value = 10; // 数据段
+
+int main(int argc, char* argv[])
+{
+    // ./test_fork2
+    int l_value = 20; // 栈
+    int* d_value = (int*)malloc(sizeof(int)); // 堆
+    *d_value = 30;
+    
+    //惯用法
+    //父子进程都是从fork()返回
+    //子进程不会执行前面的代码
+    pid_t pid = fork(); 
+    
+    switch(pid){
+        case -1:
+            //出错
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            g_value += 100;
+            l_value += 100;
+            *d_value += 100;
+            printf("g_value = %d, l_value = %d, d_value = %d\n", g_value, l_value, *d_value);
+            exit(0);
+        default:
+            //父进程
+            sleep(2);
+            printf("g_value = %d, l_value = %d, d_value = %d\n", g_value, l_value, *d_value);
+            exit(0);
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609161526.png)
+
+##### 用户态缓冲区（文件流）：父子进程是私有的
+
+![用户态缓冲区（文件流）：父子进程是私有的](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609161723.png)
+
++ 测试代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_fork3
+    printf("BEGIN:"); // stdout是行缓冲区
+    
+    //惯用法
+    //父子进程都是从fork()返回
+    //子进程不会执行前面的代码
+    pid_t pid = fork(); 
+    
+    switch(pid){
+        case -1:
+            //出错
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            printf("I am a baby\n");
+            exit(0);
+        default:
+            //父进程
+            sleep(2);
+            printf("Who's your daddy?\n");
+            exit(0);
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609162127.png)
+
++ 用户缓冲区父子进程私有经典题目一：
+	+ 总共输出 24 个 `a`。
+
+![经典题目一](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609164244.png)
+
++ 用户缓冲区父子进程私有经典题目二：
+	+ 总共输出 14 个 `a`。
+
+![经典题目二](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609164333.png)
+
+##### 打开文件（共享的）、文件描述符列表（私有的）
++ 对于父子进程，打开文件（共享的）、文件描述符列表（私有的）
++ 测试代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_fork4
+    int fd = open("test.txt", O_RDWR | O_CREAT | O_TRUNC, 0666);
+    printf("origin_pos: %ld\n", lseek(fd, 0, SEEK_CUR));
+
+    //惯用法
+    //父子进程都是从fork()返回
+    //子进程不会执行前面的代码
+    pid_t pid = fork(); 
+    int newfd;
+
+    switch(pid){
+        case -1:
+            //出错
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            write(fd, "hello world", 11);
+            printf("child_pos: %ld\n", lseek(fd, 0, SEEK_CUR));
+            close(STDERR_FILENO);
+
+            newfd = dup(fd); // newfd = 2
+            printf("child_newfd = %d\n", newfd);
+            exit(0);
+        default:
+            //父进程
+            sleep(2);
+            printf("parent_pos: %ld\n", lseek(fd, 0, SEEK_CUR));
+            newfd = dup(fd); // newfd = 4
+            printf("parent_newfd = %d\n", newfd);
+            exit(0);
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609165658.png)
+
+#### 终止进程
++ 基本概念：
+
+![终止进程的基本概念](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609170714.png)
+##### 正常终止
++ 库函数 `exit()` 的步骤以及系统调用 `atexit()` 的用法和返回值：
+
+![库函数 exit() 的步骤和返回值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609180501.png)
+
++ 示例代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+//执行一些资源清理操作
+void func(void){
+    printf("Something going to die...");
+}
+
+int main(int argc, char* argv[])
+{
+    // ./test_exit
+    // 调用atexit()注册函数
+    int err = atexit(func); // 仅注册，不会执行func函数
+    if(err != 0){
+        error(1, 0, "atexit()");
+    }
+    
+    //正常执行程序...
+    printf("Hello world");
+    
+    exit(123); //前面分析的执行exit函数后第一步执行atexit()注册的func函数
+    
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609181435.png)
+
++ 系统调用 `_exit()` 的用法：
+	+ 退出状态码传至操作系统。
+
+![系统调用 _exit() 的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609181614.png)
+
++ 测试程序：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+//执行一些资源清理操作
+void func(void){
+    printf("Something going to die...");
+}
+
+int main(int argc, char* argv[])
+{
+    // ./test_exit
+    // 调用atexit()注册函数
+    int err = atexit(func);
+    if(err != 0){
+        error(1, 0, "atexit()");
+    }
+    
+    //正常执行程序...
+    printf("Hello world");
+    
+    _exit(123);
+    
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609181901.png)
+
+##### 异常终止
++ 系统调用 `abort()` 的用法：
+
+![系统调用 abort() 的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609182101.png)
+
++ 测试代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+//执行一些资源清理操作
+void func(void){
+    printf("Something going to die...");
+}
+
+int main(int argc, char* argv[])
+{
+    // ./test__exit
+    // 调用atexit()注册函数
+    int err = atexit(func);
+    if(err != 0){
+        error(1, 0, "atexit()");
+    }
+    
+    //正常执行程序...
+    printf("Hello world");
+    
+    abort();
+    
+    printf("You can't see me!!!");
+    
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609182315.png)
+
++ 内核给该进程发送 `SIGABRT` 信号
+
+![内核给该进程发送 SIGABRT 信号](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609182437.png)
+
+
+
+
+
+
