@@ -2764,8 +2764,8 @@ public:
 ```
 
 ### 另一棵树的子树
-+ 对称二叉树：[101. 对称二叉树](https://leetcode.cn/problems/symmetric-tree/description/)
-+ 思路：与上一题类似，先写好递归判断两颗子树是否相等 `compare` 函数，再使用层序遍历法逐个遍历主树的节点，并调用 `compare` 函数。
++ 对称二叉树：[572. 另一棵树的子树](https://leetcode.cn/problems/subtree-of-another-tree/description/)
++ 思路：与上一题类似，先写好递归判断两棵子树是否相等 `compare` 函数，再使用层序遍历法逐个遍历主树的节点，并调用 `compare` 函数。
 + 代码：
 
 ```cpp
