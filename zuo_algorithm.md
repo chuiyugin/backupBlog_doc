@@ -2113,7 +2113,7 @@ public:
             else
                 stk.push(stoi(tokens[i]));
         }
-        return stk.top();;
+        return stk.top();
     }
 };
 ```
@@ -2865,6 +2865,177 @@ public:
             return true;
         }
         return isSubtree(root->left, subRoot) || isSubtree(root->right, subRoot);
+    }
+};
+```
+
+### 二叉树的最大深度
++ 二叉树的最大深度：[104.二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/)
++ 递归思路：求二叉树的最大深度就是求二叉树的最大高度，可以使用后序遍历的方式递归求节点 `root` 左右子树的最大高度，然后加 `1` 返回节点 `root` 的最大高度。
++ 递归代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int getMaxDepth(TreeNode* root){
+        if(root == nullptr)
+            return 0;
+        int leftDepth = getMaxDepth(root->left);
+        int rightDepth = getMaxDepth(root->right);
+        // 返回节点root左右子树的最大高度，然后加1返回节点root的最大高度
+        return 1 + max(leftDepth, rightDepth); 
+    }
+    
+    int maxDepth(TreeNode* root) {
+        return getMaxDepth(root);
+    }
+};
+```
+
++ 层序遍历代码：
+
+```cpp
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+        if (root == NULL) return 0;
+        int depth = 0;
+        queue<TreeNode*> que;
+        que.push(root);
+        while(!que.empty()) {
+            int size = que.size();
+            depth++; // 记录深度
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+            }
+        }
+        return depth;
+    }
+};
+```
+
+### 二叉树的最小深度
++ 二叉树的最小深度：[111.二叉树的最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/description/)
++ 递归思路：需要关注节点 `root` 左右孩子节点中有一个为空的情况，做特殊处理。而当节点 `root` 有左右子树的时候取左右子树的最小高度，然后加 `1` 返回节点 `root` 的最小高度。
++ 递归代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int getMinDepth(TreeNode* root){
+        if(root == nullptr)
+            return 0;
+        int leftDepth = getMinDepth(root->left);
+        int rightDepth = getMinDepth(root->right);
+        if(root->left == nullptr && root->right != nullptr)
+            return 1 + rightDepth;
+        else if(root->left != nullptr && root->right == nullptr)
+            return 1 + leftDepth;
+        else
+            return 1 + min(leftDepth, rightDepth);
+    }
+
+    int minDepth(TreeNode* root) {
+        return getMinDepth(root);
+    }
+};
+```
+
++ 层序遍历法代码：
+
+```cpp
+class Solution {
+public:
+    int minDepth(TreeNode* root) {
+        if (root == NULL) return 0;
+        int depth = 0;
+        queue<TreeNode*> que;
+        que.push(root);
+        while(!que.empty()) {
+            int size = que.size();
+            depth++; // 记录最小深度
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+                if (!node->left && !node->right) { // 当左右孩子都为空的时候，说明是最低点的一层了，退出
+                    return depth;
+                }
+            }
+        }
+        return depth;
+    }
+};
+```
+
+### 平衡二叉树
++ 平衡二叉树：[110.平衡二叉树](https://leetcode.cn/problems/minimum-depth-of-binary-tree/description/)
++ 递归思路：思路与求最大深度类似，递归找节点 `root` 左右子树的最大高度，然后在递归中进行处理，如果在该节点 `root` 已经不满足平衡二叉树的时候就返回 `-1`，否则求节点 `root` 左右子树的最大高度，然后加 `1` 返回节点 `root` 的最大高度。再加上单独处理 `-1` 的情况即可。
++ 递归代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int getHeight(TreeNode* root){
+        if(root == nullptr)
+            return 0;
+        int leftHeight = getHeight(root->left);
+        if(leftHeight == -1)
+            return -1;
+        int rightHeight = getHeight(root->right);
+        if(rightHeight == -1)
+            return -1;
+        int result;
+        if(abs(leftHeight - rightHeight) > 1)
+            result = -1;
+        else
+            result = 1 + max(leftHeight, rightHeight);
+        return result;
+    }
+
+    bool isBalanced(TreeNode* root) {
+        int ans = getHeight(root);
+        if(ans == -1)
+            return false;
+        else
+            return true;
     }
 };
 ```

@@ -1286,7 +1286,184 @@ int main(int argc, char* argv[])
 
 ![内核给该进程发送 SIGABRT 信号](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609182437.png)
 
+### 孤儿进程和僵尸进程
++ 孤儿进程：子进程存活，父进程终止了
++ 测试代码：
 
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char* argv[])
+{
+    // ./orphen
+    pid_t pid = fork();
+    switch(pid){
+        case -1:
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            sleep(2);
+            printf("pid = %d, ppid = %d\n", getpid(), getppid());
+            exit(0);
+        default:
+            //父进程
+            printf("Parent: pid = %d, childpid = %d\n", getpid(), pid);
+            exit(0);
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![僵尸进程测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610164343.png)
+
++ 分析：孤儿进程会被 `1` 号进程（`init` 进程）收养，该进程一直循环执行 `wait` 函数。
+
+![孤儿进程分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610164541.png)
+
++ 僵尸进程：子进程死亡时，有一些信息会保存在内核（`pid` 、退出状态、CPU 时间......），方便父进程以后查看这个信息，并且给父进程发送 `SIGCHLD` 信号，但父进程默认会忽略信号。
+	+ 如何给僵尸进程收尸：`wait`、`waitpid`。
+
+#### wait()
++ 系统调用 `wait()` 的用法和返回值：
+
+![系统调用 wait() 的用法和返回值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610165007.png)
+
++ 测试程序：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+void print_wstatus(int status){
+    if(WIFEXITED(status)){
+        int exit_code = WEXITSTATUS(status);
+        printf("exit_code = %d", exit_code);
+    }
+    else if(WIFSIGNALED(status)){
+        int signo = WTERMSIG(status);
+        printf("term_sig = %d", signo);
+    }
+#ifdef WCOREDUMP
+    if(WCOREDUMP(status)){
+        printf(" (core dump) ");
+    }
+#endif
+    printf("\n");
+}
+
+int main(int argc, char* argv[])
+{
+    pid_t pid = fork();
+    switch(pid){
+        case -1:
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            printf("CHILD: pid = %d\n", getpid());
+            return 123;
+        default:
+            //父进程
+            int status; // 保存子进程的终止状态信息，位图。
+            pid_t childPid = wait(&status); // 阻塞点：一直等待，直到有子进程终止
+            if(childPid > 0){
+                printf("PARENT: %d terminated\n", childPid);
+                print_wstatus(status);
+            }
+            exit(0);
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610172230.png)
+
+#### waitpid()
++ 系统调用 `waitpid()` 的用法：
+
+![系统调用 waitpid() 的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610180607.png)
+
++ 系统调用 `waitpid()` 的返回值：
+
+![系统调用 waitpid() 的返回值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610180707.png)
+
++ 测试程序：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+void print_wstatus(int status){
+    if(WIFEXITED(status)){
+        int exit_code = WEXITSTATUS(status);
+        printf("exit_code = %d", exit_code);
+    }
+    else if(WIFSIGNALED(status)){
+        int signo = WTERMSIG(status);
+        printf("term_sig = %d", signo);
+    }
+#ifdef WCOREDUMP
+    if(WCOREDUMP(status)){
+        printf(" (core dump) ");
+    }
+#endif
+    printf("\n");
+}
+
+int main(int argc, char* argv[])
+{
+    pid_t pid = fork();
+    switch(pid){
+        case -1:
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            printf("CHILD: pid = %d\n", getpid());
+            return 123;
+        default:
+            //父进程
+            int status; // 保存子进程的终止状态信息，位图。
+            pid_t childPid = waitpid(-1, &status, WNOHANG); // 阻塞点：一直等待，直到有子进程终止
+            if(childPid > 0){
+                printf("PARENT: %d terminated\n", childPid);
+                print_wstatus(status);
+            }
+            else if(childPid == 0){
+                printf("PARENT: no child changed state!\n");
+            }
+            else{
+                error(1, 0, "waitpid");
+            }
+            exit(0);
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610181037.png)
 
 
 
