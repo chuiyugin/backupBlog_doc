@@ -1465,6 +1465,104 @@ int main(int argc, char* argv[])
 
 ![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610181037.png)
 
+### exec 函数簇
+#### 环境变量 env 的定义：
 
+![环境变量 env 的内容](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250611190306.png)
+
++ 打印环境变量 `env` 测试程序：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_environ
+    // 打印进程的pid
+    printf("pid = %d, ppid = %d\n", getpid(), getppid());
+    
+    // 打印命令行参数
+    for(int i=0; i<argc; i++){
+        puts(argv[i]);
+    }
+    printf("-----------------------------\n");
+    // 打印环境变量
+    // 声明外部变量(引用其它文件定义的environ变量)
+    extern char** environ; 
+    char** cur = environ;
+    while(*cur){
+        puts(*cur);
+        cur++;
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![打印环境变量测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250611190428.png)
+
+#### exec 函数簇
++ `exec` 函数簇的用法：
+
+![exec 函数簇的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250611190641.png)
+
++ `exec` 函数簇的测试程序：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+// 定义新的环境变量
+char* const new_env[] = {"USER=yugin", "TEST=0123", NULL};
+// 使用execv函数簇的命令行参数向量
+char* const args[] = {"./test_environ", "aaa", "bbb", "ccc", NULL};
+
+int main(int argc, char* argv[])
+{
+    // ./test_exce
+    // 打印进程的pid
+    printf("pid = %d, ppid = %d\n", getpid(), getppid());
+    
+    printf("BEGIN:\n");
+
+    //execl("test_environ", "./test_environ", "aaa", "bbb", "ccc", NULL);
+    //p:会根据path环境变量查找可执行程序
+    //execlp("test_environ", "./test_environ", "aaa", "bbb", "ccc", NULL);
+    execle("test_environ", "./test_environ", "aaa", "bbb", "ccc", NULL, new_env);
+    //execv("test_environ", args);
+    //p:会根据path环境变量查找可执行程序
+    //execvp("test_environ", args);
+    //execve("test_environ", args, new_env);
+
+	printf("You cannot see here!");
+    error(1, errno, "exce");
+
+    return 0;
+}
+```
+
++ 测试结果：
+
+![exce 函数簇测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250611193253.png)
+
++ `exec` 现象和原理：
+	+ 从上图可以看到，`pid` 和 `ppid` 没有改变，因此没有创建新的进程，并且在新的可执行程序 `mian` 函数的第一行开始执行。
+	+ 原理在于：
+		+ 执行 `exec` 函数簇会清除进程的代码段、数据段、堆、栈、上下文；
+		+ 加载新的可执行程序（设置代码段、数据段）；
+		+ 从新的可执行程序 `mian` 函数的第一行开始执行。
++ 清除进程的代码段、数据段、堆、栈、上下文如下图所示：
+
+![清除进程的代码段、数据段、堆、栈、上下文](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250611194231.png)
 
 
