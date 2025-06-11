@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "linux_program.md",
+                "file": "new_function.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "linux_program"
+              "title": "new_function"
             }
           }
         ]
@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "0edc808bdabaac2f",
@@ -170,13 +169,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "linux_program.md",
+                "file": "new_function.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "linux_program 的大纲"
+              "title": "new_function 的大纲"
             }
           },
           {
@@ -208,9 +207,9 @@
   "active": "a9eade74042ea9b5",
   "lastOpenFiles": [
     "zuo_algorithm.md",
+    "new_function.md",
     "linux_program.md",
     "linux_learning.md",
-    "new_function.md",
     "houjie_cpp.md",
     "Josephus.md",
     "5g_1.md",

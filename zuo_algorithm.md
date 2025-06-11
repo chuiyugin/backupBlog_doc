@@ -3040,6 +3040,110 @@ public:
 };
 ```
 
+### 二叉树的所有路径
++ 二叉树的所有路径：[257.二叉树的所有路径](https://leetcode.cn/problems/binary-tree-paths/description/)
++ 思路：这道题目要求从根节点到叶子的路径，所以需要前序遍历，这样才方便让父节点指向孩子节点，找到对应的路径。同时要使用到回溯把路径记录下来，需要回溯来回退一个路径再进入另一个路径。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    void travelsal(TreeNode* node, vector<int>& path, vector<string>& result){
+        // 中，为什么写在这里，因为最后一个节点也要加入到path中
+        path.push_back(node->val); // 传入节点数值
+        // 递归终止条件，到达叶子节点
+        if(node->left == nullptr && node->right == nullptr){
+            string sPath;
+            int size = path.size();
+            for(int i=0; i<size-1; i++){
+                sPath += to_string(path[i]);
+                sPath += "->";
+            }
+            sPath += to_string(path[size-1]);
+            result.push_back(sPath);
+            return;
+        }
+        //左
+        if(node->left){
+            travelsal(node->left, path, result);
+            // 回溯，path是全局变量，要把递归的后一个节点弹出
+            path.pop_back(); 
+        }
+        // 右
+        if(node->right){
+            travelsal(node->right, path, result);
+            // 回溯，path是全局变量，要把递归的后一个节点弹出
+            path.pop_back(); 
+        }
+    }
+    
+    vector<string> binaryTreePaths(TreeNode* root) {
+        vector<string> result;
+        if(root == nullptr)
+            return result;
+        vector<int> path;
+        travelsal(root, path, result);
+        return result;
+    }
+};
+```
+
++ 代码也可以进行精简：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    void travelsal(TreeNode* node, string path, vector<string>& result){
+        // 中，处理路径中的节点数值
+        path += to_string(node->val);
+        // 递归终止条件，遇到叶子节点
+        if(node->left == nullptr && node->right == nullptr){
+            result.push_back(path);
+            return;
+        }
+        // 左，回溯需要在调用函数的path中加"->"
+        if(node->left){
+            travelsal(node->left, path + "->", result);
+        }
+        // 右，回溯需要在调用函数的path中加"->"
+        if(node->right){
+            travelsal(node->right, path + "->", result);
+        }
+    }
+    
+    vector<string> binaryTreePaths(TreeNode* root) {
+        vector<string> result;
+        if(root == nullptr)
+            return result;
+        string path;
+        travelsal(root, path, result);
+        return result;
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
