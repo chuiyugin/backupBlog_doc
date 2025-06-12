@@ -1565,4 +1565,54 @@ int main(int argc, char* argv[])
 
 ![清除进程的代码段、数据段、堆、栈、上下文](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250611194231.png)
 
+#### system 的实现和惯用法
++ `system()` 系统调用的用法：
+
+![system() 系统调用的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250612161213.png)
+
++ 简易 `system()` 的实现代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int simple_system(const char* command){
+    pid_t childPid = fork();
+    int status;
+
+    switch(childPid){
+        case -1: // 出错
+            return -1;
+        case 0:
+            execl("/bin/sh", "sh", "-c", command, NULL);
+            _exit(127); // 出错了直接退出，避免stdout输出两次
+        default:
+            if(waitpid(childPid, &status, 0) == -1){
+                return -1;
+            }
+            else{
+                return status;
+            }
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    // ./test_system
+    simple_system("ls");
+    return 0;
+}
+```
+
++ 惯用法说明：
+
+![惯用法说明](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250612161400.png)
+
+
 
