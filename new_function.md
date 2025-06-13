@@ -9,12 +9,63 @@ excerpt: Some useful C++ function!
 ---
 # C++库函数积累应用
 ## 字符串 (string) 相关
+### 调整字符串数组长度函数（resize()）
 + 调整字符串数组长度的函数 `string::resize()`：
 	+ 将字符串大小调整为 `n` 个字符的长度。
 	+ 如果 `n` 小于当前字符串长度，则当前值将缩短为其第一个 `n` 个字符，删除超过 `n` 个字符的字符。
 	+ 如果 `n` 大于当前字符串长度，则通过在末尾插入所需数量的字符来扩展当前内容，以达到 `n` 的大小。如果指定了 `char c`，则新元素初始化为 `char c` 的副本，否则，它们是值初始化字符（空字符）。
 
 ![string::resize()](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250513151409.png)
+
+### 将数值类型转换为字符串类型（to_string()）
++ 将数值类型转换为字符串类型的函数 `to_string()` 。
++ 用法示例：
+	+ 二叉树的所有路径：[257.二叉树的所有路径](https://leetcode.cn/problems/binary-tree-paths/description/)
++ 思路：这道题目要求从根节点到叶子的路径，所以需要前序遍历，这样才方便让父节点指向孩子节点，找到对应的路径。同时要使用到回溯把路径记录下来，需要回溯来回退一个路径再进入另一个路径。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    void travelsal(TreeNode* node, string path, vector<string>& result){
+        // 中，处理路径中的节点数值
+        path += to_string(node->val);
+        // 递归终止条件，遇到叶子节点
+        if(node->left == nullptr && node->right == nullptr){
+            result.push_back(path);
+            return;
+        }
+        // 左，回溯需要在调用函数的path中加"->"
+        if(node->left){
+            travelsal(node->left, path + "->", result);
+        }
+        // 右，回溯需要在调用函数的path中加"->"
+        if(node->right){
+            travelsal(node->right, path + "->", result);
+        }
+    }
+    
+    vector<string> binaryTreePaths(TreeNode* root) {
+        vector<string> result;
+        if(root == nullptr)
+            return result;
+        string path;
+        travelsal(root, path, result);
+        return result;
+    }
+};
+```
 
 ## 哈希表相关
 ### set
@@ -129,3 +180,4 @@ public:
     }
 };
 ```
+

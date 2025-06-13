@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "linux_program.md",
+                "file": "zuo_algorithm.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "linux_program"
+              "title": "zuo_algorithm"
             }
           }
         ]
@@ -170,13 +170,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "linux_program.md",
+                "file": "zuo_algorithm.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "linux_program 的大纲"
+              "title": "zuo_algorithm 的大纲"
             }
           },
           {
@@ -207,9 +207,9 @@
   },
   "active": "a9eade74042ea9b5",
   "lastOpenFiles": [
-    "zuo_algorithm.md",
     "linux_program.md",
     "new_function.md",
+    "zuo_algorithm.md",
     "linux_learning.md",
     "houjie_cpp.md",
     "Josephus.md",

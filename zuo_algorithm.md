@@ -2113,7 +2113,7 @@ public:
             else
                 stk.push(stoi(tokens[i]));
         }
-        return stk.top();;
+        return stk.top();
     }
 };
 ```
@@ -2629,6 +2629,610 @@ public:
 };
 ```
 
+### 翻转二叉树
++ 翻转二叉树：[226. 翻转二叉树](https://leetcode.cn/problems/invert-binary-tree/)
++ 思路：
+	+ 递归法：采用**前序、后序递归比较合适**，中序会造成左孩子翻转两次。
+	+ 层序遍历法也可以。
++ 递归法前序遍历代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+        if(root == nullptr)
+            return root;
+        swap(root->left, root->right);
+        invertTree(root->left);
+        invertTree(root->right);
+        return root;
+    }
+};
+```
+
++ 递归法后序遍历代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+        if(root == nullptr)
+            return root;
+        invertTree(root->left);
+        invertTree(root->right);
+        swap(root->left, root->right);
+        return root;
+    }
+};
+```
+
++ 层序遍历法：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+        queue<TreeNode*> que;
+        if (root != NULL) que.push(root);
+        while (!que.empty()) {
+            int size = que.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                swap(node->left, node->right); // 节点处理
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+            }
+        }
+        return root;
+    }
+};
+```
+
+### 对称二叉树
++ 对称二叉树：[101. 对称二叉树](https://leetcode.cn/problems/symmetric-tree/description/)
++ 思路：[代码随想录思路](https://programmercarl.com/0101.%E5%AF%B9%E7%A7%B0%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E6%80%9D%E8%B7%AF)
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 递归判断
+    bool compare(TreeNode* left, TreeNode* right){
+        if(left == nullptr && right != nullptr)
+            return false;
+        else if(left != nullptr && right == nullptr)
+            return false;
+        else if(left == nullptr && right == nullptr)
+            return true;
+        else if(left->val != right->val)
+            return false;
+        else // 分为子树内侧和外侧
+            return (compare(left->left, right->right) && compare(left->right, right->left));
+    }
+
+    bool isSymmetric(TreeNode* root) {
+        if(root == nullptr)
+            return true;
+        return compare(root->left, root->right);
+    }
+};
+```
+
+### 另一棵树的子树
++ 对称二叉树：[572. 另一棵树的子树](https://leetcode.cn/problems/subtree-of-another-tree/description/)
++ 思路：与上一题类似，先写好递归判断两棵子树是否相等 `compare` 函数，再使用层序遍历法逐个遍历主树的节点，并调用 `compare` 函数。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool compare(TreeNode* root, TreeNode* subRoot){
+        if(root == nullptr && subRoot == nullptr)
+            return true;
+        else if(root != nullptr && subRoot == nullptr)
+            return false;
+        else if(root == nullptr && subRoot != nullptr)
+            return false;
+        else if(root->val != subRoot->val)
+            return false;
+        else{
+            return (compare(root->left, subRoot->left) && compare(root->right, subRoot->right));
+        }
+    }
+	//层序遍历寻找子树
+    bool isSubtree(TreeNode* root, TreeNode* subRoot) {
+        if(root == nullptr && subRoot == nullptr)
+            return true;
+        else if(root == nullptr && subRoot != nullptr)
+            return false;
+        queue<TreeNode*> que;
+        que.push(root);
+        while(!que.empty()){
+            TreeNode* node = que.front();
+            int size = que.size();
+            bool ans;
+            for(int i=0; i<size; i++){
+                node = que.front();
+                que.pop();
+                ans = compare(node, subRoot);
+                if(ans)
+                    return true;
+                if(node->left)
+                    que.push(node->left);
+                if(node->right)
+                    que.push(node->right);
+            }
+        }
+        return false;
+    }
+};
+```
+
++ 递归遍历法代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool compare(TreeNode* root, TreeNode* subRoot){
+        if(root == nullptr && subRoot == nullptr)
+            return true;
+        else if(root != nullptr && subRoot == nullptr)
+            return false;
+        else if(root == nullptr && subRoot != nullptr)
+            return false;
+        else if(root->val != subRoot->val)
+            return false;
+        else{
+            return (compare(root->left, subRoot->left) && compare(root->right, subRoot->right));
+        }
+    }
+
+    bool isSubtree(TreeNode* root, TreeNode* subRoot) {
+        if (subRoot == nullptr) {
+            return root == nullptr;
+        }
+        if (root == nullptr) {
+            return false;
+        }
+        if (compare(root, subRoot)) {
+            return true;
+        }
+        return isSubtree(root->left, subRoot) || isSubtree(root->right, subRoot);
+    }
+};
+```
+
+### 二叉树的最大深度
++ 二叉树的最大深度：[104.二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/)
++ 递归思路：求二叉树的最大深度就是求二叉树的最大高度，可以使用后序遍历的方式递归求节点 `root` 左右子树的最大高度，然后加 `1` 返回节点 `root` 的最大高度。
++ 递归代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int getMaxDepth(TreeNode* root){
+        if(root == nullptr)
+            return 0;
+        int leftDepth = getMaxDepth(root->left);
+        int rightDepth = getMaxDepth(root->right);
+        // 返回节点root左右子树的最大高度，然后加1返回节点root的最大高度
+        return 1 + max(leftDepth, rightDepth); 
+    }
+    
+    int maxDepth(TreeNode* root) {
+        return getMaxDepth(root);
+    }
+};
+```
+
++ 层序遍历代码：
+
+```cpp
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+        if (root == NULL) return 0;
+        int depth = 0;
+        queue<TreeNode*> que;
+        que.push(root);
+        while(!que.empty()) {
+            int size = que.size();
+            depth++; // 记录深度
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+            }
+        }
+        return depth;
+    }
+};
+```
+
+### 二叉树的最小深度
++ 二叉树的最小深度：[111.二叉树的最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/description/)
++ 递归思路：需要关注节点 `root` 左右孩子节点中有一个为空的情况，做特殊处理。而当节点 `root` 有左右子树的时候取左右子树的最小高度，然后加 `1` 返回节点 `root` 的最小高度。
++ 递归代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int getMinDepth(TreeNode* root){
+        if(root == nullptr)
+            return 0;
+        int leftDepth = getMinDepth(root->left);
+        int rightDepth = getMinDepth(root->right);
+        if(root->left == nullptr && root->right != nullptr)
+            return 1 + rightDepth;
+        else if(root->left != nullptr && root->right == nullptr)
+            return 1 + leftDepth;
+        else
+            return 1 + min(leftDepth, rightDepth);
+    }
+
+    int minDepth(TreeNode* root) {
+        return getMinDepth(root);
+    }
+};
+```
+
++ 层序遍历法代码：
+
+```cpp
+class Solution {
+public:
+    int minDepth(TreeNode* root) {
+        if (root == NULL) return 0;
+        int depth = 0;
+        queue<TreeNode*> que;
+        que.push(root);
+        while(!que.empty()) {
+            int size = que.size();
+            depth++; // 记录最小深度
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+                if (!node->left && !node->right) { // 当左右孩子都为空的时候，说明是最低点的一层了，退出
+                    return depth;
+                }
+            }
+        }
+        return depth;
+    }
+};
+```
+
+### 平衡二叉树
++ 平衡二叉树：[110.平衡二叉树](https://leetcode.cn/problems/minimum-depth-of-binary-tree/description/)
++ 递归思路：思路与求最大深度类似，递归找节点 `root` 左右子树的最大高度，然后在递归中进行处理，如果在该节点 `root` 已经不满足平衡二叉树的时候就返回 `-1`，否则求节点 `root` 左右子树的最大高度，然后加 `1` 返回节点 `root` 的最大高度。再加上单独处理 `-1` 的情况即可。
++ 递归代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int getHeight(TreeNode* root){
+        if(root == nullptr)
+            return 0;
+        int leftHeight = getHeight(root->left);
+        if(leftHeight == -1)
+            return -1;
+        int rightHeight = getHeight(root->right);
+        if(rightHeight == -1)
+            return -1;
+        int result;
+        if(abs(leftHeight - rightHeight) > 1)
+            result = -1;
+        else
+            result = 1 + max(leftHeight, rightHeight);
+        return result;
+    }
+
+    bool isBalanced(TreeNode* root) {
+        int ans = getHeight(root);
+        if(ans == -1)
+            return false;
+        else
+            return true;
+    }
+};
+```
+
+### 二叉树的所有路径
++ 二叉树的所有路径：[257.二叉树的所有路径](https://leetcode.cn/problems/binary-tree-paths/description/)
++ 思路：这道题目要求从根节点到叶子的路径，所以需要前序遍历，这样才方便让父节点指向孩子节点，找到对应的路径。同时要使用到回溯把路径记录下来，需要回溯来回退一个路径再进入另一个路径。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    void travelsal(TreeNode* node, vector<int>& path, vector<string>& result){
+        // 中，为什么写在这里，因为最后一个节点也要加入到path中
+        path.push_back(node->val); // 传入节点数值
+        // 递归终止条件，到达叶子节点
+        if(node->left == nullptr && node->right == nullptr){
+            string sPath;
+            int size = path.size();
+            for(int i=0; i<size-1; i++){
+                sPath += to_string(path[i]);
+                sPath += "->";
+            }
+            sPath += to_string(path[size-1]);
+            result.push_back(sPath);
+            return;
+        }
+        //左
+        if(node->left){
+            travelsal(node->left, path, result);
+            // 回溯，path是全局变量，要把递归的后一个节点弹出
+            path.pop_back(); 
+        }
+        // 右
+        if(node->right){
+            travelsal(node->right, path, result);
+            // 回溯，path是全局变量，要把递归的后一个节点弹出
+            path.pop_back(); 
+        }
+    }
+    
+    vector<string> binaryTreePaths(TreeNode* root) {
+        vector<string> result;
+        if(root == nullptr)
+            return result;
+        vector<int> path;
+        travelsal(root, path, result);
+        return result;
+    }
+};
+```
+
++ 代码也可以进行精简：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    void travelsal(TreeNode* node, string path, vector<string>& result){
+        // 中，处理路径中的节点数值
+        path += to_string(node->val);
+        // 递归终止条件，遇到叶子节点
+        if(node->left == nullptr && node->right == nullptr){
+            result.push_back(path);
+            return;
+        }
+        // 左，回溯需要在调用函数的path中加"->"
+        if(node->left){
+            travelsal(node->left, path + "->", result);
+        }
+        // 右，回溯需要在调用函数的path中加"->"
+        if(node->right){
+            travelsal(node->right, path + "->", result);
+        }
+    }
+    
+    vector<string> binaryTreePaths(TreeNode* root) {
+        vector<string> result;
+        if(root == nullptr)
+            return result;
+        string path;
+        travelsal(root, path, result);
+        return result;
+    }
+};
+```
+
+### 找树左下角的值
++ 找树左下角的值：[513.找树左下角的值](https://leetcode.cn/problems/find-bottom-left-tree-value/description/)
++ 思路：这道题目使用层序遍历法十分直观，而使用递归法需要进行回溯，找到二叉树的最大深度的第一个节点并做记录。
++ 层序遍历法：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int findBottomLeftValue(TreeNode* root) {
+        int ans = 0;
+        queue<TreeNode*> que;
+        que.push(root);
+        while(!que.empty()){
+            int size = que.size();
+            TreeNode* node = que.front();
+            for(int i=0; i<size; i++){
+                node = que.front();
+                que.pop();
+                if(i == 0)
+                    ans = node->val;
+                if(node->left)
+                    que.push(node->left);
+                if(node->right)
+                    que.push(node->right);
+            }
+        }
+        return ans;
+    }
+};
+```
+
++ 递归回溯法：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int maxDepth = INT_MIN;
+    void travelsal(TreeNode* node, int depth, int& ans){
+        // 终止条件，到达叶子节点
+        if(node->left == nullptr && node->right == nullptr){
+            if(depth > maxDepth){
+                maxDepth = depth;
+                ans = node->val;
+                return ;
+            }
+        }
+        if(node->left){
+            depth++;
+            travelsal(node->left, depth, ans);
+            depth--; // 回溯的过程
+        }
+        if(node->right){
+            depth++;
+            travelsal(node->right, depth, ans);
+            depth--; // 回溯的过程
+        }
+    }
+    
+    int findBottomLeftValue(TreeNode* root) {
+        int result = 0;
+        int depth = 1;
+        travelsal(root, depth, result);
+        return result;
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
@@ -2662,13 +3266,11 @@ void choose_sort(vector<int>& nums)
 
 ![选择排序的分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510210721.png)
 
-
 ### 冒泡排序
 #### 普通冒泡排序
 + 冒泡排序理论：
 
 ![冒泡排序理论](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510161815.png)
-
 
 + 代码：
 
@@ -2700,7 +3302,6 @@ void bubble_sort(vector<int>& nums)
 + 分析：
 
 ![冒泡排序的分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510210853.png)
-
 
 ### 插入排序
 #### 普通插入排序
