@@ -3144,6 +3144,220 @@ public:
 };
 ```
 
+### 找树左下角的值
++ 找树左下角的值：[513.找树左下角的值](https://leetcode.cn/problems/find-bottom-left-tree-value/description/)
++ 思路：这道题目使用层序遍历法十分直观，而使用递归法需要进行回溯，找到二叉树的最大深度的第一个节点并做记录。
++ 层序遍历法：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int findBottomLeftValue(TreeNode* root) {
+        int ans = 0;
+        queue<TreeNode*> que;
+        que.push(root);
+        while(!que.empty()){
+            int size = que.size();
+            TreeNode* node = que.front();
+            for(int i=0; i<size; i++){
+                node = que.front();
+                que.pop();
+                if(i == 0)
+                    ans = node->val;
+                if(node->left)
+                    que.push(node->left);
+                if(node->right)
+                    que.push(node->right);
+            }
+        }
+        return ans;
+    }
+};
+```
+
++ 递归回溯法：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int maxDepth = INT_MIN;
+    void travelsal(TreeNode* node, int depth, int& ans){
+        // 终止条件，到达叶子节点
+        if(node->left == nullptr && node->right == nullptr){
+            if(depth > maxDepth){
+                maxDepth = depth;
+                ans = node->val;
+                return ;
+            }
+        }
+        if(node->left){
+            depth++;
+            travelsal(node->left, depth, ans);
+            depth--; // 回溯的过程
+        }
+        if(node->right){
+            depth++;
+            travelsal(node->right, depth, ans);
+            depth--; // 回溯的过程
+        }
+    }
+    
+    int findBottomLeftValue(TreeNode* root) {
+        int result = 0;
+        int depth = 1;
+        travelsal(root, depth, result);
+        return result;
+    }
+};
+```
+
+### 从中序与后序遍历序列构造二叉树
++ 从中序与后序遍历序列构造二叉树：[106.从中序与后序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/)
++ 思路：
+	+ 第一步：如果数组大小为零的话，说明是空节点了；
+	+ 第二步：如果不为空，那么取后序数组最后一个元素作为中间节点 `root` ；
+	+ 第三步：判断数组大小是否为 `1`，是的话到达叶子节点，可以直接返回；
+	+ 第四步：找到**后序数组**最后一个元素在**中序数组**的位置索引 `index` ，作为切割点；
+	+ 第五步：分割中序遍历数组，均采用左闭右开，注意迭代器 `inorder.end()` 表示数组中最后一个元素的后一个；
+	+ 第六步：分割后序遍历数组，同样需要想清楚区间；
+	+ 第七步，递归左右子树并返回中间节点 `root` 。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* travelsal(vector<int>& inorder, vector<int>& postorder){
+        // 如果后序数组为空
+        if(postorder.size() == 0)
+            return nullptr;
+        // 后序数组的最后一个节点就是中间节点
+        int rootValue = postorder[postorder.size()-1];
+        TreeNode* root = new TreeNode(rootValue); // 中间节点数值
+        // 到达叶子节点
+        if(postorder.size() == 1)
+            return root;
+        // 找分割数组的索引
+        int index = 0; // 找分割点
+        for(int i=0; i<inorder.size(); i++){
+            if(inorder[i] == rootValue){
+                index = i;
+                break;
+            }
+        }
+        // 分割中序数组
+        // [begin, begin+index)
+        vector<int> leftInorder(inorder.begin(), inorder.begin()+index); 
+        // [begin+index+1, end) end是容器尾部元素的下一位
+        vector<int> rightInorder(inorder.begin()+index+1, inorder.end()); 
+        // 分割后序数组
+        // [begin, begin+index) 
+        vector<int> leftPostorder(postorder.begin(), postorder.begin()+index); 
+        // [begin+index, end-1) end是容器尾部元素的下一位
+        vector<int> rightPostorder(postorder.begin()+index, postorder.end()-1); 
+        // 递归左子树
+        root->left = travelsal(leftInorder, leftPostorder);
+        // 递归右子树
+        root->right = travelsal(rightInorder, rightPostorder);
+        return root;
+    }
+    
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        return travelsal(inorder, postorder);
+    }
+};
+```
+
++ 从中序与前序遍历序列构造二叉树：[105.从中序与前序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/)
++ 思路：与上面的题目思路类似！
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* travelsal(vector<int>& preorder, vector<int>& inorder){
+        // 空节点
+        if(preorder.size() == 0)
+            return nullptr;
+        // 记录先序遍历的第一个节点作为中间节点
+        int rootValue = preorder[0];
+        TreeNode* root = new TreeNode(rootValue);
+        // 到达叶子节点
+        if(preorder.size() == 1)
+            return root;
+        // 从中序遍历中寻找中间节点左右子树的索引
+        int index = 0;
+        for(int i=0; i<inorder.size(); i++){
+            if(inorder[i] == rootValue){
+                index = i;
+                break;
+            }
+        }
+        // 分割中序遍历数组
+        // [begin, begin+index)
+        vector<int> leftInorder(inorder.begin(), inorder.begin()+index);
+        // [begin+index+1, end)
+        vector<int> rightInorder(inorder.begin()+index+1, inorder.end());
+        // 分割前序遍历数组
+        // [begin+1, begin+1+index)
+        vector<int> leftPreorder(preorder.begin()+1, preorder.begin()+1+index);
+        // [begin+1+index, end)
+        vector<int> rightPreorder(preorder.begin()+1+index, preorder.end());
+        // 递归左右子树
+        root->left = travelsal(leftPreorder, leftInorder);
+        root->right = travelsal(rightPreorder, rightInorder);
+        return root;
+    }
+    
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        return travelsal(preorder, inorder);
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
@@ -3177,13 +3391,11 @@ void choose_sort(vector<int>& nums)
 
 ![选择排序的分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510210721.png)
 
-
 ### 冒泡排序
 #### 普通冒泡排序
 + 冒泡排序理论：
 
 ![冒泡排序理论](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510161815.png)
-
 
 + 代码：
 
@@ -3215,7 +3427,6 @@ void bubble_sort(vector<int>& nums)
 + 分析：
 
 ![冒泡排序的分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250510210853.png)
-
 
 ### 插入排序
 #### 普通插入排序
