@@ -3358,6 +3358,100 @@ public:
 };
 ```
 
+### 最大二叉树
++ 最大二叉树：[654.最大二叉树](https://leetcode.cn/problems/maximum-binary-tree/description/)
++ 思路：这道题目与前面一道题目类似，依然采用前序遍历的方式，首先构建根节点然后再递归构建左右子树，需要注意的是需要遍历寻找数组中最大值，然后依据改数值将数组划分为左右两部分，将区间索引传入左右子树的递归中。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 左闭右闭 [left, right]
+    TreeNode* travelsal(const vector<int>& nums, int left, int right){
+        // 终止条件
+        if(right == left){
+            TreeNode* root = new TreeNode(nums[left]);
+            return root;
+        }
+        // 中：找到最大值和索引分为左右子树
+        int maxValue = 0;
+        int index = 0;
+        for(int i=left; i<=right; i++){
+            if(nums[i]>maxValue){
+                maxValue = nums[i];
+                index = i;
+            }
+        }
+        // 以最大值构造根节点
+        TreeNode* root = new TreeNode(maxValue);
+        // 递归左子树
+        if(index > left){
+            root->left = travelsal(nums, left, index-1);
+        }
+        // 递归右子树
+        if(index<right){
+            root->right = travelsal(nums, index+1, right);
+        }
+        return root;
+    }
+    
+    TreeNode* constructMaximumBinaryTree(vector<int>& nums) {
+        return travelsal(nums, 0, nums.size()-1);
+    }
+};
+```
+
+### 合并二叉树
++ 合并二叉树：[617.合并二叉树](https://leetcode.cn/problems/merge-two-binary-trees/description/)
++ 思路：同样采用前序遍历，在 `root1` 的基础上合并二叉树，终止条件为有一个节点为空节点的时候，返回另一个课子树。递归逻辑在于将 `root2` 的数值加到 `root1` 中合并为根节点，然后从根节点出发递归遍历左右子树。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* travelsal(TreeNode* root1, TreeNode* root2){
+        // 终止条件
+        if(root1 == nullptr)
+            return root2;
+        if(root2 == nullptr)
+            return root1;
+        // 中：在root1的基础上加上root2的值
+        root1->val += root2->val;
+        // 遍历左子树
+        root1->left = travelsal(root1->left, root2->left);
+        // 遍历右子树
+        root1->right = travelsal(root1->right, root2->right);
+        return root1;
+    }
+    
+    TreeNode* mergeTrees(TreeNode* root1, TreeNode* root2) {
+        return travelsal(root1, root2);
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
