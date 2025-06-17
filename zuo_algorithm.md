@@ -3452,6 +3452,88 @@ public:
 };
 ```
 
+### 二叉搜索树的搜索
++ 二叉搜索树的搜索：[700.二叉搜索树的搜索](https://leetcode.cn/problems/search-in-a-binary-search-tree/description/)
++ 思路：终止条件为遇到空节点或者找到要搜索的数值，因为该二叉树是二叉搜索树，所以左子树的数值一定小于根节点数值，根节点数值一定小于右子树数值，因此可以选择性地向左右子树进行递归来寻找。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* travelsal(TreeNode* root, int val){
+        // 终止条件
+        if(root == nullptr)
+            return nullptr;
+        if(root->val == val)
+            return root;
+        // 递归遍历左右子树
+        TreeNode* ans = nullptr;
+        if(root->val > val)
+            ans = travelsal(root->left, val);
+        if(root->val < val)
+            ans = travelsal(root->right, val);
+        return ans;
+    }
+    
+    TreeNode* searchBST(TreeNode* root, int val) {
+        return travelsal(root, val);
+    }
+};
+```
+
+### 验证二叉搜索树
++ 验证二叉搜索树：[98.验证二叉搜索树](https://leetcode.cn/problems/validate-binary-search-tree/description/)
++ 思路：要想验证这棵二叉树是否为二叉搜索树，只需要中序遍历该树得到遍历后的元素数组，再验证这个数组是否为升序的即可。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    void inorder(TreeNode* root, vector<int>& arr){
+        // 终止条件
+        if(root == nullptr)
+            return;
+        inorder(root->left, arr);
+        arr.push_back(root->val);
+        inorder(root->right, arr);
+    }
+    
+    bool isValidBST(TreeNode* root) {
+        vector<int> arr;
+        // 中序遍历将二叉搜索树转换为有序数组
+        inorder(root, arr);
+        for(int i=0; i<arr.size()-1; i++){
+             // 注意要小于等于，搜索树里不能有相同元素
+            if(arr[i+1] <= arr[i])
+                return false;
+        }
+        return true;
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
