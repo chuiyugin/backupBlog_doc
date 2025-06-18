@@ -3534,6 +3534,150 @@ public:
 };
 ```
 
+### 二叉搜索树的最小绝对差
++ 二叉搜索树的最小绝对差：[530.二叉搜索树的最小绝对差](https://leetcode.cn/problems/minimum-absolute-difference-in-bst/description/)
++ 两种思路：
+	+ 一是类似上一题验证二叉搜索树的方法利用中序遍历得到升序数组，再遍历数组找出最小差值；
+	+ 二是利用双指针法，只需要采用中序遍历一次二叉搜索树即可，但需要注意一些细节。
++ 思路一代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> result;
+    // 中序遍历
+    void inorder(TreeNode* root){
+        // 终止条件
+        if(root == nullptr)
+            return;
+        // 左
+        inorder(root->left);
+        // 中
+        result.push_back(root->val);
+        // 右
+        inorder(root->right);
+    }
+
+    int getMinimumDifference(TreeNode* root) {
+        // 先进行中序遍历
+        inorder(root);
+        int minValue = INT_MAX;
+        for(int i=0; i<result.size()-1; i++){
+            minValue = min(minValue, result[i+1] - result[i]);
+        }
+        return minValue;
+    }
+};
+```
+
++ 思路二代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int minValue = INT_MAX;
+    // 指向前一个指针
+    TreeNode* pre = nullptr;
+    void travelsal(TreeNode* cur){
+        // 终止条件
+        if(cur == nullptr)
+            return;
+        // 左
+        travelsal(cur->left);
+        // 中
+        if(pre != nullptr)
+            minValue = min(minValue, abs(cur->val - pre->val));
+        // 将pre指针指向cur的前一个
+        pre = cur;
+        // 右
+        travelsal(cur->right);
+    }
+
+    int getMinimumDifference(TreeNode* root) {
+        travelsal(root);
+        return minValue;
+    }
+};
+```
+
+### 二叉搜索树的众数
++ 二叉搜索树的众数：[501.二叉搜索树的众数](https://leetcode.cn/problems/find-mode-in-binary-search-tree/)
++ 思路：这题跟上面一题可以采用双指针法，使用 `cur` 指针指向当前节点，`pre` 指针指向 `cur` 的前一个节点，需要注意一下 `count` 和 `maxCount` 的数值变化和 `result` 数组的处理情况。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int count = 0;
+    int maxCount = 0;
+    vector<int> result;
+    TreeNode* pre = nullptr;
+    void travelsal(TreeNode* cur){
+        // 终止条件
+        if(cur == nullptr)
+            return;
+        // 左
+        travelsal(cur->left);
+        // 中
+        if(pre == nullptr) // 第一个节点
+            count = 1;
+        else if(pre->val == cur->val) // 两个节点数值相同
+            count++;
+        else // 发现新节点数值
+            count = 1;
+        // pre指向cur的前一个节点
+        pre = cur;
+        if(count == maxCount)
+            result.push_back(cur->val);
+        if(count > maxCount){
+            result.clear();
+            maxCount = count;
+            result.push_back(cur->val);
+        }
+        // 右
+        travelsal(cur->right);
+    }
+
+    vector<int> findMode(TreeNode* root) {
+        travelsal(root);
+        return result;
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
