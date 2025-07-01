@@ -3678,6 +3678,55 @@ public:
 };
 ```
 
+### 二叉树的最近公共祖先
++ 二叉树的最近公共祖先：[236.二叉树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/description/)
++ 思路：采用后续遍历，终止条件为遇到空节点就返回 `nullptr`，或者找到了 `p` 或者 `q` 的节点，就返回当前节点 `root` 。然后递归处理左右节点，处理中间节点时有以下判断：
+	+ 左节点和有节点是否都不为为空，该中间节点就是最近公共祖先，返回 `root`。
+	+ 左节点或者右节点其中一个为空另外一个不为空，返回不为空的节点。
+	+ 左右节点都为空，返回空节点。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    // 后续遍历
+    TreeNode* travelsal(TreeNode* root, TreeNode* p, TreeNode* q){
+        // 终止条件
+        if(root == nullptr)
+            return nullptr;
+        if(root == q || root == p)
+            return root;
+        // 左
+        TreeNode* left = travelsal(root->left, p, q);
+        // 右
+        TreeNode* right = travelsal(root->right, p, q);
+        // 中
+        if(left != nullptr && right != nullptr)
+            return root;
+        else if(left == nullptr && right != nullptr)
+            return right;
+        else if(left != nullptr && right == nullptr)
+            return left;
+        else
+            return nullptr;
+    }
+    
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        TreeNode* ans = travelsal(root, p, q);
+        return ans;
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
