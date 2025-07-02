@@ -1699,6 +1699,10 @@ int main(int argc, char* argv[])
 
 ### 进程间通信
 #### 管道 pipe
++ 管道：内核管理的一个数据结构
+	+ 管道需要读端和写端都就绪，`open` 才会返回。
+	+ 当写端写入数据时，`read` 才会返回，否则是阻塞状态。
+	+ 如果写端关闭，读端是可以读到剩余数据，如果数据读完了，读端会读到 `EOF`（`read` 会返回 `0`）；
 + 创建管道：
 
 ![创建管道](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250701193043.png)
@@ -1751,9 +1755,11 @@ int main(int argc, char* argv[])
 ```
 
 #### 有名管道 mkfifo
-+ 管道：内核管理的一个数据结构
++ 有名管道 `mkfifo`：
 	+ 管道需要读端和写端都就绪，`open` 才会返回。
 	+ 当写端写入数据时，`read` 才会返回，否则是阻塞状态。
+	+ 如果写端关闭，读端是可以读到剩余数据，如果数据读完了，读端会读到 `EOF`（`read` 会返回 `0`）；
+	+ 如果读端关闭，往管道写数据，内核发送 `SIGPIPE` 信号。
 
 ![有名管道的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702172701.png)
 
@@ -1936,3 +1942,238 @@ int main(int argc, char* argv[])
     return 0;
 }
 ```
+
++ `select` 系统调用的缺陷：
+	+ 监听的文件描述符的个数是有限的；
+	+ 当 `select` 系统调用返回时，还需要遍历 `fd_set`，找到就绪的文件描述符。
+
+### 信号
+#### 基本概念
++ 信号是内核通知应用程序外部事件的一种机制。
+
+![事件通知机制](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702202437.png)
+
++ 事件源：
+
+![事件源](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702202616.png)
+
++ 内核会感知事件，并给进程发送相应的信号。
+
+![内核会感知事件，并给进程发送相应的信号](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702202714.png)
+
++ 信号的处理方式：
+
+![信号的处理方式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702202807.png)
+
++ 标准信号 1：
+
+![标准信号 1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702202912.png)
+
++ 标准信号 2：
+
+![标准信号 2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702202957.png)
+
+#### 信号的执行流程
++ 注册信号处理函数：
+
+![注册信号处理函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702210529.png)
+
++ 示例代码：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+
+void handler(int signo){
+    switch(signo){
+        case SIGINT:
+            printf("Caught SIGINT\n");
+            break;
+        case SIGTSTP:
+            printf("Caught SIGTSTP\n");
+            break;
+        default:
+            printf("Unknown %d\n", signo);
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    //注册信号处理函数（捕获信号）
+    void (*oldhandler)(int);  // 声明一个函数指针
+    oldhandler = signal(SIGINT, handler);
+    if(oldhandler == SIG_ERR){
+        error(1, errno, "signal %d", SIGINT);
+    }
+    oldhandler = signal(SIGTSTP, handler);
+    if(oldhandler == SIG_ERR){
+        error(1, errno, "signal %d", SIGTSTP);
+    }
+    
+    for(;;){
+    }
+    
+    return 0;
+}
+```
+
++ 信号的处理流程：
+	+ 注册函数是跑在用户态的。
+
+![信号的处理流程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702210656.png)
+
++ 信号的特点：
+	+ 不稳定；
+	+ 异步的（什么时候收到信号是不确定的，收到信号后，会立刻马上执行信号处理函数）；
+	+ 不同心态关于信号的语义也不一样。
+
+#### 注册信号处理函数
++ 注册信号处理函数：
+
+![注册信号处理函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702213625.png)
+
++ 示例代码 1：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+
+int main(int argc, char* argv[])
+{
+    printf("pid = %d\n", getpid());
+
+    // 忽略 SIGINT 信号
+    void (*oldhandler)(int);  // 声明一个函数指针
+    oldhandler = signal(SIGINT, SIG_IGN);
+    if(oldhandler == SIG_ERR){
+        error(1, errno, "signal %d", SIGINT);
+    }
+    sleep(5);
+
+    printf("Wake up\n");
+
+    signal(SIGINT, SIG_DFL);
+
+    for(;;){
+    }
+
+    return 0;
+}
+```
+
++ 示例代码 2：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+
+void handler(int signo){
+    switch(signo){
+        case SIGKILL:
+            printf("Caught SIGKILL\n");
+            break;
+        case SIGSTOP:
+            printf("Caught SIGSTOP\n");
+            break;
+        default:
+            printf("Unknown %d\n", signo);
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    //注册信号处理函数（捕获信号）
+    void (*oldhandler)(int);  // 声明一个函数指针
+    oldhandler = signal(SIGKILL, handler);
+    if(oldhandler == SIG_ERR){
+        error(0, errno, "signal SIGKILL");
+    }
+    oldhandler = signal(SIGSTOP, handler);
+    if(oldhandler == SIG_ERR){
+        error(0, errno, "signal SIGSTOP");
+    }
+
+    for(;;){
+    }
+
+    return 0;
+}
+```
+
+#### 发送信号
++ `kill` 命令：
+
+![kill 命令](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702215628.png)
+
++ `pid` 相关权限和返回值：
+
+![pid 相关权限和返回值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702215753.png)
+
++ 示例代码：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_kill signo pid ...
+    if(argc < 3){
+        error(1, 0, "Usage: %s signo pid ...", argv[0]);
+    }
+
+    int signo;
+    sscanf(argv[1], "%d", &signo);
+
+    for(int i=2; i<argc; i++){
+        pid_t pid;
+        sscanf(argv[i], "%d", &pid);
+        if(kill(pid, signo) == -1){
+            error(0, errno, "kill(%d %d)", pid, signo);
+        }
+    }
+    return 0;
+}
+```
+
+
+
+
+
+
