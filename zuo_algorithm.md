@@ -3727,6 +3727,56 @@ public:
 };
 ```
 
+### 二叉搜索树的最近公共祖先
++ 二叉搜索树的最近公共祖先：[235.二叉搜索树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-search-tree/)
++ 思路：利用二叉搜索树的特性：
+	+ 如果 `p` 和 `q` 的值都小于 `root` 的值，就往左子树搜索；
+	+ 如果 `p` 和 `q` 的值都大于 `root` 的值，就往右子树搜索；
+	+ 如果 `p` 和分别在 `root` 的两端或者 `root` 就是 `p` 和 `q` 中的一个节点，就返回 `root`，`root` 一定是 `p` 和 `q` 的最近公共祖先。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+class Solution {
+public:
+    TreeNode* travelsal(TreeNode* root, TreeNode* p, TreeNode* q){
+        // 终止条件
+        if(root == nullptr)
+            return nullptr;
+        TreeNode* left = nullptr;
+        TreeNode* right = nullptr;
+        // 左
+        if(p->val < root->val && q->val < root->val){
+            left = travelsal(root->left, p, q);
+        }// 右
+        else if(p->val > root->val && q->val > root->val){
+            right = travelsal(root->right, p, q);
+        }
+        // 中
+        if(left != nullptr)
+            return left;
+        else if(right != nullptr)
+            return right;
+        else
+            return root;
+    }
+
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        TreeNode* ans = travelsal(root, p, q);
+        return ans;
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
