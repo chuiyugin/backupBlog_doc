@@ -3866,6 +3866,82 @@ public:
 };
 ```
 
+### 删除二叉搜索树中的节点
++ 删除二叉搜索树中的节点：[450.删除二叉搜索树中的节点](https://leetcode.cn/problems/delete-node-in-a-bst/description/)
++ 思路：
+	+ 终止条件有以下五种情况：
+		+ 第一种情况：没找到删除的节点，遍历到空节点直接返回了；
+		+ 找到删除的节点：
+			+ 第二种情况：左右孩子都为空（叶子节点），直接删除节点，返回 NULL 为根节点；
+			+ 第三种情况：删除节点的左孩子为空，右孩子不为空，删除节点，右孩子补位，返回右孩子为根节点；
+			+ 第四种情况：删除节点的右孩子为空，左孩子不为空，删除节点，左孩子补位，返回左孩子为根节点；
+			+ 第五种情况：左右孩子节点都不为空，则将删除节点的左子树头结点（左孩子）放到删除节点的右子树的最左面节点的左孩子上，返回删除节点右孩子为新的根节点。
+	+ 根据二叉搜索树的规则递归查找 `key` 节点。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* travelsal(TreeNode* root, int key){
+        // 终止条件
+        // 1.没有找到要删除的节点
+        if(root == nullptr){
+            return nullptr;
+        }
+        // 2.删除的是叶子节点
+        else if(key == root->val && root->left == nullptr && root->right == nullptr){
+            delete root;
+            return nullptr;
+        }
+        // 3.删除的节点只有左子树
+        else if(key == root->val && root->left != nullptr && root->right == nullptr){
+            TreeNode* temp_node = root->left;
+            delete root;
+            return temp_node;
+        }
+        // 4.删除的节点只有右子树
+        else if(key == root->val && root->right != nullptr && root->left == nullptr){
+            TreeNode* temp_node = root->right;
+            delete root;
+            return temp_node;
+        }
+        // 5.删除的节点左右子树都不为空,把左子树嫁接到右子树处
+        else if(key == root->val && root->right != nullptr && root->left != nullptr){
+            TreeNode* temp_node = root->right;
+            while(temp_node->left != nullptr){
+                temp_node = temp_node->left;
+            }
+            temp_node->left = root->left;
+            TreeNode* new_root = root->right;
+            delete root;
+            return new_root;
+        }
+        // 递归遍历
+        if(key < root->val)
+            root->left = travelsal(root->left, key);
+        if(key > root->val)
+            root->right = travelsal(root->right, key);
+        return root;
+    }
+
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        TreeNode* ans = travelsal(root, key);
+        return ans;
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
