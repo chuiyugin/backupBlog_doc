@@ -2172,6 +2172,91 @@ int main(int argc, char* argv[])
 }
 ```
 
+#### 线程
++ 线程：一条执行的流程。
+
+![线程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250703174335.png)
+
++ 引入线程：
+	+ 进程是资源分配的最小单位；
+	+ 线程是调度的最小单位；
+	+ 线程共享进程的所有资源。
++ 为什么要引入线程？
+	+ 进程之间的切换（`CPU` 的高速缓存，`TLB` 失效），开销大。用进程中的线程之间切换，开销较小。
+	+ 进程之间通信，需要打破隔离避障，线程之间的通信，开销较小。
+	+ 进程的创建和销毁比较耗时，而线程的创建和销毁要轻量很多。
+##### 线程的基本操作
++ 获取线程的标识：
+
+![获取线程的标识](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250703185042.png)
+
++ 创建线程：
+	+ `pthread` 库设计原则：
+		+ 返回值是 `int` 类型，表示调用成功或失败。
+			+ 成功：`0`；
+			+ 失败：错误码，不会设置 `errno`。
+		+ `thread_t` ：返回时，存放创建线程 `ID`。
+		+ `attr_t` ：线程属性，一般填 `NULL`，表示用默认属性。
+		+ `start_routine` ：线程的入口函数。
+		+ `arg`：线程的入口函数的参数。
+
+![创建线程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250703185116.png)
+
++ 示例代码：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+#include <pthread.h>
+
+void print_ids(const char* prefix){
+    printf("%s: ", prefix);
+    printf("pid = %d, ppid = %d ", getpid(), getppid());
+    printf("tid = %lu\n", pthread_self());
+}
+
+// 子线程的执行流程
+void* start_routine(void* args){
+    print_ids("child_thread");
+    return NULL;
+}
+
+int main(int argc, char* argv[])
+{
+    // 主线程
+    print_ids("main_thread");
+
+    pthread_t tid;
+    int err = pthread_create(&tid, NULL, start_routine, NULL);
+    if(err){
+        error(1, err, "pthread_create");
+    }
+
+    printf("main: new_thread = %lu\n", tid);
+
+    // 注意事项：当主线程终止时，整个进程就终止了
+    sleep(2);
+    return 0;
+}
+```
+
++ 运行结果：
+
+![运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250703185815.png)
+
+
+
+
+
 
 
 

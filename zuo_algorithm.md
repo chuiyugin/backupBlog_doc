@@ -3777,6 +3777,95 @@ public:
 };
 ```
 
+### 二叉搜索树中的插入操作
++ 二叉搜索树中的插入操作：[701.二叉搜索树中的插入操作](https://leetcode.cn/problems/insert-into-a-binary-search-tree/description/)
++ 思路：因为本题是二叉搜索树，并且不限制插入的方式，因此按照二叉搜索树的规则遍历，找到空节点插入即可。这道题采用递归方式和迭代方式都比较方便，同样是按照二叉搜索树的规则往下搜寻得到空间点，再将空节点插入即可。
++ 递归法代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 递归法插入
+    TreeNode* insert(TreeNode* root, int val){
+        // 终止条件
+        if(root == nullptr){
+            root = new TreeNode(val);
+            return root;
+        }
+        // 向左递归
+        if(val < root->val){
+            root->left = insert(root->left, val);
+        }
+        // 向右递归
+        if(val > root->val){
+            root->right = insert(root->right, val);
+        }
+        return root;
+    }
+
+    TreeNode* insertIntoBST(TreeNode* root, int val) {
+        TreeNode* ans = insert(root, val);
+        return ans;
+    }
+};```
+
++ 迭代法代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+	// 迭代法
+    TreeNode* insertIntoBST(TreeNode* root, int val) {
+        TreeNode* cur = root;
+        if(root == nullptr)
+            root = new TreeNode(val);
+        while(cur != nullptr){
+            if(val < cur->val){
+                if(cur->left != nullptr)
+                    cur = cur->left;
+                else{
+                    TreeNode* node = new TreeNode(val);
+                    cur->left = node;
+                    cur = nullptr;
+                }
+            }
+            else if(val > cur->val){
+                if(cur->right != nullptr)
+                    cur = cur->right;
+                else{
+                    TreeNode* node = new TreeNode(val);
+                    cur->right = node;
+                    cur = nullptr;
+                }
+            }
+        }
+        return root;
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
