@@ -487,4 +487,1693 @@ int main(int argc, char* argv[])
 
 ![文件库函数和文件系统调用之间的关系](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250603205358.png)
 
+### 文件描述符和文件流的异同
++ 文件描述符的系统调用与文件流的函数：
+
+![文件描述符的系统调用与文件流的函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250605145014.png)
+
++ 文件描述符和文件流的数据访问流程：
+
+![文件描述符和文件流的数据访问流程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250605145112.png)
+
+### 同步内存中所有已修改的文件数据到储存设备
++ 函数 `fsync()` 同步内存中所有已修改的文件数据到储存设备。
+	+ 将和文件描述符相关联的脏页刷新到磁盘。
+	+ 刷新成功：返回 `0`；
+	+ 刷新失败：返回 `-1` 并设置 `errno`。
+
+![系统调用 fsync()](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250605145633.png)
+
+### 修改文件长度
++ 函数 `ftruncate()` 修改文件长度为 `length` 个字节大小。
++ 用法如下：
+
+![系统调用 ftruncate() 的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250605161558.png)
+
++ 修改文件的长度有两种情况：
+	+ 情况二可能会出现文件空洞的情况，此时数据全为 `0` 的页不会分配磁盘空间。
+
+![修改文件的长度的两种情况](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250605161818.png)
+
++ 使用代码示例：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_ftruncate file length
+    if(argc != 3){
+        error(1, 0, "Usage: %s file length", argv[0]);
+    }
+    
+    off_t length; // 要截断的文件长度
+    sscanf(argv[2], "%ld", &length);
+    
+    int fd = open(argv[1], O_RDWR);
+    if(fd == -1){
+        error(1, errno, "open %s", argv[1]);
+    }
+    
+    if(ftruncate(fd, length) == -1){
+        error(1, errno, "ftruncate %d", fd);
+    } // 截断成功
+    
+    close(fd);
+    
+    return 0;
+}
+```
+
++ 关于文件空洞的测试：
+
+![关于文件空洞的测试](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250605162213.png)
+
+### 获取文件状态信息
++ 函数 `fstat()` 用于获取文件状态信息。
+	+ 获取成功：返回 `0`；
+	+ 获取失败：返回 `-1`，设置 `errno`。
++ 其具体用法和状态信息结构体如下：
+
+![fstat() 的具体用法和状态信息结构体](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250605165212.png)
+
++ 代码示例：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_fstat file
+    if(argc != 2){
+        error(1, 0, "Usage %s file", argv[0]);
+    }
+    
+    int fd = open(argv[1], O_RDONLY);
+    if(fd == -1){
+        error(1, errno, "open %s", argv[1]);
+    }
+    
+    struct stat sb; // 存储文件元数据信息
+    if(fstat(fd, &sb) == -1){
+        error(1, errno, "fstat %d", fd);
+    }
+    
+    // 打印 struct stat 里面的成员信息
+    printf("st_ino=%ld\nst_mode=%lo\nst_nlink=%ld\nst_size=%ld\nst_blocks=%ld\n",
+            (long)sb.st_ino,
+            (long)sb.st_mode,
+            (long)sb.st_nlink,
+            (long)sb.st_size,
+            (long)sb.st_blocks);
+            
+    return 0;
+}
+```
+
++ 打印结果：
+
+![打印结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250605165347.png)
+
+### 文件描述符的复制
++ 系统调用 `dup()` 用于对文件描述符的复制。
+	+ 复制成功：返回新的文件描述符；
+	+ 复制失败：返回 `-1`，设置 `errno`。
++ 其具体用法如下，分为 `dup()` 和 `dup2()` 两个系统调用：
+
+![两个文件描述符系统调用的具体用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250606173642.png)
+
++ 系统调用 `dup()` 的内核管理文件流程：
+
+![系统调用 dup() 的内核管理文件流程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250606174115.png)
+
++ 使用 `dup()` 函数实现重定向：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char* argv[])
+{
+    // 对 stderr 重定向
+    int fd = open("application.log", O_RDWR | O_CREAT | O_APPEND, 0664);
+    if (fd == -1){
+        error(1, errno, "open application.log");
+    }
+    
+    // STDERR_FILENO 标准错误输出的文件描述符
+    write(STDERR_FILENO, "The first error massage\n", 24);
+    
+    //对 stderr 进行重定向
+    close(STDERR_FILENO);
+    dup(fd);
+    
+    write(STDERR_FILENO, "The second error massage\n", 25);
+    
+    return 0;
+}
+```
+
++ 使用 `dup2()` 函数实现重定向：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char* argv[])
+{
+    // 对 stderr 重定向
+    int fd = open("application.log", O_RDWR | O_CREAT | O_APPEND, 0664);
+    if (fd == -1){
+        error(1, errno, "open application.log");
+    }
+    
+    // STDERR_FILENO 标准错误输出的文件描述符
+    write(STDERR_FILENO, "The first error massage\n", 24);
+    
+    //对 stderr 进行重定向
+    //close(STDERR_FILENO);
+    if(dup2(fd, STDERR_FILENO) == -1){
+        error(1, errno, "dup2 %d %d", fd, STDERR_FILENO);
+    }
+    
+    write(STDERR_FILENO, "The second error massage\n", 25);
+    
+    return 0;
+}
+```
+
++ 分别执行完两个代码的运行结果：
+	+ 第一个代码重定向 `STDERR_FILENO` 文件描述符到 `application.log` 文件，写入一段语句；
+	+ 第二个代码同样重定向 `STDERR_FILENO` 文件描述符到 `application.log` 文件，写入一段语句。
+
+![分别执行完两个代码的运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250606174455.png)
+
+### 零拷贝（mmap）
++ 系统调用零拷贝（ `mmap()` ）能够省去内核态和用户态的内存拷贝。
+
+![零拷贝](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202506071540394.png)
+
++ 系统调用零拷贝（ `mmap()` ）的工作原理：
+	+ 相当于将文件的一部分内存通过 `I/O` 操作拷贝到物理内存中，并且内核态和用户态共用这部分内存，不再需要重复拷贝。
+
+![image.png](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202506071542883.png)
+
++ 系统调用零拷贝（ `mmap()` 和 `munmap()` ）的使用方法：
+
+![系统调用零拷贝 mmap() 和 munmap() 的使用方法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202506071600326.png)
+
++ 系统调用零拷贝（ `mmap()` 和 `munmap()` ）的返回值：
+
+![系统调用零拷贝 mmap() 和 munmap() 的返回值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202506071602492.png)
+
++ 系统调用零拷贝（ `mmap()` 和 `munmap()` ）的复制大文件使用场景：
+
+![系统调用零拷贝 mmap() 和 munmap() 的复制大文件使用场景](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202506071651605.png)
+
++ 代码示例：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <sys/mman.h>
+
+// offset 应该是页大小的整数倍
+#define MMAP_SIZE (4096 * 10)
+
+int main(int argc, char *argv[])
+{
+    // ./mmap_cp src dst
+    if (argc != 3){
+        error(1, 0, "Usage: %s src dst", argv[0]);
+    }
+    
+    int srcfd = open(argv[1], O_RDONLY);
+    if (srcfd == -1){
+        error(1, errno, "open %s", argv[1]);
+    }
+    // 需要读写权限
+    int dstfd = open(argv[2], O_RDWR | O_CREAT | O_TRUNC, 0666);
+    if (dstfd == -1){
+        close(srcfd);
+        error(1, errno, "open %s", argv[2]);
+    }
+    // 1.需要事先知道文件大小
+    // 获取src大小
+    struct stat sb;
+    fstat(srcfd, &sb);
+    off_t fsize = sb.st_size;
+    // 将dst文件大小设置为fsize
+    ftruncate(dstfd, fsize); // 目标文件大小需要事先固定
+    // 设置初始偏移量，表示已经复制的数据
+    off_t offset = 0;
+    while (offset < fsize)
+    {
+        // 计算映射区长度
+        off_t length;
+        if (fsize - offset >= MMAP_SIZE)
+            length = MMAP_SIZE;
+        else
+            length = fsize - offset;
+        // 映射
+        void *addr1 = mmap(NULL, length, PROT_READ, MAP_SHARED, srcfd, offset);
+        if (addr1 == MAP_FAILED){
+            error(1, errno, "mmap %s", argv[1]);
+        }
+        
+        void *addr2 = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, dstfd, offset);
+        if (addr2 == MAP_FAILED){
+            error(1, errno, "mmap %s", argv[2]);
+        }
+        // 通过将addr1的内容复制到addr2中实现文件的复制
+        memcpy(addr2, addr1, length);
+        offset += length;
+        // 解除映射
+        int err = munmap(addr1, length);
+        if (err == -1){
+            error(1, errno, "munmap %s", argv[1]);
+        }
+        
+        err = munmap(addr2, length);
+        if (err == -1){
+            error(1, errno, "munmap %s", argv[2]);
+        }
+    } // offset == fsize
+    return 0;
+}
+```
+
+## CPU 的虚拟化
+### 前置知识
++ 内核的职责：管理硬件资源
++ 共享资源的方式：
+	+ 时分共享（CPU）
+	+ 空分共享（内存）
++ 操作系统通过让一个进程运行一段时间，然后切换到其它进程，缺点是会造成性能损失（需要进行上下文切换）。
++ 如何实现 CPU 的时分共享？
+	+ 底层机制：如何进行上下文切换
+	+ 上层策略：调度策略
+
+### 认识进程
++ 用户角度：进程就是正在执行的程序
++ 内核角度：要执行的任务（ `struct task_t` ）
+	+ 进程之间必须隔离，进程之间是相互看不到的，感知不到另外的进程存在。
+	+ 以进程的角度看，就像它独占计算机的所有资源（抽象机制：CPU 的虚拟化）。
++ `xv6` 操作系统的进程相关结构体：
+
+![xv6 操作系统的进程相关结构体](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608162423.png)
+
+### 底层机制：实现上下文切换的三种方式及优缺点
++ 指标：
+	+ 性能：不应该增加太多的系统开销
+	+ 控制权：操作系统应该保留控制权
+
+#### 方式一：直接运行（无限制）
++ 优点：简单、快
++ 缺点：没有控制权、不安全。
+
+![直接运行（无限制）](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608170100.png)
+
++ 如何限制应用程序的权限？
+	+ 不能让用户态应用程序访问非法的内存空间和执行一些特权指令。
+	+ 需要硬件的协助即 CPU 的模态（模式）：
+		+ 用户态：应用程序（不能访问非法的内存空间和执行一些特权指令）
+		+ 内核态：操作系统（可以访问机器的所有资源）
+#### 方式二：受限直接运行协议
++ 应用程序如何执行特权操作？
+	+ 通过系统调用！
+
+![应用程序通过系统调用执行特权操作](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608170707.png)
+
++ 通过特殊指令 `trap` 来切换用户态和内核态：
+	+ 缺点在于控制权不是主动掌握在操作系统上。
+
+![受限直接运行协议](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608171106.png)
+
+#### 方式三：受限直接运行协议（时钟中断）
++ 方式二采用协作（ `yield()` ）的方式，等待系统调用。
++ 方式三采用非协作方式（抢占方式），操作系统能够主动进行控制。
++ 时钟中断的方式：
+
+![时钟中断的方式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608171600.png)
+
++ 受限直接运行协议（时钟中断）：
+
+![受限直接运行协议（时钟中断）](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608171645.png)
+
++ 进程之间是隔离的（感知不到内核和其他进程的存在）。
++ 进程是资源分配的最小单位（任务<-分配资源）。
++ 上下文切换：
+	+ 调用系统调用
+	+ 切换进程
+
+### 和进程相关的常用命令
+#### 显示进程
++ `ps` 命令显示和终端关联的进程：
+
+![ps 命令显示和终端关联的进程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608200539.png)
+
++ `ps x` 显示和用户关联的进程：
+
+![ps x 显示和用户关联的进程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608200642.png)
+
++ `ps aux` 显示所有用户相关的进程：
+
+![ps aux 显示所有用户相关的进程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608200744.png)
+
++ `top` 每 3 秒统计一次进程信息：
+
+![top 每 3 秒统计一次进程信息](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608200852.png)
+
++ `pstree` 打印进程树：
+
+![pstree 打印进程树](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608200946.png)
+
++ 前台进程：
+
+![前台进程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608201022.png)
+
++ 后台进程：
+
+![后台进程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608201050.png)
+
+### 获取进程的标识
++ 获取进程的标识的用法：
+
+![获取进程的标识的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608202024.png)
+
++ 代码示例：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_getpid
+    printf("pid=%d\n",getpid());
+    printf("ppid=%d\n",getppid());
+
+    sleep(10);
+    return 0;
+}
+```
+
++ 运行结果：
+
+![运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608202612.png)
+
+ + `Linux` 进程 `id` 的分配策略：
+
+![image.png](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250608202721.png)
+
+### 进程的基本操作
++ 创建进程：`fork()`
++ 终止进程：`exit()` 、`_exit()`、`abort()`、`wait()`、`waitpid()`
++ 执行程序：`exec` 函数簇
+
+#### 创建进程：fork()
++ 系统调用 `fork()` 的用法：
+
+![系统调用 fork() 的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609155511.png)
+
++ 系统调用 `fork()` 的返回值：
+	+ 成功：
+		+ 父进程：子进程的 `pid`
+		+ 子进程：`0`
+	+ 失败：
+		+ 父进程：`-1`，并且不会创建子进程，设置 `errno`。
+
++ 惯用法代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_fork1 
+    printf("BEGIN:\n");
+    
+    //惯用法
+    //父子进程都是从fork()返回
+    //子进程不会执行前面的代码
+    pid_t pid = fork(); 
+    
+    switch(pid){
+        case -1:
+            //出错
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            printf("I am a baby\n");
+            printf("child:pid = %d, ppid = %d\n", getpid(), getppid());
+            break;
+        default:
+            //父进程
+            printf("Who's your daddy?\n");
+            printf("parent:pid = %d, chilpid = %d\n", getpid(), pid);
+            break;
+    }
+    printf("BYE BYE!\n"); // 父子进程
+    
+    return 0;
+}
+```
+
++ 测试结果：
+	+ 到底是父进程先执行还是子进程先执行是不确定的（不能假定到底是谁先执行）。
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609155956.png)
+
++  系统调用 `fork()` 的原理：
+
+![系统调用 fork() 的原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609160153.png)
+
+##### 代码段：父子进程共享（不能修改）
++ 栈、堆、数据段（父子进程私有）
++ 测试代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+
+int g_value = 10; // 数据段
+
+int main(int argc, char* argv[])
+{
+    // ./test_fork2
+    int l_value = 20; // 栈
+    int* d_value = (int*)malloc(sizeof(int)); // 堆
+    *d_value = 30;
+    
+    //惯用法
+    //父子进程都是从fork()返回
+    //子进程不会执行前面的代码
+    pid_t pid = fork(); 
+    
+    switch(pid){
+        case -1:
+            //出错
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            g_value += 100;
+            l_value += 100;
+            *d_value += 100;
+            printf("g_value = %d, l_value = %d, d_value = %d\n", g_value, l_value, *d_value);
+            exit(0);
+        default:
+            //父进程
+            sleep(2);
+            printf("g_value = %d, l_value = %d, d_value = %d\n", g_value, l_value, *d_value);
+            exit(0);
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609161526.png)
+
+##### 用户态缓冲区（文件流）：父子进程是私有的
+
+![用户态缓冲区（文件流）：父子进程是私有的](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609161723.png)
+
++ 测试代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_fork3
+    printf("BEGIN:"); // stdout是行缓冲区
+    
+    //惯用法
+    //父子进程都是从fork()返回
+    //子进程不会执行前面的代码
+    pid_t pid = fork(); 
+    
+    switch(pid){
+        case -1:
+            //出错
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            printf("I am a baby\n");
+            exit(0);
+        default:
+            //父进程
+            sleep(2);
+            printf("Who's your daddy?\n");
+            exit(0);
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609162127.png)
+
++ 用户缓冲区父子进程私有经典题目一：
+	+ 总共输出 24 个 `a`。
+
+![经典题目一](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609164244.png)
+
++ 用户缓冲区父子进程私有经典题目二：
+	+ 总共输出 14 个 `a`。
+
+![经典题目二](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609164333.png)
+
+##### 打开文件（共享的）、文件描述符列表（私有的）
++ 对于父子进程，打开文件（共享的）、文件描述符列表（私有的）
++ 测试代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_fork4
+    int fd = open("test.txt", O_RDWR | O_CREAT | O_TRUNC, 0666);
+    printf("origin_pos: %ld\n", lseek(fd, 0, SEEK_CUR));
+
+    //惯用法
+    //父子进程都是从fork()返回
+    //子进程不会执行前面的代码
+    pid_t pid = fork(); 
+    int newfd;
+
+    switch(pid){
+        case -1:
+            //出错
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            write(fd, "hello world", 11);
+            printf("child_pos: %ld\n", lseek(fd, 0, SEEK_CUR));
+            close(STDERR_FILENO);
+
+            newfd = dup(fd); // newfd = 2
+            printf("child_newfd = %d\n", newfd);
+            exit(0);
+        default:
+            //父进程
+            sleep(2);
+            printf("parent_pos: %ld\n", lseek(fd, 0, SEEK_CUR));
+            newfd = dup(fd); // newfd = 4
+            printf("parent_newfd = %d\n", newfd);
+            exit(0);
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609165658.png)
+
+#### 终止进程
++ 基本概念：
+
+![终止进程的基本概念](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609170714.png)
+##### 正常终止
++ 库函数 `exit()` 的步骤以及系统调用 `atexit()` 的用法和返回值：
+
+![库函数 exit() 的步骤和返回值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609180501.png)
+
++ 示例代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+//执行一些资源清理操作
+void func(void){
+    printf("Something going to die...");
+}
+
+int main(int argc, char* argv[])
+{
+    // ./test_exit
+    // 调用atexit()注册函数
+    int err = atexit(func); // 仅注册，不会执行func函数
+    if(err != 0){
+        error(1, 0, "atexit()");
+    }
+    
+    //正常执行程序...
+    printf("Hello world");
+    
+    exit(123); //前面分析的执行exit函数后第一步执行atexit()注册的func函数
+    
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609181435.png)
+
++ 系统调用 `_exit()` 的用法：
+	+ 退出状态码传至操作系统。
+
+![系统调用 _exit() 的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609181614.png)
+
++ 测试程序：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+//执行一些资源清理操作
+void func(void){
+    printf("Something going to die...");
+}
+
+int main(int argc, char* argv[])
+{
+    // ./test_exit
+    // 调用atexit()注册函数
+    int err = atexit(func);
+    if(err != 0){
+        error(1, 0, "atexit()");
+    }
+    
+    //正常执行程序...
+    printf("Hello world");
+    
+    _exit(123);
+    
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609181901.png)
+
+##### 异常终止
++ 系统调用 `abort()` 的用法：
+
+![系统调用 abort() 的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609182101.png)
+
++ 测试代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+//执行一些资源清理操作
+void func(void){
+    printf("Something going to die...");
+}
+
+int main(int argc, char* argv[])
+{
+    // ./test__exit
+    // 调用atexit()注册函数
+    int err = atexit(func);
+    if(err != 0){
+        error(1, 0, "atexit()");
+    }
+    
+    //正常执行程序...
+    printf("Hello world");
+    
+    abort();
+    
+    printf("You can't see me!!!");
+    
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609182315.png)
+
++ 内核给该进程发送 `SIGABRT` 信号
+
+![内核给该进程发送 SIGABRT 信号](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250609182437.png)
+
+### 孤儿进程和僵尸进程
++ 孤儿进程：子进程存活，父进程终止了
++ 测试代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char* argv[])
+{
+    // ./orphen
+    pid_t pid = fork();
+    switch(pid){
+        case -1:
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            sleep(2);
+            printf("pid = %d, ppid = %d\n", getpid(), getppid());
+            exit(0);
+        default:
+            //父进程
+            printf("Parent: pid = %d, childpid = %d\n", getpid(), pid);
+            exit(0);
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![僵尸进程测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610164343.png)
+
++ 分析：孤儿进程会被 `1` 号进程（`init` 进程）收养，该进程一直循环执行 `wait` 函数。
+
+![孤儿进程分析](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610164541.png)
+
++ 僵尸进程：子进程死亡时，有一些信息会保存在内核（`pid` 、退出状态、CPU 时间......），方便父进程以后查看这个信息，并且给父进程发送 `SIGCHLD` 信号，但父进程默认会忽略信号。
+	+ 如何给僵尸进程收尸：`wait`、`waitpid`。
+
+#### wait()
++ 系统调用 `wait()` 的用法和返回值：
+
+![系统调用 wait() 的用法和返回值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610165007.png)
+
++ 测试程序：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+void print_wstatus(int status){
+    if(WIFEXITED(status)){
+        int exit_code = WEXITSTATUS(status);
+        printf("exit_code = %d", exit_code);
+    }
+    else if(WIFSIGNALED(status)){
+        int signo = WTERMSIG(status);
+        printf("term_sig = %d", signo);
+    }
+#ifdef WCOREDUMP
+    if(WCOREDUMP(status)){
+        printf(" (core dump) ");
+    }
+#endif
+    printf("\n");
+}
+
+int main(int argc, char* argv[])
+{
+    pid_t pid = fork();
+    switch(pid){
+        case -1:
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            printf("CHILD: pid = %d\n", getpid());
+            return 123;
+        default:
+            //父进程
+            int status; // 保存子进程的终止状态信息，位图。
+            pid_t childPid = wait(&status); // 阻塞点：一直等待，直到有子进程终止
+            if(childPid > 0){
+                printf("PARENT: %d terminated\n", childPid);
+                print_wstatus(status);
+            }
+            exit(0);
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610172230.png)
+
+#### waitpid()
++ 系统调用 `waitpid()` 的用法：
+
+![系统调用 waitpid() 的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610180607.png)
+
++ 系统调用 `waitpid()` 的返回值：
+
+![系统调用 waitpid() 的返回值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610180707.png)
+
++ 测试程序：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+void print_wstatus(int status){
+    if(WIFEXITED(status)){
+        int exit_code = WEXITSTATUS(status);
+        printf("exit_code = %d", exit_code);
+    }
+    else if(WIFSIGNALED(status)){
+        int signo = WTERMSIG(status);
+        printf("term_sig = %d", signo);
+    }
+#ifdef WCOREDUMP
+    if(WCOREDUMP(status)){
+        printf(" (core dump) ");
+    }
+#endif
+    printf("\n");
+}
+
+int main(int argc, char* argv[])
+{
+    pid_t pid = fork();
+    switch(pid){
+        case -1:
+            error(1, errno, "fork");
+        case 0:
+            //子进程
+            printf("CHILD: pid = %d\n", getpid());
+            return 123;
+        default:
+            //父进程
+            int status; // 保存子进程的终止状态信息，位图。
+            pid_t childPid = waitpid(-1, &status, WNOHANG); // 阻塞点：一直等待，直到有子进程终止
+            if(childPid > 0){
+                printf("PARENT: %d terminated\n", childPid);
+                print_wstatus(status);
+            }
+            else if(childPid == 0){
+                printf("PARENT: no child changed state!\n");
+            }
+            else{
+                error(1, 0, "waitpid");
+            }
+            exit(0);
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250610181037.png)
+
+### exec 函数簇
+#### 环境变量 env 的定义：
+
+![环境变量 env 的内容](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250611190306.png)
+
++ 打印环境变量 `env` 测试程序：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_environ
+    // 打印进程的pid
+    printf("pid = %d, ppid = %d\n", getpid(), getppid());
+    
+    // 打印命令行参数
+    for(int i=0; i<argc; i++){
+        puts(argv[i]);
+    }
+    printf("-----------------------------\n");
+    // 打印环境变量
+    // 声明外部变量(引用其它文件定义的environ变量)
+    extern char** environ; 
+    char** cur = environ;
+    while(*cur){
+        puts(*cur);
+        cur++;
+    }
+    return 0;
+}
+```
+
++ 测试结果：
+
+![打印环境变量测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250611190428.png)
+
+#### exec 函数簇
++ `exec` 函数簇的用法：
+
+![exec 函数簇的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250611190641.png)
+
++ `exec` 函数簇的测试程序：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+
+// 定义新的环境变量
+char* const new_env[] = {"USER=yugin", "TEST=0123", NULL};
+// 使用execv函数簇的命令行参数向量
+char* const args[] = {"./test_environ", "aaa", "bbb", "ccc", NULL};
+
+int main(int argc, char* argv[])
+{
+    // ./test_exce
+    // 打印进程的pid
+    printf("pid = %d, ppid = %d\n", getpid(), getppid());
+    
+    printf("BEGIN:\n");
+
+    //execl("test_environ", "./test_environ", "aaa", "bbb", "ccc", NULL);
+    //p:会根据path环境变量查找可执行程序
+    //execlp("test_environ", "./test_environ", "aaa", "bbb", "ccc", NULL);
+    execle("test_environ", "./test_environ", "aaa", "bbb", "ccc", NULL, new_env);
+    //execv("test_environ", args);
+    //p:会根据path环境变量查找可执行程序
+    //execvp("test_environ", args);
+    //execve("test_environ", args, new_env);
+
+	printf("You cannot see here!");
+    error(1, errno, "exce");
+
+    return 0;
+}
+```
+
++ 测试结果：
+
+![exce 函数簇测试结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250611193253.png)
+
++ `exec` 现象和原理：
+	+ 从上图可以看到，`pid` 和 `ppid` 没有改变，因此没有创建新的进程，并且在新的可执行程序 `mian` 函数的第一行开始执行。
+	+ 原理在于：
+		+ 执行 `exec` 函数簇会清除进程的代码段、数据段、堆、栈、上下文；
+		+ 加载新的可执行程序（设置代码段、数据段）；
+		+ 从新的可执行程序 `mian` 函数的第一行开始执行。
++ 清除进程的代码段、数据段、堆、栈、上下文如下图所示：
+
+![清除进程的代码段、数据段、堆、栈、上下文](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250611194231.png)
+
+#### system 的实现和惯用法
++ `system()` 系统调用的用法：
+
+![system() 系统调用的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250612161213.png)
+
++ 简易 `system()` 的实现代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int simple_system(const char* command){
+    pid_t childPid = fork();
+    int status;
+
+    switch(childPid){
+        case -1: // 出错
+            return -1;
+        case 0:
+            execl("/bin/sh", "sh", "-c", command, NULL);
+            _exit(127); // 出错了直接退出，避免stdout输出两次
+        default:
+            if(waitpid(childPid, &status, 0) == -1){
+                return -1;
+            }
+            else{
+                return status;
+            }
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    // ./test_system
+    simple_system("ls");
+    return 0;
+}
+```
+
++ 惯用法说明：
+
+![惯用法说明](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250612161400.png)
+
+#### Simple_shell 的实现
++ 使用 `exec` 函数簇实现建议 `shell`：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+
+#define MAXLINE 1024
+#define MAXRGS 128
+
+void print_wstatus(int status){
+    if(WIFEXITED(status)){
+        int exit_code = WEXITSTATUS(status);
+        printf("exit_code = %d", exit_code);
+    }
+    else if(WIFSIGNALED(status)){
+        int signo = WTERMSIG(status);
+        printf("term_sig = %d", signo);
+    }
+#ifdef WCOREDUMP
+    if(WCOREDUMP(status)){
+        printf(" (core dump) ");
+    }
+#endif
+    printf("\n");
+}
+
+// 解析命令行参数
+void parse_parameters(char* message, char* argv[]){
+    int i=0;
+    argv[i] = strtok(message, " \t\n");
+    while(argv[i] != NULL){
+        i++;
+        argv[i] = strtok(NULL, " \t\n");
+    } // argv[i] == NULL
+}
+
+int main(int argc, char* argv[])
+{
+    char cmd[MAXLINE];
+    char* parameters[MAXRGS];
+
+    int status;
+
+    for(;;){
+        // 读取用户命令
+        printf("Simple_shell > ");
+        fgets(cmd, MAXLINE, stdin);
+        // 如果cmd是exit，终止程序
+        if(strcmp(cmd, "exit\n") == 0){
+            exit(0);
+        }
+        // 创建子进程，让子进程执行命令
+        pid_t pid = fork();
+
+        switch(pid){
+            case -1:
+                error(1, errno, "fork");
+            case 0: // 子进程
+                // 解析命令行参数
+                parse_parameters(cmd, parameters);
+                if(execvp(parameters[0], parameters) == -1){
+                    error(1, errno, "exevp");
+                }
+                break;
+            default:
+                if(waitpid(pid, &status, 0) == -1){
+                    error(1, errno, "waitpid");
+                }
+                // 打印子进程的终止信息
+                printf("%d terminated\n", pid);
+                print_wstatus(status);
+        }
+    }
+    return 0;
+}
+```
+
+### 进程间通信
+#### 管道 pipe
++ 管道：内核管理的一个数据结构
+	+ 管道需要读端和写端都就绪，`open` 才会返回。
+	+ 当写端写入数据时，`read` 才会返回，否则是阻塞状态。
+	+ 如果写端关闭，读端是可以读到剩余数据，如果数据读完了，读端会读到 `EOF`（`read` 会返回 `0`）；
++ 创建管道：
+
+![创建管道](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250701193043.png)
+
++ 进程间管道通信惯用法：
+	+ 先 `pipe`
+	+ 再 `fork`
+	+ 父进程关闭管道一端
+	+ 子进程关闭管道的另一端
+
+![进程间管道通信惯用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250701193221.png)
+
++ 代码：
+
+```c
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+
+#define MAXLINE 1024
+
+int main(int argc, char* argv[])
+{
+    // 先创建管道pipe
+    int fields[2]; // fields[0]读端、fields[1]写端
+    if(pipe(fields) == -1)
+        error(1, errno, "pipe");
+    // 再fork
+    pid_t pid = fork();
+    switch(pid){
+        case -1:
+            error(1, errno, "fork");
+        case 0: // 子进程
+            close(fields[1]);
+            char message[MAXLINE];
+            read(fields[0], message, MAXLINE);
+            printf("child: %s",message);
+            break;
+        default: // 父进程
+            close(fields[0]);
+            sleep(5); // 管道为空会阻塞子进程
+            write(fields[1], "This is parent!\n", 16+1); // +1 for '\0'
+    }
+    return 0;
+}
+```
+
+#### 有名管道 mkfifo
++ 有名管道 `mkfifo`：
+	+ 管道需要读端和写端都就绪，`open` 才会返回。
+	+ 当写端写入数据时，`read` 才会返回，否则是阻塞状态。
+	+ 如果写端关闭，读端是可以读到剩余数据，如果数据读完了，读端会读到 `EOF`（`read` 会返回 `0`）；
+	+ 如果读端关闭，往管道写数据，内核发送 `SIGPIPE` 信号。
+
+![有名管道的用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702172701.png)
+
+#### 五种 I/O 模型
++ 五种 `I/O` 模型:
+
+![五种 I/O 模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702173022.png)
+
+#### 多路 I/O 复用
+##### select 系统调用
++ `select` 系统调用用法：
+	+ 作用：将多个阻塞点变成一个阻塞点！
+
+![select 系统调用用法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702173423.png)
+
++ `select` 系统调用参数：
+
+![select 系统调用参数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702173648.png)
+
++ `select` 系统调用详细参数和使用方法：
+
+![select 系统调用详细参数和使用方法](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702173850.png)
+
++ `select` 系统调用工作原理：
+
+![select 系统调用工作原理](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702174025.png)
+
++ 使用 `select` 系统调用实现点对点聊天系统：
+	+ 需要注意的点：如果一方将管道写端关闭了，`read` 系统调用会一直读，但返回值是 0，即读到 0 个 Bytes。
++ 用户 1 代码：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+
+#define MAXLINE 1024
+
+int main(int argc, char* argv[])
+{
+    int fd1 = open("./pipe1", O_WRONLY);
+    if(fd1 == -1){
+        error(1, errno, "open pipe1");
+    }
+    int fd2 = open("./pipe2", O_RDONLY);
+    if(fd2 == -1){
+        error(1, errno, "open pipe2");
+    }
+    printf("Established!\n");
+
+    char recvline[MAXLINE];
+    char sendline[MAXLINE];
+
+    fd_set mainfds; //局部变量，1024的位图
+    FD_ZERO(&mainfds); //将所有位置都置为0
+    // 将感兴趣的文件描述符加入到mainfds中
+    FD_SET(STDIN_FILENO, &mainfds);
+    int max_fds = STDIN_FILENO;
+    FD_SET(fd2, &mainfds);
+    if(fd2 > max_fds){
+        max_fds = fd2;
+    }
+
+    for(;;){
+        fd_set readfds = mainfds; // 结构体的复制
+        int events = select(max_fds+1, &readfds, NULL, NULL, NULL);
+        switch(events){
+        case -1: 
+            error(1, errno, "select");
+        case 0:
+            //超时
+            printf("TIMEOUT");
+            continue;
+        default:
+            // STDIN_FILENO 就绪
+            if(FD_ISSET(STDIN_FILENO, &readfds)){
+                // 一定不会阻塞
+                fgets(sendline, MAXLINE, stdin);
+                write(fd1, sendline, strlen(sendline)+1); // +1 for '\0'
+            }
+            //fd2 就绪
+            if(FD_ISSET(fd2, &readfds)){
+                // 一定不会阻塞
+                int nbytes = read(fd2, recvline, MAXLINE);
+                if(nbytes == 0) // 管道写端关闭了
+                    goto end;
+                else if(nbytes == -1)
+                    error(1, errno, "read pipe2");
+                printf("From p2: %s", recvline);
+            }
+        }
+    }
+    end:
+        close(fd1);
+        close(fd2);
+    return 0;
+}
+```
+
++ 用户 2 代码：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+
+#define MAXLINE 1024
+
+int main(int argc, char* argv[])
+{
+    int fd1 = open("./pipe1", O_RDONLY);
+    if(fd1 == -1){
+        error(1, errno, "open pipe1");
+    }
+    int fd2 = open("./pipe2", O_WRONLY);
+    if(fd2 == -1){
+        error(1, errno, "open pipe2");
+    }
+    printf("Established!\n");
+
+    char recvline[MAXLINE];
+    char sendline[MAXLINE];
+
+    fd_set mainfds; //局部变量，1024的位图
+    FD_ZERO(&mainfds); //将所有位置都置为0
+    // 将感兴趣的文件描述符加入到mainfds中
+    FD_SET(STDIN_FILENO, &mainfds);
+    int max_fds = STDIN_FILENO;
+    FD_SET(fd1, &mainfds);
+    if(fd1 > max_fds){
+        max_fds = fd2;
+    }
+
+    for(;;){
+        fd_set readfds = mainfds; // 结构体的复制
+        int events = select(max_fds+1, &readfds, NULL, NULL, NULL);
+        switch(events){
+        case -1: 
+            error(1, errno, "select");
+        case 0:
+            //超时
+            printf("TIMEOUT");
+            continue;
+        default:
+            // STDIN_FILENO 就绪
+            if(FD_ISSET(STDIN_FILENO, &readfds)){
+                // 一定不会阻塞
+                fgets(sendline, MAXLINE, stdin);
+                write(fd2, sendline, strlen(sendline)+1); // +1 for '\0'
+            }
+            //fd1 就绪
+            if(FD_ISSET(fd1, &readfds)){
+                // 一定不会阻塞
+                int nbytes = read(fd1, recvline, MAXLINE);
+                if(nbytes == 0) // 管道写端关闭了
+                    goto end;
+                else if(nbytes == -1)
+                    error(1, errno, "read pipe1");
+                printf("From p1: %s", recvline);
+            }
+        }
+    }
+    end:
+        close(fd1);
+        close(fd2);
+    return 0;
+}
+```
+
++ `select` 系统调用的缺陷：
+	+ 监听的文件描述符的个数是有限的；
+	+ 当 `select` 系统调用返回时，还需要遍历 `fd_set`，找到就绪的文件描述符。
+
+### 信号
+#### 基本概念
++ 信号是内核通知应用程序外部事件的一种机制。
+
+![事件通知机制](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702202437.png)
+
++ 事件源：
+
+![事件源](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702202616.png)
+
++ 内核会感知事件，并给进程发送相应的信号。
+
+![内核会感知事件，并给进程发送相应的信号](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702202714.png)
+
++ 信号的处理方式：
+
+![信号的处理方式](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702202807.png)
+
++ 标准信号 1：
+
+![标准信号 1](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702202912.png)
+
++ 标准信号 2：
+
+![标准信号 2](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702202957.png)
+
+#### 信号的执行流程
++ 注册信号处理函数：
+
+![注册信号处理函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702210529.png)
+
++ 示例代码：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+
+void handler(int signo){
+    switch(signo){
+        case SIGINT:
+            printf("Caught SIGINT\n");
+            break;
+        case SIGTSTP:
+            printf("Caught SIGTSTP\n");
+            break;
+        default:
+            printf("Unknown %d\n", signo);
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    //注册信号处理函数（捕获信号）
+    void (*oldhandler)(int);  // 声明一个函数指针
+    oldhandler = signal(SIGINT, handler);
+    if(oldhandler == SIG_ERR){
+        error(1, errno, "signal %d", SIGINT);
+    }
+    oldhandler = signal(SIGTSTP, handler);
+    if(oldhandler == SIG_ERR){
+        error(1, errno, "signal %d", SIGTSTP);
+    }
+    
+    for(;;){
+    }
+    
+    return 0;
+}
+```
+
++ 信号的处理流程：
+	+ 注册函数是跑在用户态的。
+
+![信号的处理流程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702210656.png)
+
++ 信号的特点：
+	+ 不稳定；
+	+ 异步的（什么时候收到信号是不确定的，收到信号后，会立刻马上执行信号处理函数）；
+	+ 不同心态关于信号的语义也不一样。
+
+#### 注册信号处理函数
++ 注册信号处理函数：
+
+![注册信号处理函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702213625.png)
+
++ 示例代码 1：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+
+int main(int argc, char* argv[])
+{
+    printf("pid = %d\n", getpid());
+
+    // 忽略 SIGINT 信号
+    void (*oldhandler)(int);  // 声明一个函数指针
+    oldhandler = signal(SIGINT, SIG_IGN);
+    if(oldhandler == SIG_ERR){
+        error(1, errno, "signal %d", SIGINT);
+    }
+    sleep(5);
+
+    printf("Wake up\n");
+
+    signal(SIGINT, SIG_DFL);
+
+    for(;;){
+    }
+
+    return 0;
+}
+```
+
++ 示例代码 2：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+
+void handler(int signo){
+    switch(signo){
+        case SIGKILL:
+            printf("Caught SIGKILL\n");
+            break;
+        case SIGSTOP:
+            printf("Caught SIGSTOP\n");
+            break;
+        default:
+            printf("Unknown %d\n", signo);
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    //注册信号处理函数（捕获信号）
+    void (*oldhandler)(int);  // 声明一个函数指针
+    oldhandler = signal(SIGKILL, handler);
+    if(oldhandler == SIG_ERR){
+        error(0, errno, "signal SIGKILL");
+    }
+    oldhandler = signal(SIGSTOP, handler);
+    if(oldhandler == SIG_ERR){
+        error(0, errno, "signal SIGSTOP");
+    }
+
+    for(;;){
+    }
+
+    return 0;
+}
+```
+
+#### 发送信号
++ `kill` 命令：
+
+![kill 命令](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702215628.png)
+
++ `pid` 相关权限和返回值：
+
+![pid 相关权限和返回值](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250702215753.png)
+
++ 示例代码：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+
+int main(int argc, char* argv[])
+{
+    // ./test_kill signo pid ...
+    if(argc < 3){
+        error(1, 0, "Usage: %s signo pid ...", argv[0]);
+    }
+
+    int signo;
+    sscanf(argv[1], "%d", &signo);
+
+    for(int i=2; i<argc; i++){
+        pid_t pid;
+        sscanf(argv[i], "%d", &pid);
+        if(kill(pid, signo) == -1){
+            error(0, errno, "kill(%d %d)", pid, signo);
+        }
+    }
+    return 0;
+}
+```
+
+
+
+
+
 
