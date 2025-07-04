@@ -3942,6 +3942,96 @@ public:
 };
 ```
 
+### 修剪二叉搜索树
++ 修剪二叉搜索树：[669.修剪二叉搜索树](https://leetcode.cn/problems/trim-a-binary-search-tree/)
++ 思路：
+	+ 在终止条件中处理 `root` 节点：
+		+ 遍历到 `root` 节点为空的情况则返回空；
+		+ 如果 `root` 节点的值小于下限值则继续往右子树遍历查找是否有不在区间的值；
+		+ 如果 `root` 节点的值大于下限值则继续往左子树遍历查找是否有不在区间的值。
+	+ 之后 `root` 节点在区间内，再递归处理左右孩子不在区间内的节点。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 返回处理好子树的根节点
+    TreeNode* travelsal(TreeNode* root, int low, int high){
+        // 终止条件(处理root节点，root节点不在区间内)
+        if(root == nullptr)
+            return root;
+        if(root->val < low){
+            TreeNode* root_right = root->right;
+            return travelsal(root->right, low, high);
+        }
+        if(root->val > high){
+            return travelsal(root->left, low, high);
+        }
+        // 之后root节点在区间内，处理左右孩子不在区间内的节点
+        // 左
+        root->left = travelsal(root->left, low, high);
+        // 右
+        root->right = travelsal(root->right, low, high);
+        return root;
+    }
+
+    TreeNode* trimBST(TreeNode* root, int low, int high) {
+        TreeNode* ans = travelsal(root, low, high);
+        return ans;
+    }
+};
+```
+
+### 将有序数组转换为二叉搜索树
++ 将有序数组转换为二叉搜索树：[108.将有序数组转换为二叉搜索树](https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/description/)
++ 思路：题目中给出的是按照升序排列的整数数组，只需要每次递归选取数组的中间数值作为根节点 `root`，递归数组左边作为左子树，数组右边作为右子树进行构造即可。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 左闭右闭区间
+    TreeNode* travelsal(vector<int>& nums, int left, int right){
+        // 终止条件
+        if(left > right)
+            return nullptr;
+        // 递归构造子树
+        int mid = left + (right - left)/2;
+        TreeNode* root = new TreeNode(nums[mid]);
+        root->left = travelsal(nums, left, mid-1);
+        root->right = travelsal(nums, mid+1, right);
+        return root;
+    }
+
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        TreeNode* ans = travelsal(nums, 0, nums.size()-1);
+        return ans;
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
