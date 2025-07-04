@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "0edc808bdabaac2f",
@@ -208,9 +207,9 @@
   "active": "a9eade74042ea9b5",
   "lastOpenFiles": [
     "linux_program.md",
-    "new_function.md",
-    "zuo_algorithm.md",
     "linux_learning.md",
+    "zuo_algorithm.md",
+    "new_function.md",
     "houjie_cpp.md",
     "Josephus.md",
     "5g_1.md",

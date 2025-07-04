@@ -3233,6 +3233,845 @@ public:
 };
 ```
 
+### 从中序与后序遍历序列构造二叉树
++ 从中序与后序遍历序列构造二叉树：[106.从中序与后序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/)
++ 思路：
+	+ 第一步：如果数组大小为零的话，说明是空节点了；
+	+ 第二步：如果不为空，那么取后序数组最后一个元素作为中间节点 `root` ；
+	+ 第三步：判断数组大小是否为 `1`，是的话到达叶子节点，可以直接返回；
+	+ 第四步：找到**后序数组**最后一个元素在**中序数组**的位置索引 `index` ，作为切割点；
+	+ 第五步：分割中序遍历数组，均采用左闭右开，注意迭代器 `inorder.end()` 表示数组中最后一个元素的后一个；
+	+ 第六步：分割后序遍历数组，同样需要想清楚区间；
+	+ 第七步，递归左右子树并返回中间节点 `root` 。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* travelsal(vector<int>& inorder, vector<int>& postorder){
+        // 如果后序数组为空
+        if(postorder.size() == 0)
+            return nullptr;
+        // 后序数组的最后一个节点就是中间节点
+        int rootValue = postorder[postorder.size()-1];
+        TreeNode* root = new TreeNode(rootValue); // 中间节点数值
+        // 到达叶子节点
+        if(postorder.size() == 1)
+            return root;
+        // 找分割数组的索引
+        int index = 0; // 找分割点
+        for(int i=0; i<inorder.size(); i++){
+            if(inorder[i] == rootValue){
+                index = i;
+                break;
+            }
+        }
+        // 分割中序数组
+        // [begin, begin+index)
+        vector<int> leftInorder(inorder.begin(), inorder.begin()+index); 
+        // [begin+index+1, end) end是容器尾部元素的下一位
+        vector<int> rightInorder(inorder.begin()+index+1, inorder.end()); 
+        // 分割后序数组
+        // [begin, begin+index) 
+        vector<int> leftPostorder(postorder.begin(), postorder.begin()+index); 
+        // [begin+index, end-1) end是容器尾部元素的下一位
+        vector<int> rightPostorder(postorder.begin()+index, postorder.end()-1); 
+        // 递归左子树
+        root->left = travelsal(leftInorder, leftPostorder);
+        // 递归右子树
+        root->right = travelsal(rightInorder, rightPostorder);
+        return root;
+    }
+    
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        return travelsal(inorder, postorder);
+    }
+};
+```
+
++ 从中序与前序遍历序列构造二叉树：[105.从中序与前序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/)
++ 思路：与上面的题目思路类似！
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* travelsal(vector<int>& preorder, vector<int>& inorder){
+        // 空节点
+        if(preorder.size() == 0)
+            return nullptr;
+        // 记录先序遍历的第一个节点作为中间节点
+        int rootValue = preorder[0];
+        TreeNode* root = new TreeNode(rootValue);
+        // 到达叶子节点
+        if(preorder.size() == 1)
+            return root;
+        // 从中序遍历中寻找中间节点左右子树的索引
+        int index = 0;
+        for(int i=0; i<inorder.size(); i++){
+            if(inorder[i] == rootValue){
+                index = i;
+                break;
+            }
+        }
+        // 分割中序遍历数组
+        // [begin, begin+index)
+        vector<int> leftInorder(inorder.begin(), inorder.begin()+index);
+        // [begin+index+1, end)
+        vector<int> rightInorder(inorder.begin()+index+1, inorder.end());
+        // 分割前序遍历数组
+        // [begin+1, begin+1+index)
+        vector<int> leftPreorder(preorder.begin()+1, preorder.begin()+1+index);
+        // [begin+1+index, end)
+        vector<int> rightPreorder(preorder.begin()+1+index, preorder.end());
+        // 递归左右子树
+        root->left = travelsal(leftPreorder, leftInorder);
+        root->right = travelsal(rightPreorder, rightInorder);
+        return root;
+    }
+    
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        return travelsal(preorder, inorder);
+    }
+};
+```
+
+### 最大二叉树
++ 最大二叉树：[654.最大二叉树](https://leetcode.cn/problems/maximum-binary-tree/description/)
++ 思路：这道题目与前面一道题目类似，依然采用前序遍历的方式，首先构建根节点然后再递归构建左右子树，需要注意的是需要遍历寻找数组中最大值，然后依据改数值将数组划分为左右两部分，将区间索引传入左右子树的递归中。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 左闭右闭 [left, right]
+    TreeNode* travelsal(const vector<int>& nums, int left, int right){
+        // 终止条件
+        if(right == left){
+            TreeNode* root = new TreeNode(nums[left]);
+            return root;
+        }
+        // 中：找到最大值和索引分为左右子树
+        int maxValue = 0;
+        int index = 0;
+        for(int i=left; i<=right; i++){
+            if(nums[i]>maxValue){
+                maxValue = nums[i];
+                index = i;
+            }
+        }
+        // 以最大值构造根节点
+        TreeNode* root = new TreeNode(maxValue);
+        // 递归左子树
+        if(index > left){
+            root->left = travelsal(nums, left, index-1);
+        }
+        // 递归右子树
+        if(index<right){
+            root->right = travelsal(nums, index+1, right);
+        }
+        return root;
+    }
+    
+    TreeNode* constructMaximumBinaryTree(vector<int>& nums) {
+        return travelsal(nums, 0, nums.size()-1);
+    }
+};
+```
+
+### 合并二叉树
++ 合并二叉树：[617.合并二叉树](https://leetcode.cn/problems/merge-two-binary-trees/description/)
++ 思路：同样采用前序遍历，在 `root1` 的基础上合并二叉树，终止条件为有一个节点为空节点的时候，返回另一个课子树。递归逻辑在于将 `root2` 的数值加到 `root1` 中合并为根节点，然后从根节点出发递归遍历左右子树。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* travelsal(TreeNode* root1, TreeNode* root2){
+        // 终止条件
+        if(root1 == nullptr)
+            return root2;
+        if(root2 == nullptr)
+            return root1;
+        // 中：在root1的基础上加上root2的值
+        root1->val += root2->val;
+        // 遍历左子树
+        root1->left = travelsal(root1->left, root2->left);
+        // 遍历右子树
+        root1->right = travelsal(root1->right, root2->right);
+        return root1;
+    }
+    
+    TreeNode* mergeTrees(TreeNode* root1, TreeNode* root2) {
+        return travelsal(root1, root2);
+    }
+};
+```
+
+### 二叉搜索树的搜索
++ 二叉搜索树的搜索：[700.二叉搜索树的搜索](https://leetcode.cn/problems/search-in-a-binary-search-tree/description/)
++ 思路：终止条件为遇到空节点或者找到要搜索的数值，因为该二叉树是二叉搜索树，所以左子树的数值一定小于根节点数值，根节点数值一定小于右子树数值，因此可以选择性地向左右子树进行递归来寻找。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* travelsal(TreeNode* root, int val){
+        // 终止条件
+        if(root == nullptr)
+            return nullptr;
+        if(root->val == val)
+            return root;
+        // 递归遍历左右子树
+        TreeNode* ans = nullptr;
+        if(root->val > val)
+            ans = travelsal(root->left, val);
+        if(root->val < val)
+            ans = travelsal(root->right, val);
+        return ans;
+    }
+    
+    TreeNode* searchBST(TreeNode* root, int val) {
+        return travelsal(root, val);
+    }
+};
+```
+
+### 验证二叉搜索树
++ 验证二叉搜索树：[98.验证二叉搜索树](https://leetcode.cn/problems/validate-binary-search-tree/description/)
++ 思路：要想验证这棵二叉树是否为二叉搜索树，只需要中序遍历该树得到遍历后的元素数组，再验证这个数组是否为升序的即可。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    void inorder(TreeNode* root, vector<int>& arr){
+        // 终止条件
+        if(root == nullptr)
+            return;
+        inorder(root->left, arr);
+        arr.push_back(root->val);
+        inorder(root->right, arr);
+    }
+    
+    bool isValidBST(TreeNode* root) {
+        vector<int> arr;
+        // 中序遍历将二叉搜索树转换为有序数组
+        inorder(root, arr);
+        for(int i=0; i<arr.size()-1; i++){
+             // 注意要小于等于，搜索树里不能有相同元素
+            if(arr[i+1] <= arr[i])
+                return false;
+        }
+        return true;
+    }
+};
+```
+
+### 二叉搜索树的最小绝对差
++ 二叉搜索树的最小绝对差：[530.二叉搜索树的最小绝对差](https://leetcode.cn/problems/minimum-absolute-difference-in-bst/description/)
++ 两种思路：
+	+ 一是类似上一题验证二叉搜索树的方法利用中序遍历得到升序数组，再遍历数组找出最小差值；
+	+ 二是利用双指针法，只需要采用中序遍历一次二叉搜索树即可，但需要注意一些细节。
++ 思路一代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> result;
+    // 中序遍历
+    void inorder(TreeNode* root){
+        // 终止条件
+        if(root == nullptr)
+            return;
+        // 左
+        inorder(root->left);
+        // 中
+        result.push_back(root->val);
+        // 右
+        inorder(root->right);
+    }
+
+    int getMinimumDifference(TreeNode* root) {
+        // 先进行中序遍历
+        inorder(root);
+        int minValue = INT_MAX;
+        for(int i=0; i<result.size()-1; i++){
+            minValue = min(minValue, result[i+1] - result[i]);
+        }
+        return minValue;
+    }
+};
+```
+
++ 思路二代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int minValue = INT_MAX;
+    // 指向前一个指针
+    TreeNode* pre = nullptr;
+    void travelsal(TreeNode* cur){
+        // 终止条件
+        if(cur == nullptr)
+            return;
+        // 左
+        travelsal(cur->left);
+        // 中
+        if(pre != nullptr)
+            minValue = min(minValue, abs(cur->val - pre->val));
+        // 将pre指针指向cur的前一个
+        pre = cur;
+        // 右
+        travelsal(cur->right);
+    }
+
+    int getMinimumDifference(TreeNode* root) {
+        travelsal(root);
+        return minValue;
+    }
+};
+```
+
+### 二叉搜索树的众数
++ 二叉搜索树的众数：[501.二叉搜索树的众数](https://leetcode.cn/problems/find-mode-in-binary-search-tree/)
++ 思路：这题跟上面一题可以采用双指针法，使用 `cur` 指针指向当前节点，`pre` 指针指向 `cur` 的前一个节点，需要注意一下 `count` 和 `maxCount` 的数值变化和 `result` 数组的处理情况。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int count = 0;
+    int maxCount = 0;
+    vector<int> result;
+    TreeNode* pre = nullptr;
+    void travelsal(TreeNode* cur){
+        // 终止条件
+        if(cur == nullptr)
+            return;
+        // 左
+        travelsal(cur->left);
+        // 中
+        if(pre == nullptr) // 第一个节点
+            count = 1;
+        else if(pre->val == cur->val) // 两个节点数值相同
+            count++;
+        else // 发现新节点数值
+            count = 1;
+        // pre指向cur的前一个节点
+        pre = cur;
+        if(count == maxCount)
+            result.push_back(cur->val);
+        if(count > maxCount){
+            result.clear();
+            maxCount = count;
+            result.push_back(cur->val);
+        }
+        // 右
+        travelsal(cur->right);
+    }
+
+    vector<int> findMode(TreeNode* root) {
+        travelsal(root);
+        return result;
+    }
+};
+```
+
+### 二叉树的最近公共祖先
++ 二叉树的最近公共祖先：[236.二叉树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/description/)
++ 思路：采用后续遍历，终止条件为遇到空节点就返回 `nullptr`，或者找到了 `p` 或者 `q` 的节点，就返回当前节点 `root` 。然后递归处理左右节点，处理中间节点时有以下判断：
+	+ 左节点和有节点是否都不为为空，该中间节点就是最近公共祖先，返回 `root`。
+	+ 左节点或者右节点其中一个为空另外一个不为空，返回不为空的节点。
+	+ 左右节点都为空，返回空节点。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    // 后续遍历
+    TreeNode* travelsal(TreeNode* root, TreeNode* p, TreeNode* q){
+        // 终止条件
+        if(root == nullptr)
+            return nullptr;
+        if(root == q || root == p)
+            return root;
+        // 左
+        TreeNode* left = travelsal(root->left, p, q);
+        // 右
+        TreeNode* right = travelsal(root->right, p, q);
+        // 中
+        if(left != nullptr && right != nullptr)
+            return root;
+        else if(left == nullptr && right != nullptr)
+            return right;
+        else if(left != nullptr && right == nullptr)
+            return left;
+        else
+            return nullptr;
+    }
+    
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        TreeNode* ans = travelsal(root, p, q);
+        return ans;
+    }
+};
+```
+
+### 二叉搜索树的最近公共祖先
++ 二叉搜索树的最近公共祖先：[235.二叉搜索树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-search-tree/)
++ 思路：利用二叉搜索树的特性：
+	+ 如果 `p` 和 `q` 的值都小于 `root` 的值，就往左子树搜索；
+	+ 如果 `p` 和 `q` 的值都大于 `root` 的值，就往右子树搜索；
+	+ 如果 `p` 和分别在 `root` 的两端或者 `root` 就是 `p` 和 `q` 中的一个节点，就返回 `root`，`root` 一定是 `p` 和 `q` 的最近公共祖先。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+class Solution {
+public:
+    TreeNode* travelsal(TreeNode* root, TreeNode* p, TreeNode* q){
+        // 终止条件
+        if(root == nullptr)
+            return nullptr;
+        TreeNode* left = nullptr;
+        TreeNode* right = nullptr;
+        // 左
+        if(p->val < root->val && q->val < root->val){
+            left = travelsal(root->left, p, q);
+        }// 右
+        else if(p->val > root->val && q->val > root->val){
+            right = travelsal(root->right, p, q);
+        }
+        // 中
+        if(left != nullptr)
+            return left;
+        else if(right != nullptr)
+            return right;
+        else
+            return root;
+    }
+
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        TreeNode* ans = travelsal(root, p, q);
+        return ans;
+    }
+};
+```
+
+### 二叉搜索树中的插入操作
++ 二叉搜索树中的插入操作：[701.二叉搜索树中的插入操作](https://leetcode.cn/problems/insert-into-a-binary-search-tree/description/)
++ 思路：因为本题是二叉搜索树，并且不限制插入的方式，因此按照二叉搜索树的规则遍历，找到空节点插入即可。这道题采用递归方式和迭代方式都比较方便，同样是按照二叉搜索树的规则往下搜寻得到空间点，再将空节点插入即可。
++ 递归法代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 递归法插入
+    TreeNode* insert(TreeNode* root, int val){
+        // 终止条件
+        if(root == nullptr){
+            root = new TreeNode(val);
+            return root;
+        }
+        // 向左递归
+        if(val < root->val){
+            root->left = insert(root->left, val);
+        }
+        // 向右递归
+        if(val > root->val){
+            root->right = insert(root->right, val);
+        }
+        return root;
+    }
+
+    TreeNode* insertIntoBST(TreeNode* root, int val) {
+        TreeNode* ans = insert(root, val);
+        return ans;
+    }
+};```
+
++ 迭代法代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+	// 迭代法
+    TreeNode* insertIntoBST(TreeNode* root, int val) {
+        TreeNode* cur = root;
+        if(root == nullptr)
+            root = new TreeNode(val);
+        while(cur != nullptr){
+            if(val < cur->val){
+                if(cur->left != nullptr)
+                    cur = cur->left;
+                else{
+                    TreeNode* node = new TreeNode(val);
+                    cur->left = node;
+                    cur = nullptr;
+                }
+            }
+            else if(val > cur->val){
+                if(cur->right != nullptr)
+                    cur = cur->right;
+                else{
+                    TreeNode* node = new TreeNode(val);
+                    cur->right = node;
+                    cur = nullptr;
+                }
+            }
+        }
+        return root;
+    }
+};
+```
+
+### 删除二叉搜索树中的节点
++ 删除二叉搜索树中的节点：[450.删除二叉搜索树中的节点](https://leetcode.cn/problems/delete-node-in-a-bst/description/)
++ 思路：
+	+ 终止条件有以下五种情况：
+		+ 第一种情况：没找到删除的节点，遍历到空节点直接返回了；
+		+ 找到删除的节点：
+			+ 第二种情况：左右孩子都为空（叶子节点），直接删除节点，返回 NULL 为根节点；
+			+ 第三种情况：删除节点的左孩子为空，右孩子不为空，删除节点，右孩子补位，返回右孩子为根节点；
+			+ 第四种情况：删除节点的右孩子为空，左孩子不为空，删除节点，左孩子补位，返回左孩子为根节点；
+			+ 第五种情况：左右孩子节点都不为空，则将删除节点的左子树头结点（左孩子）放到删除节点的右子树的最左面节点的左孩子上，返回删除节点右孩子为新的根节点。
+	+ 根据二叉搜索树的规则递归查找 `key` 节点。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* travelsal(TreeNode* root, int key){
+        // 终止条件
+        // 1.没有找到要删除的节点
+        if(root == nullptr){
+            return nullptr;
+        }
+        // 2.删除的是叶子节点
+        else if(key == root->val && root->left == nullptr && root->right == nullptr){
+            delete root;
+            return nullptr;
+        }
+        // 3.删除的节点只有左子树
+        else if(key == root->val && root->left != nullptr && root->right == nullptr){
+            TreeNode* temp_node = root->left;
+            delete root;
+            return temp_node;
+        }
+        // 4.删除的节点只有右子树
+        else if(key == root->val && root->right != nullptr && root->left == nullptr){
+            TreeNode* temp_node = root->right;
+            delete root;
+            return temp_node;
+        }
+        // 5.删除的节点左右子树都不为空,把左子树嫁接到右子树处
+        else if(key == root->val && root->right != nullptr && root->left != nullptr){
+            TreeNode* temp_node = root->right;
+            while(temp_node->left != nullptr){
+                temp_node = temp_node->left;
+            }
+            temp_node->left = root->left;
+            TreeNode* new_root = root->right;
+            delete root;
+            return new_root;
+        }
+        // 递归遍历
+        if(key < root->val)
+            root->left = travelsal(root->left, key);
+        if(key > root->val)
+            root->right = travelsal(root->right, key);
+        return root;
+    }
+
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        TreeNode* ans = travelsal(root, key);
+        return ans;
+    }
+};
+```
+
+### 修剪二叉搜索树
++ 修剪二叉搜索树：[669.修剪二叉搜索树](https://leetcode.cn/problems/trim-a-binary-search-tree/)
++ 思路：
+	+ 在终止条件中处理 `root` 节点：
+		+ 遍历到 `root` 节点为空的情况则返回空；
+		+ 如果 `root` 节点的值小于下限值则继续往右子树遍历查找是否有不在区间的值；
+		+ 如果 `root` 节点的值大于下限值则继续往左子树遍历查找是否有不在区间的值。
+	+ 之后 `root` 节点在区间内，再递归处理左右孩子不在区间内的节点。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 返回处理好子树的根节点
+    TreeNode* travelsal(TreeNode* root, int low, int high){
+        // 终止条件(处理root节点，root节点不在区间内)
+        if(root == nullptr)
+            return root;
+        if(root->val < low){
+            TreeNode* root_right = root->right;
+            return travelsal(root->right, low, high);
+        }
+        if(root->val > high){
+            return travelsal(root->left, low, high);
+        }
+        // 之后root节点在区间内，处理左右孩子不在区间内的节点
+        // 左
+        root->left = travelsal(root->left, low, high);
+        // 右
+        root->right = travelsal(root->right, low, high);
+        return root;
+    }
+
+    TreeNode* trimBST(TreeNode* root, int low, int high) {
+        TreeNode* ans = travelsal(root, low, high);
+        return ans;
+    }
+};
+```
+
+### 将有序数组转换为二叉搜索树
++ 将有序数组转换为二叉搜索树：[108.将有序数组转换为二叉搜索树](https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/description/)
++ 思路：题目中给出的是按照升序排列的整数数组，只需要每次递归选取数组的中间数值作为根节点 `root`，递归数组左边作为左子树，数组右边作为右子树进行构造即可。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 左闭右闭区间
+    TreeNode* travelsal(vector<int>& nums, int left, int right){
+        // 终止条件
+        if(left > right)
+            return nullptr;
+        // 递归构造子树
+        int mid = left + (right - left)/2;
+        TreeNode* root = new TreeNode(nums[mid]);
+        root->left = travelsal(nums, left, mid-1);
+        root->right = travelsal(nums, mid+1, right);
+        return root;
+    }
+
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        TreeNode* ans = travelsal(nums, 0, nums.size()-1);
+        return ans;
+    }
+};
+```
+
+### 把二叉搜索树转换为累加树
++ 把二叉搜索树转换为累加树：[538.把二叉搜索树转换为累加树](https://leetcode.cn/problems/convert-bst-to-greater-tree/description/)
++ 思路：这题采用双指针的方法，因为要将比该节点大的所有数值加上，因此采用**右-中-左**的遍历方式，中的逻辑处理相加操作。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int pre = 0;
+    void travelsal(TreeNode* cur){
+	    // 终止条件
+        if(cur == nullptr)
+            return;
+        // 右
+        travelsal(cur->right);
+        // 中
+        cur->val += pre;
+        pre = cur->val;
+        // 左
+        travelsal(cur->left);
+    }
+    
+    TreeNode* convertBST(TreeNode* root) {
+        travelsal(root);
+        return root;
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
