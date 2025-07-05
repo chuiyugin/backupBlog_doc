@@ -2185,7 +2185,7 @@ int main(int argc, char* argv[])
 	+ 进程之间的切换（`CPU` 的高速缓存，`TLB` 失效），开销大。用进程中的线程之间切换，开销较小。
 	+ 进程之间通信，需要打破隔离避障，线程之间的通信，开销较小。
 	+ 进程的创建和销毁比较耗时，而线程的创建和销毁要轻量很多。
-##### 线程的基本操作
+##### 线程的基本操作和创建线程
 + 获取线程的标识：
 
 ![获取线程的标识](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250703185042.png)
@@ -2253,7 +2253,296 @@ int main(int argc, char* argv[])
 
 ![运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250703185815.png)
 
++ 向线程的入口函数传递参数（`void*`）代码：
 
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+#include <pthread.h>
+
+typedef struct {
+    int id;
+    char name[25];
+    char gender;
+} Student;
+
+void print_ids(const char* prefix){
+    printf("%s: ", prefix);
+    printf("pid = %d, ppid = %d ", getpid(), getppid());
+    printf("tid = %lu\n", pthread_self());
+}
+
+// 子线程的执行流程
+void* start_routine(void* args){
+    Student* p = (Student*) args;
+    // 在子线程中访问主线程栈里面的数据
+    printf("%d %s %c\n",
+        p->id,
+        p->name,
+        p->gender);
+    print_ids("child_thread");
+    return NULL;
+}
+
+int main(int argc, char* argv[])
+{
+    // 主线程
+    print_ids("main_thread");
+
+    Student s = {1, "yugin", 'm'};
+
+    pthread_t tid;
+    int err = pthread_create(&tid, NULL, start_routine, (void*)&s);
+    if(err){
+        error(1, err, "pthread_create");
+    }
+
+    printf("main: new_thread = %lu\n", tid);
+
+    // 注意事项：当主线程终止时，整个进程就终止了
+    sleep(2);
+    return 0;
+}
+```
+
++ 运行结果：
+
+![向线程的入口函数传递参数运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250705174257.png)
+
+##### 终止线程
++ 进程的终止：
+	+ 从 `main` 返回
+	+ `exit()`
+	+ 收到信号
++ 线程的终止：
+	+ 从 `start_routine` 返回
+	+ `pthread_exit()`
+	+ `pthread_cancel()`
+###### 线程显式终止函数
++ `pthread_exit()` 线程显式终止函数：
+
+![线程显式终止函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250705211436.png)
+
++ `pthread_join()` 等待一个线程的结束：
+
+![等待一个线程的结束](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250705211644.png)
+
++ 示例代码（`1` 到 `100` 求和，分两个线程执行）：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+#include <pthread.h>
+
+typedef struct {
+    int* arr;
+    int left;
+    int right;
+} Section;
+
+// 子线程的执行流程
+void* start_routine(void* args){
+    Section* sec = (Section*) args;
+    // 在子线程中访问主线程栈里面的数据
+    int sum = 0;
+    for(int i=sec->left; i<=sec->right; i++){
+        sum += sec->arr[i];
+    }
+    // 子线程两种返回方式（返回即终止）
+    pthread_exit((void*)sum);
+    //return (void*)sum;
+    return NULL;
+}
+
+int main(int argc, char* argv[])
+{
+    // 主线程
+    int arr[100];
+    for(int i=1; i<=100; i++){
+        arr[i-1] = i;
+    }
+
+    pthread_t tid1, tid2;
+
+    Section sec1 = {arr, 0, 49};
+    int err = pthread_create(&tid1, NULL, start_routine, (void*)&sec1);
+    if(err){
+        error(1, err, "pthread_create");
+    }
+
+    Section sec2 = {arr, 50, 99};
+    err = pthread_create(&tid2, NULL, start_routine, (void*)&sec2);
+    if(err){
+        error(1, err, "pthread_create");
+    }
+
+    // 主线程：等待子线程结束，并接收返回值
+    int result1;
+    err = pthread_join(tid1, (void**)&result1);
+    if(err){
+        error(1, err, "pthread_join %lu\n", tid1);
+    }
+    int result2;
+    err = pthread_join(tid2, (void**)&result2);
+    if(err){
+        error(1, err, "pthread_join %lu\n", tid2);
+    }
+
+    printf("main: sum = %d\n", result1+result2);
+
+    // 注意事项：当主线程终止时，整个进程就终止了
+    return 0;
+}
+```
+
++ 运行结果：
+
+![运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250705211817.png)
+
++ 注意：不能返回指向该线程栈上数据的指针，因为当线程退出时，该线程的栈会销毁。
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+#include <pthread.h>
+
+typedef struct {
+    int id;
+    char name[25];
+    char gender;
+} Student;
+
+// 子线程的执行流程
+void* start_routine(void* args){
+    // 不能返回指向该线程栈上数据的指针，因为当线程退出时，该线程的栈会销毁
+    //Student* p = (Student*) args;
+    Student* p = (Student*) malloc(sizeof(Student));
+    // 在子线程中访问主线程栈里面的数据
+    p->id = 1;
+    strcpy(p->name, "yugin");
+    p->gender = 'm';
+    pthread_exit((void**) p);
+    return NULL;
+}
+
+int main(int argc, char* argv[])
+{
+    // 主线程
+    pthread_t tid;
+    int err = pthread_create(&tid, NULL, start_routine, NULL);
+    if(err){
+        error(1, err, "pthread_create");
+    }
+    Student* result;
+    pthread_join(tid, (void**) &result);
+    printf("%d %s %c\n",
+        result->id,
+        result->name,
+        result->gender);
+    printf("main: child_thread = %lu\n", tid);
+
+    // 注意事项：当主线程终止时，整个进程就终止了
+    return 0;
+}
+```
+
+###### 游离线程
++ `pthread_detach()` 用于将线程设置为游离状态的函数，使线程在终止时自动释放资源：
+
+![将线程设置为游离状态](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250705213222.png)
+
++ 示例代码：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+#include <pthread.h>
+
+typedef struct {
+    int id;
+    char name[25];
+    char gender;
+} Student;
+
+// 子线程的执行流程
+void* start_routine(void* args){
+    // 不能返回指向该线程栈上数据的指针，因为当线程退出时，该线程的栈会销毁
+    //Student* p = (Student*) args;
+    Student* p = (Student*) malloc(sizeof(Student));
+    // 在子线程中访问主线程栈里面的数据
+    p->id = 1;
+    strcpy(p->name, "yugin");
+    p->gender = 'm';
+    pthread_exit((void**) p);
+    return NULL;
+}
+
+int main(int argc, char* argv[])
+{
+    // 主线程
+    pthread_t tid;
+    int err = pthread_create(&tid, NULL, start_routine, NULL);
+    if(err){
+        error(1, err, "pthread_create");
+    }
+    
+    // 当线程主动调用 pthread_detach
+    err = pthread_detach(tid);
+    if(err){
+        error(1, err, "pthread_detach");
+    }
+
+    Student* result;
+    pthread_join(tid, (void**) &result);
+    printf("%d %s %c\n",
+        result->id,
+        result->name,
+        result->gender);
+
+    // 注意事项：当主线程终止时，整个进程就终止了
+    return 0;
+}
+```
+
++ 主线程无法再获取游离线程的返回结果：
+
+![主线程无法再获取游离线程的返回结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250705213915.png)
 
 
 
