@@ -4032,6 +4032,46 @@ public:
 };
 ```
 
+### 把二叉搜索树转换为累加树
++ 把二叉搜索树转换为累加树：[538.把二叉搜索树转换为累加树](https://leetcode.cn/problems/convert-bst-to-greater-tree/description/)
++ 思路：这题采用双指针的方法，因为要将比该节点大的所有数值加上，因此采用**右-中-左**的遍历方式，中的逻辑处理相加操作。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int pre = 0;
+    void travelsal(TreeNode* cur){
+	    // 终止条件
+        if(cur == nullptr)
+            return;
+        // 右
+        travelsal(cur->right);
+        // 中
+        cur->val += pre;
+        pre = cur->val;
+        // 左
+        travelsal(cur->left);
+    }
+    
+    TreeNode* convertBST(TreeNode* root) {
+        travelsal(root);
+        return root;
+    }
+};
+```
+
 ## 排序问题
 ### 选择排序
 #### 普通选择排序
