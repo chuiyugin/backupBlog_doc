@@ -2544,6 +2544,264 @@ int main(int argc, char* argv[])
 
 ![主线程无法再获取游离线程的返回结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250705213915.png)
 
+###### 线程清理函数
++ 线程清理函数：用于在线程退出时执行预定义的清理操作。
+	+ `execute` 参数：
+		+ `0`：栈中的 `args` 参数出栈但不执行 `cleanup` 线程清理函数。
+		+ 非 `0`：栈中的 `args` 参数出栈并执行 `cleanup` 线程清理函数。
+
+![线程清理函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250706133555.png)
+
++ 与进程之间的对比：
+
+![与进程之间的对比](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250706133657.png)
+
++ 示例代码：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+#include <pthread.h>
+
+void cleanup(void* args){
+    char* msg = (char*) args;
+    printf("cleanup: %s\n", msg);
+}
+
+// 子线程的执行流程
+void* start_routine(void* args){
+    // 注册线程清理函数
+    pthread_cleanup_push(cleanup, "first");
+    pthread_cleanup_push(cleanup, "second");
+    pthread_cleanup_push(cleanup, "third");
+
+    pthread_cleanup_pop(1); // 执行线程清理函数，打印third，执行顺序与注册顺序相反
+    pthread_cleanup_pop(0); // 
+
+    sleep(2);
+    printf("child thread is going to return!\n");
+
+    pthread_exit(NULL);
+    // 后面的代码肯定不会执行
+    pthread_cleanup_pop(0);
+
+    return NULL;
+}
+
+int main(int argc, char* argv[])
+{
+    // 主线程
+    pthread_t tid;
+    int err = pthread_create(&tid, NULL, start_routine, NULL);
+    if(err){
+        error(1, err, "pthread_create");
+    }
+    // 主线程等待子线程
+    err = pthread_join(tid, NULL);
+    if(err){
+        error(1, err, "pthread_join");
+    }
+    // 注意事项：当主线程终止时，整个进程就终止了
+    return 0;
+}
+```
+
++ 运行结果：
+
+![运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250706141101.png)
+
++ 注意事项：
+	+ 从 `start_routine` 返回，不会执行线程清理函数。
+	+ `pthread_cleanup_push` 和 `pthread_cleanup_pop` 必须成对出现。
+		+ 必须成对出现的原因在于源码中采用了宏函数的特性。
+
+![宏函数的特性](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250706141824.png)
+
+##### 线程的同步
++ 原子性：CPU 指令是原子性的。
++ 相关术语：
+	+ 竞态条件（`race condition`）：
+		+ 多个执行流程
+		+ 共享资源
+		+ 程序的结果（状态取决于执行流程调度的情况）
+	+ 异步和同步：
+		+ 异步：任何调度情况都可以出现、两个执行流程不做任何交流。
+		+ 同步：让一些调度不可能出现（同步会有一些开销）。
+			+ 互斥锁、条件变量。
+	+ 并发和并行：
+		+ 并发：一种现象，在一个时间段中，执行流程可以交替执行。
+		+ 并行：一种技术，同一时刻，可以执行多个执行流程（并行是并发的一种）。
++ 线程的同步：
+	+ 互斥地访问资源
+	+ 等待某个条件成立
+
+![线程的同步](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250706155605.png)
+
++ 互斥锁函数：
+
+![互斥锁函数](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250706160444.png)
+
++ 互斥锁的使用代码：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+#include <pthread.h>
+
+// 具有以下状态：未初始化、初始化、上锁、没上锁、销毁..
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; // 静态初始化，默认属性
+
+// 子线程的执行流程
+void* start_routine(void* args){
+    long* value = (long*) args;
+    for(int i=0; i<10000000; i++){
+        pthread_mutex_lock(&mutex);
+        (*value)++; // 临界区，对共享资源操作
+        pthread_mutex_unlock(&mutex);
+    }
+    return NULL;
+}
+
+int main(int argc, char* argv[])
+{
+    // 主线程
+    long* value = (long*)calloc(1, sizeof(long)); // *value = 0
+
+    pthread_t tid1, tid2;
+
+    int err = pthread_create(&tid1, NULL, start_routine, value);
+    if(err){
+        error(1, err, "pthread_create");
+    }
+
+    err = pthread_create(&tid2, NULL, start_routine, value);
+    if(err){
+        error(1, err, "pthread_create");
+    }
+
+    // 主线程：等待子线程结束，并接收返回值
+    err = pthread_join(tid1, NULL);
+    if(err){
+        error(1, err, "pthread_join %lu\n", tid1);
+    }
+    err = pthread_join(tid2, NULL);
+    if(err){
+        error(1, err, "pthread_join %lu\n", tid2);
+    }
+
+    // 销毁互斥锁
+    pthread_mutex_destroy(&mutex);
+
+    printf("value = %ld\n", *value);
+
+    // 注意事项：当主线程终止时，整个进程就终止了
+    return 0;
+}
+```
+
++ 运行结果：
+
+![运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250706162054.png)
+
++ 银行例子（细粒度锁）：
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+#include <pthread.h>
+
+typedef struct{
+    int id;
+    int balance;
+    pthread_mutex_t mutex;
+} Account;
+
+// 具有以下状态：未初始化、初始化、上锁、没上锁、销毁..
+Account acct1 = {1, 100, PTHREAD_MUTEX_INITIALIZER};
+
+// 扣款函数
+int withdraw(Account* acct, int money){
+    pthread_mutex_lock(&acct->mutex);
+    // 临界区，对共享资源操作
+    if(acct->balance < money){
+        return 0;
+    }
+    sleep(1);// 让某种调度出现的概率最大化
+    acct->balance -= money;
+    pthread_mutex_unlock(&acct->mutex);
+    printf("%lu: withdraw %d\n",pthread_self(), money);
+    return money;
+}
+
+// 子线程的执行流程
+void* start_routine(void* args){
+    withdraw(&acct1, 100);
+    return NULL;
+}
+
+int main(int argc, char* argv[])
+{
+    // 主线程
+    pthread_t tid1, tid2;
+    int err = pthread_create(&tid1, NULL, start_routine, NULL);
+    if(err){
+        error(1, err, "pthread_create");
+    }
+    err = pthread_create(&tid2, NULL, start_routine, NULL);
+    if(err){
+        error(1, err, "pthread_create");
+    }
+
+    // 主线程：等待子线程结束
+    err = pthread_join(tid1, NULL);
+    if(err){
+        error(1, err, "pthread_join %lu\n", tid1);
+    }
+    err = pthread_join(tid2, NULL);
+    if(err){
+        error(1, err, "pthread_join %lu\n", tid2);
+    }
+
+    // 销毁互斥锁
+    pthread_mutex_destroy(&acct1.mutex);
+    // 打印账户余额
+    printf("balance = %d\n", acct1.balance);
+
+    // 注意事项：当主线程终止时，整个进程就终止了
+    return 0;
+}
+```
+
++ 运行结果：
+
+![运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250706163256.png)
 
 
 
