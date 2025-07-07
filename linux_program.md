@@ -2971,5 +2971,264 @@ pthread_mutex_unlock(&protection);
 
 ![解决互斥，实现原子性](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250706205923.png)
 
+##### 等待条件成立
++ 条件变量（`pthread_cond_t`）：
+	+ 条件变量只是提供了一个等待、唤醒机制；
+	+ 至于条件何时成立，何时不成立，取决于业务。
++ 1、初始化：
+
+![条件变量初始化](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250707210657.png)
+
++ 2、当条件不成立，等待：
+
+![当条件不成立，等待](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250707210847.png)
+
++ `pthread_cond_wait()` 返回时，条件一定成立吗？
+	+ 不一定！
+
+![`pthread_cond_wait()` 返回时，条件不一定成立](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250707211013.png)
+
++ 3、当条件成立时，唤醒等待的线程：
+
+![当条件成立时，唤醒等待的线程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250707211149.png)
+
++ 4、销毁
+
+![销毁](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250707211215.png)
+
+##### 生产者消费者模型
++ 生产者消费者模型：
+	+ 阻塞队列：
+		+ 当队列满时，如果线程往阻塞队列中添加东西，线程会陷入阻塞；
+		+ 当队列空时，如果线程往阻塞队列中取出东西，线程会陷入阻塞；
+	+ 生产者，产生任务：
+		+ 如果队列满了，生产者陷入阻塞，等待队列不满（`not_full`）;
+		+ 如果队列不满，将任务添加到阻塞队列，队列非空，唤醒消费者（`not_empty`）;
+	+ 消费者，完成任务：
+		+ 如果队列空了，消费者陷入阻塞，等待队列非空（`not_empty`）;
+		+ 如果队列非空，从阻塞队列中获取任务，队列不满，唤醒生产者（`not_full`）;
+
+![生产者消费者模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250707211858.png)
+
+##### 阻塞队列
++ 阻塞队列（有界队列）：
+
+![阻塞队列（有界队列）](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250707211938.png)
+
++ `blockQ.h` 文件：
+
+```c
+#ifndef __WD_BLOCKQ_H
+#define __WD_BLOCKQ_H
+
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <error.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+#include <pthread.h>
+#include <stdbool.h>
+
+#define N 1024
+
+typedef int E;
+
+// 循环数组实现队列
+typedef struct {
+    E elements[N];
+    int front;
+    int rear;
+    int size;
+
+    pthread_mutex_t mutex;
+    pthread_cond_t not_empty; // 非空
+    pthread_cond_t not_full; // 不满
+} BlockQ;
+
+// API 
+BlockQ* blockq_create(void);
+void blockq_destroy(BlockQ* q);
+
+void blockq_push(BlockQ* q, E val);
+E blockq_pop(BlockQ* q);
+E blockq_peek(BlockQ* q);
+bool blockq_empty(BlockQ* q);
+bool blockq_full(BlockQ* q);
+
+#endif
+```
+
++ `blockQ.c` 文件：
+
+```c
+#include "blockQ.h"
+
+// 创建空的阻塞队列
+BlockQ* blockq_create(void){
+    BlockQ* q = (BlockQ*) calloc(1, sizeof(BlockQ));
+
+    pthread_mutex_init(&q->mutex, NULL);
+    pthread_cond_init(&q->not_empty, NULL);
+    pthread_cond_init(&q->not_full, NULL);
+
+    return q;
+}
+
+void blockq_destroy(BlockQ* q){
+    pthread_mutex_destroy(&q->mutex);
+    pthread_cond_destroy(&q->not_empty);
+    pthread_cond_destroy(&q->not_full);
+
+    free(q);
+}
+
+void blockq_push(BlockQ* q, E val){
+    // 获取锁
+    pthread_mutex_lock(&q->mutex);
+    // 注意事项：一定要写成while，当线程返回时再次检查队列未满
+    while(q->size == N){
+        // 1. 释放q->mutex
+        // 2. 该线程陷入阻塞状态
+        // 3. 当pthread_cond_wait返回时，一定再一次获取了q->mutex
+        pthread_cond_wait(&q->not_full, &q->mutex);
+    } // a. 获取了q->mutex; b. q->size != N
+
+    q->elements[q->rear] = val;
+    q->rear = (q->rear + 1) % N;
+    q->size++;
+    // 此时not_empty的条件成立，唤醒not_empty条件的线程
+    pthread_cond_signal(&q->not_empty);
+    // 释放锁
+    pthread_mutex_unlock(&q->mutex);
+}
+
+E blockq_pop(BlockQ* q){
+    // 获取锁
+    pthread_mutex_lock(&q->mutex);
+    // 注意事项：一定要写成while，当线程返回时再次检查队列未满
+    while(q->size == 0){
+        // 1. 释放q->mutex
+        // 2. 该线程陷入阻塞状态
+        // 3. 当pthread_cond_wait返回时，一定再一次获取了q->mutex
+        pthread_cond_wait(&q->not_empty, &q->mutex);
+    } // a. 获取了q->mutex; b. q->size != 0
+
+    E ret = q->elements[q->front];
+    q->front = (q->front + 1) % N;
+    q->size++;
+    // 此时not_full的条件成立，唤醒not_full条件的线程
+    pthread_cond_signal(&q->not_full);
+    // 释放锁
+    pthread_mutex_unlock(&q->mutex);
+
+    return ret;
+}
+
+bool blockq_full(BlockQ* q){
+    pthread_mutex_lock(&q->mutex);
+    int size = q->size;
+    pthread_mutex_unlock(&q->mutex);
+    return size == N;
+}
+
+bool blockq_empty(BlockQ* q){
+    pthread_mutex_lock(&q->mutex);
+    int size = q->size;
+    pthread_mutex_unlock(&q->mutex);
+    return size == 0;
+}
+```
+
+##### 实现生产者消费者模型
++ 通过线程池（能够避免频繁地创建和销毁线程）实现生产者消费者模型；
+
+![实现生产者消费者模型](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250707212319.png)
 
 
++ 应用程序应该包含多少个线程要通过两个方面考虑：
+	+ CPU 的核数
+	+ 任务的负载
+		+ `I/O` 密集型任务
+		+ 计算密集型任务
+
+![应用程序应该包含多少个线程要通过两个方面考虑](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250707212345.png)
+
++ 代码示例：
+
+```c
+#include "blockQ.h"
+
+typedef struct {
+    pthread_t* threads; // 线程数组
+    int nums; // 线程数目
+    BlockQ* q;
+} ThreadPool;
+
+void* start_routine(void* args){
+    ThreadPool* pool = (ThreadPool*) args;
+    pthread_t tid = pthread_self();
+    
+    // 从阻塞队列中获取任务
+    for(;;){
+        E task_id = blockq_pop(pool->q);
+        if(task_id == -1){
+            pthread_exit(NULL);
+        }
+        printf("%lx: execute task %d\n", tid, task_id);
+        sleep(1); // 模拟执行任务
+        printf("%lx: task %d done!\n", tid, task_id);
+    }
+    return NULL;
+}
+
+ThreadPool* threadpool_create(int n){
+    ThreadPool* pool = (ThreadPool*) malloc(sizeof(ThreadPool));
+    pool->threads = (pthread_t*) malloc(n * sizeof(ThreadPool));
+    pool->q = blockq_create();
+    // 创建线程
+    for(int i=0; i<n; i++){
+        pthread_create(pool->threads+i, NULL, start_routine, (void*)pool);
+    }
+    return pool;
+}
+
+void threadpool_destroy(ThreadPool* pool){
+    blockq_destroy(pool->q);
+    free(pool->threads);
+    free(pool);
+}
+
+int main(int argc, char* argv[]){
+    // 1.创建线程池，并初始化
+    ThreadPool* pool = threadpool_create(8);
+
+    // 2.主线程生产任务
+    for(int i=0; i<100; i++){
+        blockq_push(pool->q, i+1);
+    }
+    sleep(13);
+
+    // 3. 退出线程池
+    for(int i=0; i<pool->nums; i++){
+        blockq_push(pool->q, -1); // -1表示退出任务
+    }
+    for(int i=0; i<pool->nums; i++){
+        pthread_join(pool->threads[i], NULL); // -1表示退出任务
+    }
+
+    // 4.销毁线程池
+    threadpool_destroy(pool);
+
+    return 0;
+}
+```
+
++ 生产者消费者模型运行结果：
+
+![生产者消费者模型运行结果](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250707212446.png)
