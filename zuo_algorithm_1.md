@@ -1,5 +1,5 @@
 ---
-title: 左程云算法学习
+title: 左程云、代码随想录算法学习（一）
 tags:
   - 算法学习
 categories:
@@ -7,7 +7,7 @@ categories:
 date: 2025-3-7 15:00:00
 excerpt: C++、编程语言、算法学习
 ---
-# 左程云算法学习
+# 左程云、代码随想录算法学习（一）
 ## 二分法
 + 二分查找法：[704.二分查找](https://leetcode.cn/problems/binary-search/description/)
 + 代码如下：
@@ -3861,6 +3861,212 @@ public:
                 }
             }
         }
+        return root;
+    }
+};
+```
+
+### 删除二叉搜索树中的节点
++ 删除二叉搜索树中的节点：[450.删除二叉搜索树中的节点](https://leetcode.cn/problems/delete-node-in-a-bst/description/)
++ 思路：
+	+ 终止条件有以下五种情况：
+		+ 第一种情况：没找到删除的节点，遍历到空节点直接返回了；
+		+ 找到删除的节点：
+			+ 第二种情况：左右孩子都为空（叶子节点），直接删除节点，返回 NULL 为根节点；
+			+ 第三种情况：删除节点的左孩子为空，右孩子不为空，删除节点，右孩子补位，返回右孩子为根节点；
+			+ 第四种情况：删除节点的右孩子为空，左孩子不为空，删除节点，左孩子补位，返回左孩子为根节点；
+			+ 第五种情况：左右孩子节点都不为空，则将删除节点的左子树头结点（左孩子）放到删除节点的右子树的最左面节点的左孩子上，返回删除节点右孩子为新的根节点。
+	+ 根据二叉搜索树的规则递归查找 `key` 节点。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* travelsal(TreeNode* root, int key){
+        // 终止条件
+        // 1.没有找到要删除的节点
+        if(root == nullptr){
+            return nullptr;
+        }
+        // 2.删除的是叶子节点
+        else if(key == root->val && root->left == nullptr && root->right == nullptr){
+            delete root;
+            return nullptr;
+        }
+        // 3.删除的节点只有左子树
+        else if(key == root->val && root->left != nullptr && root->right == nullptr){
+            TreeNode* temp_node = root->left;
+            delete root;
+            return temp_node;
+        }
+        // 4.删除的节点只有右子树
+        else if(key == root->val && root->right != nullptr && root->left == nullptr){
+            TreeNode* temp_node = root->right;
+            delete root;
+            return temp_node;
+        }
+        // 5.删除的节点左右子树都不为空,把左子树嫁接到右子树处
+        else if(key == root->val && root->right != nullptr && root->left != nullptr){
+            TreeNode* temp_node = root->right;
+            while(temp_node->left != nullptr){
+                temp_node = temp_node->left;
+            }
+            temp_node->left = root->left;
+            TreeNode* new_root = root->right;
+            delete root;
+            return new_root;
+        }
+        // 递归遍历
+        if(key < root->val)
+            root->left = travelsal(root->left, key);
+        if(key > root->val)
+            root->right = travelsal(root->right, key);
+        return root;
+    }
+
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        TreeNode* ans = travelsal(root, key);
+        return ans;
+    }
+};
+```
+
+### 修剪二叉搜索树
++ 修剪二叉搜索树：[669.修剪二叉搜索树](https://leetcode.cn/problems/trim-a-binary-search-tree/)
++ 思路：
+	+ 在终止条件中处理 `root` 节点：
+		+ 遍历到 `root` 节点为空的情况则返回空；
+		+ 如果 `root` 节点的值小于下限值则继续往右子树遍历查找是否有不在区间的值；
+		+ 如果 `root` 节点的值大于下限值则继续往左子树遍历查找是否有不在区间的值。
+	+ 之后 `root` 节点在区间内，再递归处理左右孩子不在区间内的节点。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 返回处理好子树的根节点
+    TreeNode* travelsal(TreeNode* root, int low, int high){
+        // 终止条件(处理root节点，root节点不在区间内)
+        if(root == nullptr)
+            return root;
+        if(root->val < low){
+            TreeNode* root_right = root->right;
+            return travelsal(root->right, low, high);
+        }
+        if(root->val > high){
+            return travelsal(root->left, low, high);
+        }
+        // 之后root节点在区间内，处理左右孩子不在区间内的节点
+        // 左
+        root->left = travelsal(root->left, low, high);
+        // 右
+        root->right = travelsal(root->right, low, high);
+        return root;
+    }
+
+    TreeNode* trimBST(TreeNode* root, int low, int high) {
+        TreeNode* ans = travelsal(root, low, high);
+        return ans;
+    }
+};
+```
+
+### 将有序数组转换为二叉搜索树
++ 将有序数组转换为二叉搜索树：[108.将有序数组转换为二叉搜索树](https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/description/)
++ 思路：题目中给出的是按照升序排列的整数数组，只需要每次递归选取数组的中间数值作为根节点 `root`，递归数组左边作为左子树，数组右边作为右子树进行构造即可。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 左闭右闭区间
+    TreeNode* travelsal(vector<int>& nums, int left, int right){
+        // 终止条件
+        if(left > right)
+            return nullptr;
+        // 递归构造子树
+        int mid = left + (right - left)/2;
+        TreeNode* root = new TreeNode(nums[mid]);
+        root->left = travelsal(nums, left, mid-1);
+        root->right = travelsal(nums, mid+1, right);
+        return root;
+    }
+
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        TreeNode* ans = travelsal(nums, 0, nums.size()-1);
+        return ans;
+    }
+};
+```
+
+### 把二叉搜索树转换为累加树
++ 把二叉搜索树转换为累加树：[538.把二叉搜索树转换为累加树](https://leetcode.cn/problems/convert-bst-to-greater-tree/description/)
++ 思路：这题采用双指针的方法，因为要将比该节点大的所有数值加上，因此采用**右-中-左**的遍历方式，中的逻辑处理相加操作。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int pre = 0;
+    void travelsal(TreeNode* cur){
+	    // 终止条件
+        if(cur == nullptr)
+            return;
+        // 右
+        travelsal(cur->right);
+        // 中
+        cur->val += pre;
+        pre = cur->val;
+        // 左
+        travelsal(cur->left);
+    }
+    
+    TreeNode* convertBST(TreeNode* root) {
+        travelsal(root);
         return root;
     }
 };
