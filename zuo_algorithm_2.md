@@ -12,6 +12,7 @@ excerpt: C++、编程语言、算法学习
 ### 回溯算法代码模板
 + 回溯算法的核心思想是：
 	+ 递归构造解空间树，在树的每个节点上做出一个选择，并继续探索；若当前选择不符合条件则回退（撤销选择）；
+	+ 回溯法抽象为树形结构后，其遍历过程就是：`for`循环横向遍历，递归纵向遍历，回溯不断调整结果集。
 + 代码模板：
 
 ```cpp
@@ -176,6 +177,89 @@ public:
         if(digits.size() == 0)
             return result;
         backtracking(digits, 0);
+        return result;
+    }
+};
+```
+
+### 组合总和
++ 组合总和：[39.组合总和](https://leetcode.cn/problems/combination-sum/description/)
++ 思路：这道题目和之前的组合总和 III 的关键不同点在于组合总和问题能够重复利用当前元素，该条件要建立在 `candidates` 内的元素是不重复的，这样子遍历出来的解集也不会出现重复的组合。因此代码仅仅需要将迭代递归语句中的 `i+1` 改为 `i` 即可。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int sum = 0;
+    vector<int> path;
+    vector<vector<int>> result;
+    void backtracking(vector<int>& candidates, int target, int startpoint){
+        // 终止条件
+        if(sum > target)
+            return;
+        if(sum == target){
+            result.push_back(path);
+        }
+        // 遍历迭代
+        for(int i=startpoint; i<candidates.size(); i++){
+            sum += candidates[i];
+            path.push_back(candidates[i]);
+            backtracking(candidates, target, i); // 关键点
+            sum -= candidates[i];
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        backtracking(candidates, target, 0);
+        return result;
+    }
+};
+```
+
+### 组合总和 II
++ 组合总和 II：[40.组合总和 II](https://leetcode.cn/problems/combination-sum-ii/)
++ 思路：这道题和之前的组合总和问题最大区别在于 `candidates` 数组中的元素是包含相同的重复元素，因此按照先前的遍历方式解集必定会出现重复集合，因此处理难度在于去重操作。具体操作如下：
+	+ 先对 `candidates` 数组进行排序，`sort(candidates.begin(), candidates.end());`；
+	+ 采用 `used` 数组来控制在同树层方向去重，而树枝方向不需要去重；
+	+ 在迭代遍历逻辑中 `true` 表示进入下一层时相同元素可以继续用；
+	+ `false` 表示进入在层深度一样时相同元素不能继续用了。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<int> path;
+    vector<vector<int>> result;
+    int sum = 0;
+    void backtracking(vector<int>& candidates, int target, int startpoint, vector<bool> used){
+        // 终止条件
+        if(sum > target)
+            return;
+        if(sum == target){
+            result.push_back(path);
+            return;
+        }
+        // 遍历迭代
+        for(int i=startpoint; i<candidates.size(); i++){
+            // used 数组控制树层去重
+            if(i>0 && candidates[i] == candidates[i-1] && used[i-1] == false)
+                continue;
+            path.push_back(candidates[i]);
+            sum += candidates[i];
+            used[i] = true; // true 表示进入下一层时相同元素可以继续用
+            backtracking(candidates, target, i+1, used);
+            used[i] = false; // 回溯置为 false，指示同层的相同元素不能再用了
+            sum -= candidates[i];
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        sort(candidates.begin(), candidates.end());
+        // 初始化used数组，第一个参数是数组大小，第二参数是每个位置的值
+        vector<bool> used(candidates.size(), false); 
+        backtracking(candidates, target, 0, used);
         return result;
     }
 };
