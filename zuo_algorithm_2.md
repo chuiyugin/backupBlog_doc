@@ -500,3 +500,121 @@ public:
     }
 };
 ```
+
+### 全排列
++ 全排列：[46.全排列](https://leetcode.cn/problems/permutations/)
++ 思路：普通全排列的题目是 `nums` 数组中没有重复的元素，因此不需要进行去重处理。全排列问题与之前的组合问题最大的区别在于 `[1,2]` 和 `[2,1]` 可以看作是两个不一样的结果，因此全排列的代码不需要 `startpoint` 来控制顺序，但需要 `used` 数组来记录哪些元素在上一个树层中已经用过了。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<int> path;
+    vector<vector<int>> result;
+    void backtracking(vector<int>& nums, vector<bool>& used) {
+        // 终止条件
+        if(path.size() == nums.size()){
+            result.push_back(path);
+            return;
+        }
+        // 递归回溯
+        for(int i=0; i<nums.size(); i++){
+            if(used[i] == true){
+                path.push_back(nums[i]);
+                used[i] = false;
+                backtracking(nums, used);
+                used[i] = true;
+                path.pop_back();
+            }
+            else
+                continue;
+        }
+    }
+
+    vector<vector<int>> permute(vector<int>& nums){
+        vector<bool> used(nums.size(), true);
+        backtracking(nums, used);
+        return result;
+    }
+};
+```
+
+### 全排列 II
++ 全排列 II：[47.全排列 II](https://leetcode.cn/problems/permutations-ii/description/)
++ 思路：
+	+ 这道题目相对于上一道普通全排列问题的最大区别在于 `nums` 数组中存在重复的元素，因此需要进行去重。去重的逻辑与组合问题的去重逻辑基本一致，就是需要先对 `nums` 数组进行排序，然后根据 `used` 数组判断是在树层中重复还是在树枝上重复，最终只需要去掉同树层中重复的情况即可。
+	+ 同样也有不排序去重的方法，和前面的非递减子序列题目类似，采用 `unordered_set<int> uset;` 来控制每一层的去重，需要注意的是 `uset` 需要写在 `for` 循环的外面，但是该方法更加耗时和占用了额外的内存空间。
++ 代码 1（排序去重）：
+
+```cpp
+class Solution {
+public:
+    vector<int> path;
+    vector<vector<int>> result;
+    void backtracking(vector<int>& nums, vector<bool>& used){
+        // 终止条件
+        if(path.size() == nums.size()){
+            result.push_back(path);
+            return;
+        }
+        // 递归回溯
+        for(int i=0; i<nums.size(); i++){
+            if(i>0 && nums[i] == nums[i-1] && used[i-1] == true)
+                continue;
+            if(used[i] == false) // 该元素已经被使用过了
+                continue;
+            else{
+                path.push_back(nums[i]);
+                used[i] = false;
+                backtracking(nums, used);
+                used[i] = true;
+                path.pop_back();
+            }
+        }
+    }
+
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        vector<bool> used(nums.size(), true);
+        sort(nums.begin(), nums.end());
+        backtracking(nums, used);
+        return result;
+    }
+};
+```
+
++ 代码 2（非排序去重）：
+
+```cpp
+class Solution {
+public:
+    vector<int> path;
+    vector<vector<int>> result;
+    void backtracking(vector<int>& nums, vector<bool>& used){
+        // 终止条件
+        if(path.size() == nums.size()){
+            result.push_back(path);
+            return;
+        }
+        // 递归回溯
+        unordered_set<int> uset;  // 控制同树层间去重
+        for(int i=0; i<nums.size(); i++){
+            if(used[i] == true && uset.find(nums[i]) == uset.end()){
+                uset.insert(nums[i]);
+                path.push_back(nums[i]);
+                used[i] = false;
+                backtracking(nums, used);
+                used[i] = true;
+                path.pop_back();
+            }
+            else
+                continue;
+        }
+    }
+
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        vector<bool> used(nums.size(), true);
+        backtracking(nums, used);
+        return result;
+    }
+};
+```
