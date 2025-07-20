@@ -618,3 +618,56 @@ public:
     }
 };
 ```
+
+### N 皇后
++ N 皇后：[51.N 皇后](https://leetcode.cn/problems/n-queens/description/)
++ 思路：N 皇后问题的递归回溯函数 `backtracking()` 函数并不复杂，遍历行 `row` 中的每一列 `col`，并采用 `isVaild()` 函数判断皇后放置在坐标 `[row, col]` 上是否合法，合法才能继续递归。而 `isVaild()` 函数检查同一列或同一斜线上是否有棋子（递归算法保证了每一行是不重复的），并且需要注意的是只需要往行数**减少方向**检查即可，行数**增大方向**并没有放置皇后，因此不需要检查！
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<vector<string>> result;
+    // 检查同一列或同一斜线上是否有棋子(递归算法保证了每一行是不重复的)
+    bool isVaild(vector<string>& chessboard, int x, int y, int n){
+        // 检查列是否重复
+        for(int i=0; i<n; i++){
+            if(chessboard[i][y] == 'Q')
+                return false;
+        }
+        // 检查45°是否重复(只需要往行数减少方向检查即可)
+        for(int i=x,j=y; i>=0 && j>=0; i--,j--){
+            if(chessboard[i][j] == 'Q')
+                return false;
+        }
+        // 检查135°是否重复(只需要往行数减少方向检查即可)
+        for(int i=x,j=y; i>=0 && j<n; i--,j++){
+            if(chessboard[i][j] == 'Q')
+                return false;
+        }
+        return true;
+    }
+    // 递归回溯函数
+    void backtracking(vector<string>& chessboard, int row, int n){
+        // 终止条件
+        if(row == n){
+            result.push_back(chessboard);
+            return;
+        }
+        // 递归回溯(遍历行row中的每一列col)
+        for(int col=0; col<n; col++){
+            if(isVaild(chessboard, row, col, n)){ // 合法
+                chessboard[row][col] = 'Q'; // 放置皇后
+                backtracking(chessboard, row+1, n);
+                chessboard[row][col] = '.'; // 回溯
+            }
+        }
+    }
+
+    vector<vector<string>> solveNQueens(int n) {
+        vector<string> chessboard(n, string(n, '.'));
+        backtracking(chessboard, 0, n);
+        return result;
+    }
+};
+```
