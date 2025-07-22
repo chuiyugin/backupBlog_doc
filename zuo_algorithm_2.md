@@ -671,3 +671,112 @@ public:
     }
 };
 ```
+
+### 解数独
++ 解数独：[37.解数独](https://leetcode.cn/problems/sudoku-solver/description/)
++ 思路：这道题目与 N 皇后问题的最大区别在于 N 皇后问题只需要遍历行 `row` 中的每一列 `col` 来寻找一个放置皇后的位置即可，而解数独这道题目需要逐个遍历各个格子，如果发现该格子为字符 `'.'` 则需要遍历填入字符 `'1' - '9'`，填入一个数字后判断是否合法：
+	+ 如果所选的数字合法则继续递归，此时如果后续递归是 `true` 的话就可以直接返回 `true`。
+	+ 如果所选的数字不合法则在 `for` 循环填入下一个数字尝试。
+	+ 或者后续递归返回 `false`，就需要回溯，并在 `for` 循环填入下一个数字尝试。
+	+ 如果该空格填入了 `9` 个数字都不行则返回 `false`。
+	+ 最终棋盘已经填满，则遍历完棋盘都没有返回 `false`，说明找到了合适棋盘位置了，直接返回 `true`。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    bool isValid(int x, int y, char k, vector<vector<char>>& board){
+        int n = board.size();
+        // 判断行是否有字符k
+        for(int i=0; i<n; i++){
+            if(board[x][i] == k)
+                return false;
+        }
+        // 判断行是否有字符k
+        for(int i=0; i<n; i++){
+            if(board[i][y] == k)
+                return false;
+        }
+        // 判断九宫格内是否有字符k
+        int m = x-x%3;
+        int l = y-y%3;
+        for(int i=m; i<m+3; i++){
+            for(int j=l; j<l+3; j++){
+                if(board[i][j] == k)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    bool backtracking(vector<vector<char>>& board){
+        // 不需要终止条件
+        int n = board.size();
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                if(board[i][j] == '.'){
+                    // 依次填入'1' - '9'
+                    for(char k='1'; k<='9'; k++){
+                        if(isValid(i, j, k, board)){
+                            board[i][j] = k;
+                            if(backtracking(board))
+                                return true;
+                            board[i][j] = '.'; // 回溯
+                        }
+                    }
+                    // 9个数试完了都不行返回false
+                    return false;
+                }
+            }
+        }
+        return true; // 遍历完没有返回false，说明找到了合适棋盘位置了
+    }
+
+    void solveSudoku(vector<vector<char>>& board) {
+        backtracking(board);
+    }
+};
+```
+
+## 贪心算法
+### 贪心算法理论基础
++ 贪心的本质是选择每一阶段的局部最优，从而达到全局最优。
++ 贪心算法一般分为如下四步：
+	- 将问题分解为若干个子问题
+	- 找出适合的贪心策略
+	- 求解每一个子问题的最优解
+	- 将局部最优解堆叠成全局最优解
++ 这个四步其实过于理论化了，我们平时在做贪心类的题目时，如果按照这四步去思考，真是有点“鸡肋”。做题的时候，只要想清楚**局部最优**是什么，能否推导出**全局最优**，其实就够了。
++ 总结：**贪心没有套路，说白了就是常识性推导加上举反例**。
+
+### 分发饼干
++ 分发饼干：[455.分发饼干](https://leetcode.cn/problems/assign-cookies/description/)
++ 思路：这里的局部最优就是用尽可能接近该小孩胃口的饼干喂饱该小孩，充分利用饼干尺寸喂饱一个小孩，全局最优就是喂饱尽可能多的小孩。
+	+ 代码开始是需要对两个数组进行排序，排序后判断胃口最小的小孩都比最大的饼干大则直接返回 `0`。
+	+ 采用 `index` 控制遍历饼干大小数组的起始位置，当饼干 `[j]` 已经投喂了小孩 `[i]` 之后，小孩 `[i+1]` 就需要用 `[j+1]` 及之后的饼干投喂了。否则容易造成超时问题。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int findContentChildren(vector<int>& g, vector<int>& s) {
+        int ans = 0;
+        sort(g.begin(), g.end());
+        sort(s.begin(), s.end());
+        // 排序后判断胃口最小的小孩都比最大的饼干大则直接返回0
+        if(s.size()>0 && g[0]>s[s.size()-1])
+            return 0;
+        int index = 0;
+        for(int i=0; i<g.size(); i++){
+            for(int j=index; j<s.size(); j++){
+                if(s[j] >= g[i]){
+                    ans++;
+                    index = j+1;
+                    break;
+                }
+            }
+        }
+        return ans;
+    }
+};
+```
