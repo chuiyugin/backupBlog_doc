@@ -780,3 +780,59 @@ public:
     }
 };
 ```
+
+### 摆动序列
++ 摆动序列：[376.摆动序列](https://leetcode.cn/problems/wiggle-subsequence/description/)
++ 思路一：默认序列至少一个元素是峰值，令 `result = 1`，例如只有一个元素或者所有元素全部相等的的序列 `[2]` 和 `[2,2,2,2]`，元素本身就是峰值。对于序列 `[1,2,2,2,3,4]` ，只有出现峰值的时候才更新 `pre` 的值，这样就能保证当 `nums[i]` 指向最后一个 `2` 的时候出现多加 `1` 的情况。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int wiggleMaxLength(vector<int>& nums) {
+        // 默认至少一个元素是峰值
+        int result = 1;
+        if(nums.size() == 1)
+            return 1;
+        if(nums.size() > 2){
+            int pre = 0;
+            int nex = 0;
+            for(int i=0; i<nums.size()-1; i++){
+                nex = nums[i+1] - nums[i];
+                // 出现峰值
+                if((pre>=0 && nex<0) || (pre<=0 && nex>0)){
+                    result++;
+                    pre = nex;
+                }
+            }
+        }
+        return result;
+    }
+};
+```
+
++ 思路二：分别使用 `up` 和 `down` 两个变量交替记录上升趋势和下降趋势，当 `nums[i] > nums[i-1]` 时，`up = down + 1`，当 `nums[i] < nums[i-1]` 时，`down = up + 1` ，这样当趋势持续上升或者下降的时候只会 `+1` 一次而不会重复记录，最终取 `up` 和 `down` 两个变量的最大值即作为结果。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int wiggleMaxLength(vector<int>& nums) {
+        int up = 1;
+        int down = 1;
+        int result = 1;
+        if(nums.size() == 1)
+            return result;
+        if(nums.size() >= 2){
+            for(int i=1; i<nums.size(); i++){
+                if(nums[i] > nums[i-1])
+                    up = down + 1;
+                if(nums[i] < nums[i-1])
+                    down = up + 1;
+            }
+        }
+        result = max(up, down);
+        return result;
+    }
+};
+```
