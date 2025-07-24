@@ -836,3 +836,49 @@ public:
     }
 };
 ```
+
+### 最大子数组和
++ 最大子数组和：[53.最大子数组和](https://leetcode.cn/problems/maximum-subarray/description/)
++ 思路一（贪心解法）：贪心解法的核心在于如果此前记录的子数组累加和为负数时，再和数组 `nums` 中后续的数相加会使得总的子数组和变小，因此子数组累加和为负数时应当置为 `0`，用后一个数为起点再次累加，每次需要将较大值通过 `result = max(result, sum)` 来记录。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        // 贪心解法
+        int sum = 0; // 子数组累加和
+        int result = INT_MIN;
+        for(int i=0; i<nums.size(); i++){
+            sum += nums[i];
+            result = max(result, sum);
+            if(sum < 0) // 子数组累加和为负数
+                sum = 0;
+        }
+        return result;
+    }
+};
+```
+
++ 思路二（前缀和解法）：应当找到一个尽可能小的前缀和 `MinPreSum`，然后用当前的总和 `sum` 减去此时最小的前缀和跟目前的最大子数组和比较再取最大值：`max(MaxSubSum, sum - MinPreSum)`。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        // 前缀和解法
+        int sum = 0;
+        // 最大子数组和
+        int MaxSubSum = INT_MIN;
+        // 最小前缀和(初始为0)
+        int MinPreSum = 0;
+        for(int i=0; i<nums.size(); i++){
+            sum += nums[i];
+            MaxSubSum = max(MaxSubSum, sum - MinPreSum);
+            MinPreSum = min(sum, MinPreSum);
+        }
+        return MaxSubSum;
+    }
+};
+```
