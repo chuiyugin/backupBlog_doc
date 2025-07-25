@@ -882,3 +882,75 @@ public:
     }
 };
 ```
+
+### 买卖股票的最佳时机 II
++ 买卖股票的最佳时机 II：[122.买卖股票的最佳时机 II](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/description/)
++ 思路：这道题目采用贪心算法的思路非常直观和简单，只要每一天的收益为正便进行股票的买卖从而使得总收益的最大化。局部最优是每一天的收益为正数，全局最优即为总的收益最大。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if(prices.size() == 0 || prices.size() == 1)
+            return 0;
+        int sum = 0;
+        for(int i=0; i<prices.size()-1; i++){
+            if(prices[i] < prices[i+1])
+                sum += prices[i+1] - prices[i];
+        }
+        return sum;
+    }
+};
+```
+
+### 跳跃游戏
++ 跳跃游戏：[55.跳跃游戏](https://leetcode.cn/problems/jump-game/description/)
++ 思路：本题的巧妙之处在于不去纠结每一跳具体是跳几步，只需要计算在 `i` 这个节点能够跳的范围 `cover`，并在 `cover` 这个范围内去寻找更大的范围，最终判断能否找到到达最后的范围。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int cover = 0;
+        for(int i=0; i<=cover; i++){
+            cover = max(cover, i+nums[i]);
+            if(cover >= nums.size()-1)
+                return true;
+        }
+        return false;
+    }
+};
+```
+
+### 跳跃游戏 II
++ 跳跃游戏 II：[45.跳跃游戏 II](https://leetcode.cn/problems/jump-game-ii/description/)
++ 思路：这道题目需要求从起点跳到终点的最短跳跃次数，处理方法和上一题有较大区别。我们需要记录当前访问过的所有节点能够跳到的最远距离 `max_cover`，以及现阶段的覆盖距离 `now_cover`，要从现阶段的覆盖范围出发，不管怎么跳，覆盖范围内一定是可以跳到的，以最小的步数增加覆盖范围，覆盖范围一旦覆盖了终点，得到的就是最少步数！
+
+![跳跃游戏 II](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202507251344404.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int jump(vector<int>& nums) {
+        if(nums.size() == 1)
+            return 0;
+        int max_cover = 0;
+        int now_cover = 0;
+        int ans = 0;
+        for(int i=0; i<nums.size(); i++){
+            max_cover = max(max_cover, i+nums[i]);
+            if(i == now_cover){
+                now_cover = max_cover;
+                ans++;
+                if(now_cover >= nums.size()-1)
+                    break;
+            }
+        }
+        return ans;
+    }
+};
+```
