@@ -954,3 +954,38 @@ public:
     }
 };
 ```
+
+### K 次取反后最大化的数组和
++ K次取反后最大化的数组和：[1005.K次取反后最大化的数组和](https://leetcode.cn/problems/jump-game-ii/description/)
++ 思路：
+	+ 贪心的思路：
+		+ 当数组有正数和负数时，局部最优：让绝对值大的负数变为正数，当前数值达到最大。整体最优：整个数组和达到最大。
+		+ 当数组只有正数和 `0` 后，局部最优：只让最小的数连续翻转，耗尽 `K` 值。整体最优：整个数组和达到最大。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int sum(vector<int>& nums){
+        int ans = 0;
+        for(int i=0; i<nums.size(); i++){
+            ans += nums[i];
+        }
+        return ans;
+    }
+
+    int largestSumAfterKNegations(vector<int>& nums, int k) {
+        sort(nums.begin(), nums.end());
+        int i=0;
+        while(i<nums.size() && nums[i]<0 && k>0){
+            nums[i] = -nums[i];
+            k--;
+            i++;
+        }
+        sort(nums.begin(), nums.end());
+        if(k%2 == 1) // k是奇数
+            nums[0] = -nums[0];
+        return sum(nums);
+    }
+};
+```
