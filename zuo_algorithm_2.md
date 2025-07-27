@@ -989,3 +989,30 @@ public:
     }
 };
 ```
+
+### 加油站
++ 加油站：[134.加油站](https://leetcode.cn/problems/gas-station/description/)
++ 思路：如果总油量减去总消耗大于等于零那么一定可以跑完一圈，说明各个站点的加油站剩油量相加一定是要大于等于零的。那么每个加油站的剩余量 `rest[i]` 为 `gas[i] - cost[i]` 。`i` 从 `0` 开始累加 `rest[i]`，和记为 `curSum` ，一旦 `curSum` 小于零，说明 `[0, i]` 区间都不能作为起始位置，因为这个区间选择任何一个位置作为起点，到 `i` 这里都会断油，那么起始位置从 `i+1` 算起，再从 `0` 计算 `curSum`。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+        int curSum = 0;
+        int totalSum = 0;
+        int start = 0;
+        for(int i=0; i<gas.size(); i++){
+            curSum  = curSum + (gas[i] - cost[i]);
+            totalSum  = totalSum + (gas[i] - cost[i]);
+            if(curSum < 0){
+                start = i+1;
+                curSum = 0;
+            }
+        }
+        if(totalSum<0)
+            return -1;
+        return start;
+    }
+};
+```
