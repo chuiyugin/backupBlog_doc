@@ -1016,3 +1016,40 @@ public:
     }
 };
 ```
+
+### 分发糖果
++ 分发糖果：[135.分发糖果](https://leetcode.cn/problems/candy/description/)
++ 思路：
+	+ 这道题需要采用两次贪心策略：
+		+ 先确定右边评分大于左边的情况（也就是从前向后遍历）。此时局部最优：只要右边评分比左边大，右边的孩子就多一个糖果，全局最优：相邻的孩子中，评分高的右孩子获得比左边孩子更多的糖果。
+		+ 再确定左孩子大于右孩子的情况（从后向前遍历）。局部最优：取 `candy[i+1]+1` 和 `candy[i]` 最大的糖果数量，保证第 `i` 个小孩的糖果数量既大于左边的也大于右边的。全局最优：相邻的孩子中，评分高的孩子获得更多的糖果。
+		+ 在确定左孩子大于右孩子的情况，需要用上之前的右边孩子的比较情况，因此需要从后向前遍历。
+
+![第二次需要从后向前遍历的原因](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202507281126507.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int candy(vector<int>& ratings) {
+        // 糖果数量数组，初始值为1
+        vector<int> candy(ratings.size(), 1);
+        // 右边孩子得分比左边孩子高(从左向右)
+        for(int i=1; i<ratings.size(); i++){
+            if(ratings[i]>ratings[i-1])
+                candy[i] = candy[i-1]+1;
+        }
+        // 左边孩子得分比右边孩子高(从右向左)
+        for(int i=ratings.size()-2; i>=0; i--){
+            if(ratings[i]>ratings[i+1])
+                candy[i] = max(candy[i], candy[i+1]+1);
+        }
+        int ans = 0;
+        for(int i=0; i<candy.size(); i++){
+            ans += candy[i];
+        }
+        return ans;
+    }
+};
+```
