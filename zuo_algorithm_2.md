@@ -1053,3 +1053,50 @@ public:
     }
 };
 ```
+
+### 柠檬水找零
++ 柠檬水找零：[860.柠檬水找零](https://leetcode.cn/problems/lemonade-change/description/)
++ 思路：
+	+ 有如下三种情况：
+		- 情况一：账单是 `5`，直接收下；
+		- 情况二：账单是 ` 10`，消耗一个 `5`，增加一个 `10`；
+		- 情况三：账单是 `20`，优先消耗一个 `10` 和一个 `5`，如果不够，再消耗三个 `5`。
+	- 贪心策略：优先找零 `10` 元钞票，因为美元 `10` 只能给账单 `20` 找零，而美元 `5` 可以给账单 `10` 和账单 `20` 找零，美元 `5` 更万能！
++ 代码：
+
+```cpp
+class Solution {
+public:
+    bool lemonadeChange(vector<int>& bills) {
+        int five = 0;
+        int ten = 0;
+        int twenty = 0;
+        for(int i=0; i<bills.size(); i++){
+            if(bills[i] == 5)
+                five++;
+            if(bills[i] == 10){
+                if(five == 0)
+                    return false;
+                ten++;
+                five--;
+                twenty++;
+            }
+            if(bills[i] == 20){
+                // 贪心策略：优先找零10元钞票
+                if(ten != 0 && five !=0){
+                    ten--;
+                    five--;
+                    twenty++;
+                }
+                else if(five >= 3){
+                    five-=3;
+                    twenty++;
+                }
+                else
+                    return false;
+            }
+        }
+        return true;
+    }
+};
+```
