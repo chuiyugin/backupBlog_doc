@@ -1100,3 +1100,35 @@ public:
     }
 };
 ```
+
+### 根据身高重建队列
++ 根据身高重建队列：[406.根据身高重建队列](https://leetcode.cn/problems/queue-reconstruction-by-height/description/)
++ 思路：按照身高排序之后，优先按身高高的 `people` 的 `k` 来插入，后序插入节点也不会影响前面已经插入的节点，最终按照 `k` 的规则完成了队列。在按照身高从大到小排序后：
+	+ 局部最优：优先按身高高的 `people` 的 `k` 来插入。插入操作过后的 `people` 满足队列属性；
+	+ 全局最优：最后都做完插入操作，整个队列满足题目队列属性。
+
+![根据身高重建队列](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202507301327566.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+    static bool cmp(const vector<int>& a, const vector<int>& b){
+        if(a[0] == b[0])
+            return a[1]<b[1]; // 小于号从小到大排序
+        return a[0]>b[0]; // 大于号从大到小排序
+    }
+
+    vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
+        sort(people.begin(), people.end(), cmp);
+        vector<vector<int>> result;
+        int pos = 0;
+        for(int i=0; i<people.size(); i++){
+            pos = people[i][1];
+            result.insert(result.begin()+pos, people[i]);
+        }
+        return result;
+    }
+};
+```
