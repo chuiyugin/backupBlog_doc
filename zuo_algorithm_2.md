@@ -1132,3 +1132,44 @@ public:
     }
 };
 ```
+
+### 用最少数量的箭引爆气球
++ 用最少数量的箭引爆气球：[452.用最少数量的箭引爆气球](https://leetcode.cn/problems/minimum-number-of-arrows-to-burst-balloons/description/)
++ 思路：
+	+ 局部最优：当气球出现重叠，一起射，所用弓箭最少。
+	+ 全局最优：把所有气球射爆所用弓箭最少。
+	+ 怎么寻找重叠区域呢？首先按照各个气球的左坐标 `left_idx` 进行对 `points` 数组进行排序，遍历取当前气球的的左坐标和 `left_idx` 的较大值，同理，取当前气球右坐标和 `right_idx` 的较小值组成重叠区域。
+	+ 初始化要射箭的总数： `ans = points.size()`。
+	+ 怎么判断是否重叠？如果 `left_idx <= right_idx` 说明当前气球和之前的气球重叠，需要射的箭的数量减一 `ans--` ，否则不重叠并更新 `left_idx` 和 `right_idx` 的值。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    static bool cmp(const vector<int>& a, const vector<int>& b){
+        if(a[0] == b[0])
+            return a[1] < b[1]; // 从小到大
+        return a[0] < b[0]; // 从小到大
+    }
+
+    int findMinArrowShots(vector<vector<int>>& points) {
+        sort(points.begin(), points.end(), cmp);
+        int ans = points.size();
+        int left_idx = points[0][0];
+        int right_idx = points[0][1];
+        if(points.size() == 1)
+            return ans;
+        for(int i=1; i<points.size(); i++){
+            left_idx = max(left_idx, points[i][0]);
+            right_idx = min(right_idx, points[i][1]);
+            if(left_idx <= right_idx)
+                ans--;
+            else{
+                left_idx = points[i][0];
+                right_idx = points[i][1];
+            }
+        }
+        return ans;
+    }
+};
+```
