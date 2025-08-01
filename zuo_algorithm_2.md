@@ -1173,3 +1173,38 @@ public:
     }
 };
 ```
+
+### 无重叠区间
++ 无重叠区间：[435.无重叠区间](https://leetcode.cn/problems/non-overlapping-intervals/description/)
++ 思路：
+	+ 关键点：判断到 `intervals[i][0] < intervals[i-1][1]` 说明 `i` 区间和 `i-1` 区间重叠了，在下一个循环就要判断 `i+1` 区间是否和 `i` 区间和 `i-1` 区间重叠的部分重叠，也就是 `intervals[i][1] = min(intervals[i][1], intervals[i-1][1])`。
+
+![无重叠区间](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202508011124775.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+    static bool cmp(const vector<int>& a, const vector<int>& b){
+        if(a[0] == b[0])
+            return a[1] < b[1]; // 小于号表示从小到大排列
+        return a[0] < b[0]; // 小于号表示从小到大排列
+    }
+
+    int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        sort(intervals.begin(), intervals.end(), cmp);
+        int ans = 0;
+        if(intervals.size() == 1)
+            return ans;
+        for(int i=1; i<intervals.size(); i++){
+            if(intervals[i][0] < intervals[i-1][1]){ // 重叠
+                ans++;
+                // 用于判断后一个区间是否和重叠区间继续重叠
+                intervals[i][1] = min(intervals[i][1], intervals[i-1][1]); 
+            } 
+        }
+        return ans;
+    }
+};
+```
