@@ -1060,7 +1060,7 @@ public:
 	+ 有如下三种情况：
 		- 情况一：账单是 `5`，直接收下；
 		- 情况二：账单是 ` 10`，消耗一个 `5`，增加一个 `10`；
-		- 情况三：账单是 `20`，优先消耗一个 `10` 和一个 `5`，如果不够，再消耗三个 `5`。
+		- 情况三：账单是 `20`，优先消耗一个 `10` 和一个 `5`，如果不够，再消耗三个 `5` 。
 	- 贪心策略：优先找零 `10` 元钞票，因为美元 `10` 只能给账单 `20` 找零，而美元 `5` 可以给账单 `10` 和账单 `20` 找零，美元 `5` 更万能！
 + 代码：
 
@@ -1205,6 +1205,82 @@ public:
             } 
         }
         return ans;
+    }
+};
+```
+
+### 划分字母区间
++ 划分字母区间：[763.划分字母区间](https://leetcode.cn/problems/partition-labels/description/)
++ 思路：在遍历的过程中相当于是要找每一个字母的边界，**如果找到之前遍历过的所有字母的最远边界，说明这个边界就是分割点了**。此时前面出现过所有字母，最远也就到这个边界了。
+	+ 具体分为以下两步：
+		+ 统计每一个字符最后出现的位置；
+		+ 从头遍历字符，并更新字符的最远出现下标，如果找到字符最远出现位置下标和当前下标相等了，则找到了分割点。
+
+![划分字母区间](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202508081116545.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<int> partitionLabels(string s) {
+        vector<int> result;
+        // 建立哈希数组并统计每个字母的最远出现下标
+        int hash[27] = {0}; 
+        for(int i=0; i<s.size(); i++){
+            hash[s[i]-'a'] = i;
+        }
+        // 如果找到字符最远出现位置下标和当前下标相等了，则找到了分割点
+        int left =0, right = 0;
+        for(int i=0; i<s.size(); i++){
+            right = max(right, hash[s[i]-'a']);
+            if(i == right){
+                result.push_back(right-left+1);
+                left = i+1;
+            }
+        }
+        return result;
+    }
+};
+```
+
+### 合并区间
++ 合并区间：[56.合并区间](https://leetcode.cn/problems/merge-intervals/description/)
++ 思路：
+	+ 首先按照区间起点升序排列，如果起点相同，按终点升序排列。
+	+ 从第二个区间开始，与前一个区间比较：
+		+ 如果**重叠**：`intervals[i][0] <= intervals[i-1][1]`  → 合并为一个区间，更新当前区间的起点和终点， `intervals[i]` 代表合并后的区间。
+		+ 如果**不重叠**：直接把前一个区间放进 `result`，继续循环。
+		+ 循环结束后，把最后一个区间加入结果。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    static bool cmp(const vector<int>& a, const vector<int>& b){
+        if(a[0] == b[0])
+            return a[1] < b[1]; // 小于号表示从小到大排序
+        return a[0] < b[0]; // 小于号表示从小到大排序
+    }
+
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        if(intervals.size() == 1)
+            return intervals;
+        sort(intervals.begin(), intervals.end(), cmp);
+        vector<vector<int>> result;
+        for(int i=1; i<intervals.size(); i++){
+            // 如果重叠，合并结果放到 intervals[i] 中
+            if(intervals[i][0] <= intervals[i-1][1]){
+                intervals[i][0] = intervals[i-1][0];
+                intervals[i][1] = max(intervals[i][1], intervals[i-1][1]);
+            }
+            else{
+                result.push_back(intervals[i-1]);
+            }
+        }
+        // 循环结束后，把最后一个区间加入结果
+        result.push_back(intervals[intervals.size()-1]);
+        return result;
     }
 };
 ```
