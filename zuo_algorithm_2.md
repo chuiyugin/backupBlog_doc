@@ -1284,3 +1284,93 @@ public:
     }
 };
 ```
+
+### 单调递增的数字
++ 单调递增的数字：[738.单调递增的数字](https://leetcode.cn/problems/monotone-increasing-digits/description/)
++ 思路：
+	+ 例如：`98`，一旦出现 `strNum[i - 1] > strNum[i]` 的情况（非单调递增），首先想让 `strNum[i - 1]--` ，然后 `strNum[i]` 给为 `9`，这样这个整数就是 `89`，即小于 `98` 的最大的单调递增整数；
+	+ 从后向前遍历，就可以重复利用上次比较得出的结果了，从后向前遍历 `332` 的数值变化为：`332 -> 329 -> 299`；
+	+ `flag` 的作用，对于 `1000` 而言，只有到最后 `10` 才会变成 `0900`，不符合题意，应该将 `flag` 标记为 `10` 中 `0` 的位置，将后面的数都变为 `9`。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int monotoneIncreasingDigits(int n) {
+        string s = to_string(n);
+        int flag = s.size();
+        for(int i=s.size()-1; i>0; i--){
+            if(s[i-1] > s[i]){
+                s[i-1]--;
+                flag = i;
+            }
+        }
+        for(int i=flag; i<s.size(); i++){
+            s[i] = '9';
+        }
+        return stoi(s);
+    }
+};
+```
+
+### 监控二叉树
++ 监控二叉树：[968.监控二叉树](https://leetcode.cn/problems/binary-tree-cameras/description/)
++ 思路：
+	+ 每个节点可能有三种状态：
+		+ `0` 该节点无覆盖
+		- `1` 本节点有摄像头
+		- `2` 本节点有覆盖
+	- 为了让摄像头数量最少，我们要尽量让叶子节点的父节点安装摄像头，这样才能摄像头的数量最少。**所以空节点的状态只能是有覆盖，这样就可以在叶子节点的父节点放摄像头了**。
+	- 单层逻辑处理主要有如下四类情况：
+		- 情况 1：左右节点至少有一个无覆盖的情况；
+		- 情况 2：左右节点至少有一个有摄像头；
+		- 情况 3：左右节点都有覆盖；
+		- 情况 4：根结点没有覆盖。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int result = 0;
+    int travelsal(TreeNode* cur){
+        // 终止条件(空节点返回有覆盖的状态)
+        if(cur == nullptr)
+            return 2;
+        // 后序遍历
+        int left = travelsal(cur->left); // 左
+        int right = travelsal(cur->right); // 右
+        // 中
+        // 左右至少一个没覆盖
+        if(left == 0 || right == 0){
+            result++;
+            return 1;
+        }
+        // 左右至少有一个摄像头
+        if(left == 1 || right == 1)
+            return 2;
+        // 左右都有覆盖
+        if(left == 2 && right == 2)
+            return 0;
+        return -1;
+    }
+
+    int minCameraCover(TreeNode* root) {
+        int state = travelsal(root);
+        // 如果根节点没被覆盖，则需要加一个摄像头
+        if(state == 0)
+            result++;
+        return result;
+    }
+};
+```
