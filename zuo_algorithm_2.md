@@ -1374,3 +1374,104 @@ public:
     }
 };
 ```
+
+## 动态规划
+### 动态规划理论基础
++ 动态规划，英文：`Dynamic Programming`，简称 `DP`，如果某一问题有很多重叠子问题，使用动态规划是最有效的。所以动态规划中每一个状态一定是由上一个状态推导出来的，**这一点就区分于贪心**，贪心没有状态推导，而是从局部直接选最优的。
++ 动态规划五部曲：
+	1. 确定 `dp` 数组（ `dp table` ）以及下标的含义
+	2. 确定递推公式
+	3. `dp` 数组如何初始化
+	4. 确定遍历顺序
+	5. 举例推导 `dp` 数组
++ 动规的题目，写代码之前一定要把状态转移在 `dp` 数组的上具体情况模拟一遍，心中有数，确定最后推出的是想要的结果。`debug` 的过程可以把程序中的 `dp` 数组打印出来与自己推导的结果进行对照来找问题。
+
+### 斐波那契树
++ 斐波那契树：[509.斐波那契树](https://leetcode.cn/problems/fibonacci-number/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i]` 的定义为：第 `i` 个数的斐波那契数值是 `dp[i]`；
+		+ 确定递推公式：状态转移方程 `dp[i] = dp[i-1] + dp[i-2];` ;
+		+ `dp` 数组如何初始化：`dp[1] = 1;` 和 `dp[2] = 1;` ；
+		+ 确定遍历顺序：从前往后遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int fib(int n) {
+        if(n == 1)
+            return 1;
+        if(n == 2)
+            return 1;
+        int dp[31];
+        dp[1] = 1;
+        dp[2] = 1;
+        for(int i=3; i<=n; i++){
+            // 递推公式
+            dp[i] = dp[i-1] + dp[i-2];
+        }
+        return dp[n];
+    }
+};
+```
+
+### 爬楼梯
++ 爬楼梯：[70.爬楼梯](https://leetcode.cn/problems/climbing-stairs/)
++ 思路：
+	+ 爬到第一层楼梯有一种方法，爬到二层楼梯有两种方法。那么第一层楼梯再跨两步就到第三层，第二层楼梯再跨一步就到第三层。所以到第三层楼梯的状态可以由第二层楼梯和到第一层楼梯状态相加推导出来，那么就可以想到动态规划了。
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i]` 的定义为：爬到第 `i` 层楼梯，有 `dp[i]` 种方法；
+		+ 确定递推公式：状态转移方程 `dp[i] = dp[i-1] + dp[i-2];` ;
+		+ `dp` 数组如何初始化：`dp[1] = 1;` 和 `dp[2] = 2;` ；
+		+ 确定遍历顺序：从前往后遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int climbStairs(int n) {
+        if(n == 1)
+            return 1;
+        if(n == 2)
+            return 2;
+        int dp[46];
+        dp[1] = 1;
+        dp[2] = 2;
+        for(int i=3; i<=n; i++){
+            dp[i] = dp[i-1] + dp[i-2];
+        }
+        return dp[n];
+    }
+};
+```
+
+### 使用最小花费爬楼梯
++ 使用最小花费爬楼梯：[746.使用最小花费爬楼梯](https://leetcode.cn/problems/min-cost-climbing-stairs/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i]` 的定义为：爬到第 `i` 层楼梯的最小花费是 `dp[i]` ；
+		+ 确定递推公式：状态转移方程 `dp[i] = min(dp[i-1]+cost[i-1], dp[i-2]+cost[i-2]);` ;
+		+ `dp` 数组如何初始化：`dp[0] = 0;` 和 `dp[1] = 0;` ；
+		+ 确定遍历顺序：从前往后遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int minCostClimbingStairs(vector<int>& cost) {
+        // 初始化
+        vector<int> dp(cost.size()+1);
+        dp[0] = 0;
+        dp[1] = 0;
+        for(int i=2; i<dp.size(); i++){
+	        // 递推公式
+            dp[i] = min(dp[i-1]+cost[i-1], dp[i-2]+cost[i-2]);
+        }
+        return dp[dp.size()-1];
+    }
+};
+```
