@@ -1475,3 +1475,66 @@ public:
     }
 };
 ```
+
+### 不同路径
++ 不同路径：[62.不同路径](https://leetcode.cn/problems/unique-paths/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 的定义为：表示从 `(1,1)` 出发，到 `(i,j)` 有 `dp[i][j]` 条不同的路径；
+		+ 确定递推公式：状态转移方程 `dp[i][j] = dp[i][j-1] + dp[i-1][j];` ;
+		+ `dp` 数组如何初始化：`dp[1][1] = 1;` ，其他初始化为 `0`；
+		+ 确定遍历顺序：从上往下、从前往后遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        vector<vector<int>> dp(m+1, vector<int>(n+1,0));
+        dp[1][1] = 1;
+        for(int i=1; i<=m; i++){
+            for(int j=1; j<=n; j++){
+                if(i!=1 || j!=1)
+                    dp[i][j] = dp[i][j-1] + dp[i-1][j];
+            }
+        }
+        return dp[m][n];
+    }
+};
+```
+
+### 不同路径 II
++ 不同路径 II：[63.不同路径 II](https://leetcode.cn/problems/unique-paths-ii/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 的定义为：表示从 `(1,1)` 出发，到 `(i,j)` 有 `dp[i][j]` 条不同的路径，和上一题的主要区别在于**增加了障碍**，在有障碍的点要令 `dp[i][j]=0` ；
+		+ 确定递推公式：状态转移方程 `dp[i][j] = dp[i][j-1] + dp[i-1][j];` ;
+		+ `dp` 数组如何初始化：`dp[1][1] = 1;` ，其他初始化为 `0`；
+		+ 确定遍历顺序：从上往下、从前往后遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        int m = obstacleGrid.size();
+        int n = obstacleGrid[0].size();
+        vector<vector<int>> dp(m+1, vector<int>(n+1, 0));
+        dp[1][1] = 1;
+        for(int i=1; i<=m; i++){
+            for(int j=1; j<=n; j++){
+                if(obstacleGrid[i-1][j-1] == 1){
+                    dp[i][j] = 0;
+                    continue;
+                }
+                if(i!=1 || j!=1){
+                    dp[i][j] = dp[i][j-1] + dp[i-1][j];
+                }
+            }
+        }
+        return dp[m][n];
+    }
+};
+```
