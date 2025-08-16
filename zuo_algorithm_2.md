@@ -1538,3 +1538,74 @@ public:
     }
 };
 ```
+
+### 整数拆分
++ 整数拆分：[343.整数拆分](https://leetcode.cn/problems/integer-break/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i]` 的定义为：拆分整数 `i` 后所得到的最大乘积为 `dp[i]` ；
+		+ 确定递推公式：
+			+ 正整数 `i` 可以拆分成 `j*(i-j)`、`j*dp[i-j]` 这两种方式，此时能够覆盖所有的拆分情况，取出最大值即可。
+			+ 状态转移方程 `dp[i] = max(max(j*(i-j), j*dp[i-j]), dp[i]);` ;
+		+ `dp` 数组如何初始化：`dp[0] = 0;` 、`dp[1] = 0;`、`dp[2] = 1;`；
+		+ 确定遍历顺序：从前往后遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int integerBreak(int n) {
+        int dp[59] = {0};
+        dp[0] = 0;
+        dp[1] = 0;
+        dp[2] = 1;
+        for(int i=3; i<=n; i++){
+            // 当拆分的整数尽可能接近时能得到最大值
+            for(int j=1; j<=i/2; j++){ 
+                dp[i] = max(max(j*(i-j), j*dp[i-j]), dp[i]);
+            }
+        }
+        return dp[n];
+    }
+};
+```
+
+### 不同的二叉搜索树
++ 不同的二叉搜索树：[96.不同的二叉搜索树](https://leetcode.cn/problems/unique-binary-search-trees/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i]` 的定义为：由 `i` 个节点组成的二叉搜索树的种类数量为 `dp[i]` 种；
+		+ `dp` 数组如何初始化：`dp[0] = 1;` ；
+		+ 确定遍历顺序：从前往后遍历；
+		+ 举例推导 `dp` 数组符合要求。
+		+ 确定递推公式：
+			+ 二叉搜索树一旦形状确定，其内部节点的填充方法就是唯一确定的（从下方投影看，左到右依次增大），所以这题就是求不同形状的二叉搜索树数量，进而转换成左子树形状种类✖️右子树形状种类；
+
+![不同的二叉搜索树](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202508161257292.png)
+
++ 状态转移方程：
+
+```cpp
+for(int j=1; j<=i; j++){
+    dp[i] += dp[j-1] * dp[i-j];
+}
+```
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int numTrees(int n) {
+        int dp[20];
+        dp[0] = 1;
+        for(int i=1; i<=n; i++){
+            for(int j=1; j<=i; j++){
+                dp[i] += dp[j-1] * dp[i-j];
+            }
+        }
+        return dp[n];
+    }
+};
+```
