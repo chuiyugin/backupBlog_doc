@@ -1609,3 +1609,109 @@ public:
     }
 };
 ```
+
+### 0 - 1背包理论基础
++ 携带研究材料：[46. 携带研究材料](https://kamacoder.com/problempage.php?pid=1046)
++ 思路：
+	+ 二维递推公式：
+		+ `i` ：表示 `0` 到 `i` 的物品任取放入容量 `j` 的背包中
+		+ `j` ：表示此时的背包容量
+		+ `dp[i][j]` : 背包在容量为 `j` 的情况下从 `0` 到 `i` 的物品中选择装入得到的最大价值。
+	+ 一维递推公式：
+		+ `i` ：表示 `0` 到 `i` 的物品任取放入容量 j 的背包中
+		+ `j` ：表示此时的背包容量
+		+ `dp[j]` : 背包在容量为 `j` 的情况下从 `0` 到 `i` 的物品中选择装入得到的最大价值。
+
+![携带研究材料](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202508171430211.png)
+
++ 一维递推公式在 `j` 上要倒序遍历，避免一个物品重复添加。例子：
+	+ 举一个例子：物品 `0` 的重量 `weight[0] = 1` ，价值 `value[0] = 15`
+	+ 如果正序遍历，此时 `i=0`
+		+ `dp[1] = dp[1 - weight[0]] + value[0] = 15`
+		+ `dp[2] = dp[2 - weight[0]] + value[0] = 30`
+	+ 此时 `dp[2]`就已经是 `30` 了，意味着物品 `0`，被放入了两次，所以不能正序遍历。
+	+ 为什么倒序遍历，就可以保证物品只放入一次呢？此时 `i=0`
+	+ 倒序就是先算 `dp[2]`
+		+ `dp[2] = dp[2 - weight[0]] + value[0] = 15` （`dp` 数组已经都初始化为 `0`）
+		+ `dp[1] = dp[1 - weight[0]] + value[0] = 15`
+	+ 所以从后往前循环，每次取得状态不会和之前取得状态重合，这样每种物品就只取一次了。
+
+![一维递推公式例子](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202508171439351.png)
+
++ 二维递推公式代码：
+
+```cpp
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main(){
+    int m,n;
+    scanf("%d %d", &m, &n);
+    vector<int> weight(m,0);
+    vector<int> value(m,0);
+    for(int i=0; i<m; i++){
+        scanf("%d", &weight[i]);
+    }
+    for(int i=0; i<m; i++){
+        scanf("%d", &value[i]);
+    }
+    vector<vector<int>> dp(m, vector<int>(n+1,0));
+    // 初始化第一列
+    for(int i=0; i<m; i++){
+        dp[i][0] = 0;
+    }
+    // 初始化第一行
+    for(int j=1; j<=n; j++){
+        if(j<weight[0]) // 背包装不下的情况
+            dp[0][j] = 0;
+        else
+            dp[0][j] = value[0];
+    }
+    // 递推公式
+    for(int i=1; i<m; i++){
+        for(int j=0; j<=n; j++){
+            if(j<weight[i]) // 背包装不下的情况
+                dp[i][j] = dp[i-1][j];
+            else
+                dp[i][j] = max(dp[i-1][j], dp[i-1][j-weight[i]]+value[i]);
+        }
+    }
+    printf("%d\n", dp[m-1][n]);
+    return 0;
+}
+```
+
++ 一维递推公式代码：
+
+```cpp
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main(){
+    int m,n;
+    scanf("%d %d", &m, &n);
+    vector<int> weight(m,0);
+    vector<int> value(m,0);
+    for(int i=0; i<m; i++){
+        scanf("%d", &weight[i]);
+    }
+    for(int i=0; i<m; i++){
+        scanf("%d", &value[i]);
+    }
+    // dp 数组初始化
+    vector<int> dp(n+1,0);
+    for(int i=0; i<m; i++){ // 表示物品种类i之前的所有物品在容量为j的背包中的最大价值dp[j]
+        for(int j=n; j>=weight[i]; j--){ // 背包容量（倒序遍历避免物品重复添加）
+            dp[j] = max(dp[j], dp[j-weight[i]]+value[i]);
+        } 
+    }
+    printf("%d\n", dp[n]);
+    return 0;
+}
+```
