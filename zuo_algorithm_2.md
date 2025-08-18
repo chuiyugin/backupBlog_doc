@@ -1715,3 +1715,74 @@ int main(){
     return 0;
 }
 ```
+
+### 分割等和子集
++ 分割等和子集：[416.分割等和子集](https://leetcode.cn/problems/partition-equal-subset-sum/description/)
++ 思路：
+	+ 这道题目可以看成是 `0 - 1` 背包问题的变式，题目只要求将一个数组分割成两个子集，使得两个子集的元素和相等。那么可以将背包容量设定为数组总和 `sum` 的一半，即 `sum/2`，各个物品的重量和价值都是 `nums` 数组的元素，若能刚好装下 `sum/2` 容量的背包则返回 `true`，否则返回 `false`。
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[j]` 的定义为：背包在容量为 `j` 的情况下从 `0` 到 `i` 的物品中选择装入得到的最大重量。 
+		+ 确定递推公式（与 `0 - 1` 背包问题一致）：
+			+ 状态转移方程 `dp[j] = max(dp[j], dp[j-nums[i]]+nums[i]);` ;
+		+ `dp` 数组如何初始化：全部初始化成 `0`；
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上倒序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    bool canPartition(vector<int>& nums) {
+        int sum = 0;
+        for(int i=0; i<nums.size(); i++){
+            sum+=nums[i];
+        }
+        if(sum%2 == 1) // 求和之后是奇数
+            return false;
+        // 背包容量是 sum/2
+        int target = sum/2;
+        vector<int> dp(target+1, 0);
+        for(int i=0; i<nums.size(); i++){
+            for(int j=target; j>=nums[i]; j--){
+                dp[j] = max(dp[j], dp[j-nums[i]]+nums[i]);
+                if(dp[target] == target)
+                    return true;
+            }
+        }
+        return false; 
+    }
+};
+```
+
+### 最后一块石头的重量II
++ 最后一块石头的重量 II：[1049.最后一块石头的重量II](https://leetcode.cn/problems/last-stone-weight-ii/)
++ 思路：
+	+ 这道题目同样可以看成是 `0 - 1` 背包问题的变式，**上一题是求背包是否正好装满，而本题是求背包最多能装多少**。那么可以将背包容量设定为数组总和 `sum` 的一半，即 `target = sum/2`，各个物品的重量和价值都是 `stones` 数组的元素，得到在该容量下能装的最大重量，最后 `sum - dp[target] - dp[target]` 即得到最小的结果。
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[j]` 的定义为：背包在容量为 `j` 的情况下从 `0` 到 `i` 的物品中选择装入得到的最大重量。 
+		+ 确定递推公式（与 `0 - 1` 背包问题一致）：
+			+ 状态转移方程 `dp[j] = max(dp[j], dp[j-nums[i]]+nums[i]);` ;
+		+ `dp` 数组如何初始化：全部初始化成 `0`；
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上倒序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int lastStoneWeightII(vector<int>& stones) {
+        int sum = 0;
+        for(int i=0; i<stones.size(); i++){
+            sum += stones[i];
+        }
+        int target = sum/2;
+        vector<int> dp(target+1, 0);
+        for(int i=0; i<stones.size(); i++){
+            for(int j=target; j>=stones[i]; j--){
+                dp[j] = max(dp[j], dp[j-stones[i]]+stones[i]);
+            }
+        }
+        return sum - dp[target] - dp[target];
+    }
+};
+```
