@@ -1786,3 +1786,90 @@ public:
     }
 };
 ```
+
+### 目标和
++ 目标和：[494.目标和](https://leetcode.cn/problems/target-sum/description/)
++ 思路：
+	+ 这道题目同样可以看成是 `0 - 1` 背包问题的变式，假设加法的总和为 `pos`，那么减法对应的总和就是 `neg = pos - sum` 。所以我们要求的是 `pos + neg = target`，`pos = (target + sum)/2`，此时问题就转化为，用 `nums` 装满容量为 `pos` 的背包，有几种方法。
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[j]` 的定义为：`dp[j]` 表示装满容量为 `j` 的背包有 `dp[j]` 种方法。 
+		+ 确定递推公式：
+			+ `dp[j]` 由所有 `dp[j-nums[i]]` 相加得到，后续要装满容量为 `j` 的背包有多少种方法都是用该递推公式。
+			+ 状态转移方程 `dp[j] += dp[j-nums[i]];` ;
+		+ `dp` 数组如何初始化：`dp[0] = 1;` 、其余初始化成 `0`；
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上倒序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int findTargetSumWays(vector<int>& nums, int target) {
+       int sum = 0;
+        for(int i=0; i<nums.size(); i++){
+            sum+=nums[i];
+        }
+        /*
+        pos + neg = target
+        pos - neg = sum -> neg = pos - sum
+        pos + pos - sum = target -> pos = (target + sum)/2
+        */
+        int ans = 0;
+        if(abs(target)>sum)
+            return 0;
+        if((target+sum)%2 == 1)
+            return 0;
+        int pos = (target+sum)/2;
+        vector<int> dp(pos+1, 0);
+        dp[0] = 1;
+        for(int i=0; i<nums.size(); i++){
+            for(int j=pos; j>=nums[i]; j--){
+                dp[j] += dp[j-nums[i]]; // dp[j] 表示装满容量为j的背包有 dp[j] 种方法
+            }
+        }
+        return dp[pos];
+    }
+};
+```
+
+### 一和零
++ 一和零：[474.一和零](https://leetcode.cn/problems/ones-and-zeroes/description/)
++ 思路：
+	+ 这道题目同样可以看成是 `0 - 1` 背包问题的变式，只不过这个背包有两个维度，一个是 `m` 一个是 `n`，而不同长度的字符串就是不同大小的待装物品。
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]`：最多有 `i` 个 `0` 和 `j` 个 `1` 的 `strs` 的最大子集的大小为 `dp[i][j]` 。
+		+ 确定递推公式：
+			+ `dp[i-x][j-y]+1` 的含义是容量为 `[i-x][j-y]` 的背包加上有 `x` 个 `0` 和 `y` 个 `1` 的字符串后子集的元素数量要 `+1` 。
+			+ 状态转移方程 `dp[i][j] = max(dp[i][j], dp[i-x][j-y]+1);` ;
+		+ `dp` 数组如何初始化：全部初始化成 `0`；
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上倒序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    void CountStr(int& x, int& y, string str){
+        for(int i=0; i<str.size(); i++){
+            if(str[i] == '0')
+                x++;
+            else
+                y++;
+        }
+    }
+
+    int findMaxForm(vector<string>& strs, int m, int n) {
+        vector<vector<int>> dp(m+1, vector<int> (n+1,0));
+        for(int k=0; k<strs.size(); k++){
+            int x=0, y=0; // x,y 分别表示字符串中0和1的个数
+            CountStr(x, y, strs[k]);
+            for(int i=m; i>=x; i--){
+                for(int j=n; j>=y; j--){
+                    dp[i][j] = max(dp[i][j], dp[i-x][j-y]+1);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+};
+```
