@@ -1618,7 +1618,7 @@ public:
 		+ `j` ：表示此时的背包容量
 		+ `dp[i][j]` : 背包在容量为 `j` 的情况下从 `0` 到 `i` 的物品中选择装入得到的最大价值。
 	+ 一维递推公式：
-		+ `i` ：表示 `0` 到 `i` 的物品任取放入容量 j 的背包中
+		+ `i` ：表示 `0` 到 `i` 的物品任取放入容量 `j` 的背包中
 		+ `j` ：表示此时的背包容量
 		+ `dp[j]` : 背包在容量为 `j` 的情况下从 `0` 到 `i` 的物品中选择装入得到的最大价值。
 
@@ -1870,6 +1870,70 @@ public:
             }
         }
         return dp[m][n];
+    }
+};
+```
+
+### 完全背包理论基础
++ 携带研究材料：[52.携带研究材料](https://kamacoder.com/problempage.php?pid=1052)
++ 思路：
+	+ 唯一和 `0 - 1` 背包不同之处在于遍历背包重量 `j` 采用正序。
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main(){
+    int n,v;
+    scanf("%d %d", &n, &v);
+    vector<int> weight(n);
+    vector<int> value(n);
+    for(int i=0; i<n; i++){
+        scanf("%d %d", &weight[i], &value[i]);
+    }
+    vector<int> dp(v+1, 0);
+    for(int i=0; i<n; i++){
+        for(int j=weight[i]; j<=v; j++){ // 唯一和 0 - 1 背包不同之处在于遍历背包重量 j 采用正序。
+            dp[j] = max(dp[j], dp[j-weight[i]]+value[i]);
+        }
+    }
+    printf("%d\n", dp[v]);
+    return 0;
+}
+```
+
+### 零钱兑换 II
++ 零钱兑换 II：[518.零钱兑换 II](https://leetcode.cn/problems/coin-change-ii/description/)
++ 思路：
+	+ 这道题目是完全背包问题的变式，求的是装满容量为 `j` 的背包有多少种方式。
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[j]`：装满容量为 `j` 的背包有 `dp[j]` 种方式。
+		+ 确定递推公式：
+			+ `dp[j]` 由所有 `dp[j-nums[i]]` 相加得到，后续要装满容量为 `j` 的背包有多少种方法都是用该递推公式。
+			+ 状态转移方程 `dp[j] += dp[j-nums[i]];` ;
+			+ 需要注意的是要加上 `if (dp[j] < INT_MAX - dp[j - coins[i]])` 来防止相加数据超 `int` 。
+		+ `dp` 数组如何初始化：`dp[0] = 1;` 、其余初始化成 `0`；
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int change(int amount, vector<int>& coins) {
+        vector<int> dp(amount+1, 0);
+        dp[0] = 1;
+        for(int i=0; i<coins.size(); i++){
+            for(int j=coins[i]; j<=amount; j++){
+                if (dp[j] < INT_MAX - dp[j - coins[i]]) // 防止相加数据超int
+                    dp[j] += dp[j-coins[i]];
+            }
+        }
+        return dp[amount];
     }
 };
 ```
