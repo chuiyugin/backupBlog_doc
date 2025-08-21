@@ -1937,3 +1937,78 @@ public:
     }
 };
 ```
+
+### 组合总和 Ⅳ
++ 组合总和 Ⅳ：[377.组合总和 Ⅳ](https://leetcode.cn/problems/combination-sum-iv/description/)
++ 思路：
+	+ 这道题目是完全背包问题的变式，求的是装满容量为 `j` 的背包有多少种方式。但是和上一题不同的是不同的遍历顺序有不同的结果：
+		+ 先背包再物品，求的是**排列数**；
+		+ 先物品再背包，求的是**组合数**。
+		+ 可以这么理解，先遍历物品的话 `0` 号物品将不会出现在后面，因此求的是组合数。
+		+ 本题求的是**排列数**，因此采用先背包再物品的遍历顺序。
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[j]`：装满容量为 `j` 的背包有 `dp[j]` 种方式。
+		+ 确定递推公式：
+			+ `dp[j]` 由所有 `dp[j-nums[i]]` 相加得到，后续要装满容量为 `j` 的背包有多少种方法都是用该递推公式。
+			+ 状态转移方程 `dp[j] += dp[j-nums[i]];` ;
+			+ 需要注意的是要加上 `if (dp[j] < INT_MAX - dp[j - coins[i]])` 来防止相加数据超 `int` 。
+		+ `dp` 数组如何初始化：`dp[0] = 1;` 、其余初始化成 `0`；
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int combinationSum4(vector<int>& nums, int target) {
+        vector<int> dp(target+1, 0);
+        dp[0] = 1;
+        for(int i=0; i<=target; i++){
+            for(int j=0; j<nums.size(); j++){
+                if(i>=nums[j] && dp[i] <= INT_MAX - dp[i-nums[j]])
+                    dp[i] += dp[i-nums[j]]; 
+            }
+        }
+        return dp[target];
+    }
+};
+```
+
+### 爬楼梯（进阶版）
++ 爬楼梯（进阶版）：[56.爬楼梯（进阶版）](https://kamacoder.com/problempage.php?pid=1067)
++ 思路：
+	+ 这道题和上一道题目完全一样，注意求的是**排列数**，因此采用先背包再物品的遍历顺序。
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[j]`：装满容量为 `j` 的背包有 `dp[j]` 种方式。
+		+ 确定递推公式：
+			+ `dp[j]` 由所有 `dp[j-nums[i]]` 相加得到，后续要装满容量为 `j` 的背包有多少种方法都是用该递推公式。
+			+ 状态转移方程 `dp[j] += dp[j-nums[i]];` ;
+			+ 需要注意的是要加上 `if (dp[j] < INT_MAX - dp[j - coins[i]])` 来防止相加数据超 `int` 。
+		+ `dp` 数组如何初始化：`dp[0] = 1;` 、其余初始化成 `0`；
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main(){
+    int n, m;
+    scanf("%d %d",&n, &m);
+    vector<int> dp(n+1, 0);
+    dp[0] = 1;
+    // 先遍历楼梯
+    for(int i=0; i<=n; i++){
+        for(int j=1; j<=m; j++){
+            if(i>=j)
+                dp[i] += dp[i-j];
+        }
+    }
+    printf("%d\n", dp[n]);
+    return 0;
+}
+```
