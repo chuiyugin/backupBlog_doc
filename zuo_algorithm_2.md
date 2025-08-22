@@ -2012,3 +2012,58 @@ int main(){
     return 0;
 }
 ```
+
+### 零钱兑换
++ 零钱兑换：[322.零钱兑换](https://leetcode.cn/problems/coin-change/)
++ 思路：
+	+ 题目中说每种硬币的数量是无限的，可以看出是典型的完全背包问题。
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[j]`：凑足总额为 `j` 所需钱币的最少个数为 `dp[j]` 。
+		+ 确定递推公式：`dp[j] = min(dp[j], dp[j-coins[i]]+1);`
+		+ `dp` 数组如何初始化：`dp[0] = 0;` 、其余初始化成 `INT_NAX`；
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        vector<int> dp(amount+1, INT_MAX);
+        dp[0] = 0;
+        for(int i=0; i<coins.size(); i++){
+            for(int j=coins[i]; j<=amount; j++){
+                if (dp[j - coins[i]] != INT_MAX) // 如果dp[j - coins[i]]是初始值则跳过
+                    dp[j] = min(dp[j], dp[j-coins[i]]+1);
+            }
+        }
+        if(dp[amount] == INT_MAX)
+            return -1;
+        else
+            return dp[amount];
+    }
+};
+```
+
+### 完全平方数
++ 完全平方数：[279.完全平方数](https://leetcode.cn/problems/perfect-squares/description/)
++ 思路：
+	+ 该题与上一题的思路完全类似。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int numSquares(int n) {
+        vector<int> dp(n+1, INT_MAX);
+        dp[0] = 0;
+        for(int i=0; i<=n; i++){
+            for(int j=i*i; j<=n; j++){
+                if(dp[j-i*i] != INT_MAX) // 如果dp[j - coins[i]]是初始值则跳过
+                    dp[j] = min(dp[j], dp[j-i*i]+1);
+            }
+        }
+        return dp[n];
+    }
+};
+```
