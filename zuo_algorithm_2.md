@@ -2067,3 +2067,34 @@ public:
     }
 };
 ```
+
+### 单词拆分
++ 单词拆分：[139.单词拆分](https://leetcode.cn/problems/word-break/description/)
++ 思路：
+	+ 单词就是物品，字符串 `s` 就是背包，单词能否组成字符串 `s`，就是问物品能不能把背包装满。拆分时可以重复使用字典中的单词，说明就是一个完全背包！
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i]` : 字符串长度为 `i` 的话，`dp[i]` 为 `true`，表示可以拆分为一个或多个在字典中出现的单词。
+		+ 确定递推公式：如果确定 `dp[j]` 是 `true`，且 `[j, i]` 这个区间的子串出现在字典里，那么 `dp[i]` 一定是 `true`。
+		+ `dp` 数组如何初始化：`dp[0] = true;` 、其余初始化成 `false`；
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
+	+ 注意代码中的 `unordered_set<string>` 和 `word_dict.find(s.substr(j, i-j)) != word_dict.end()` 相关代码的使用！
++ 代码：
+
+```cpp
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        unordered_set<string> word_dict(wordDict.begin(), wordDict.end());
+        vector<bool> dp(s.size()+1, false);
+        dp[0] = true;
+        for(int i=1; i<=s.size(); i++){ // 求排列序，先背包
+            for(int j=0; j<i; j++){ // 再物品
+                if(word_dict.find(s.substr(j, i-j)) != word_dict.end() && dp[j] == true)
+                    dp[i] = true;
+            }
+        }
+        return dp[s.size()];
+    }
+};
+```
