@@ -2098,3 +2098,81 @@ public:
     }
 };
 ```
+
+### 打家劫舍
++ 打家劫舍：[198.打家劫舍](https://leetcode.cn/problems/house-robber/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i]` : 考虑下标 `i`（包括 `i`）以内的房屋，最多可以偷窃的金额为 `dp[i]`。
+		+ 确定递推公式：`dp[i] = max(dp[i-2]+nums[i], dp[i-1]);` 。
+			+ 最大金额要么是 `dp[i-2]` 家的金额加上 `nums[i]`，要么是不偷第 `i` 家，最大金额是 `dp[i-1]`，这两者取最大值即可。
+		+ `dp` 数组如何初始化：`dp[0] = nums[0];` 、`dp[1] = max(dp[0], nums[1]);`、其余初始化成 `false`；
+		+ 确定遍历顺序：在 `i` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        if(nums.size() == 1)
+            return nums[0];
+        if(nums.size() == 2)
+            return max(nums[0], nums[1]);
+        vector<int> dp(nums.size(), 0);
+        dp[0] = nums[0];
+        dp[1] = max(dp[0], nums[1]);
+        for(int i=2; i<nums.size(); i++){
+            dp[i] = max(dp[i-2]+nums[i], dp[i-1]);
+        }
+        return dp[nums.size()-1];
+    }
+};
+```
+
+### 打家劫舍II
++ 打家劫舍 II：[213.打家劫舍II](https://leetcode.cn/problems/house-robber-ii/description/)
++ 思路：
+	+ 这一道题目和上一题差不多，唯一区别就是成环了。
++ 情况一：考虑不包含首尾元素
+
+![情况一](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202508241255366.png)
+
++ 情况二：考虑包含首元素，不包含尾元素
+
+![情况二](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202508241256488.png)
+
++ 情况三：考虑包含尾元素，不包含首元素
+
+![情况三](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202508241256473.png)
+
++ 由于情况二和情况三都包含了情况一了，所以只考虑情况二和情况三就可以了。因此分别求情况二和情况三的值，返回其中的最大值即可。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    // 打家劫舍一的代码
+    int rob_1(vector<int>& nums, int start, int end){
+        if(end == start)
+            return nums[start];
+        if(end - start == 1)
+            return max(nums[start], nums[start+1]);
+        vector<int> dp(nums.size(), 0);
+        dp[start] = nums[start];
+        dp[start+1] = max(dp[start], nums[start+1]);
+        for(int i=start+2; i<=end; i++){
+            dp[i] = max(dp[i-2]+nums[i], dp[i-1]);
+        }
+        return dp[end];
+    }
+
+    int rob(vector<int>& nums) {
+        if(nums.size() == 1)
+            return nums[0];
+        int num_1 = rob_1(nums, 0, nums.size()-2);
+        int num_2 = rob_1(nums, 1, nums.size()-1);
+        return max(num_1, num_2);
+    }
+};
+```
