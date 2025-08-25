@@ -2176,3 +2176,102 @@ public:
     }
 };
 ```
+
+### 打家劫舍III
++ 打家劫舍 III：[337.打家劫舍III](https://leetcode.cn/problems/house-robber-iii/description/)
++ 思路：
+	+ 1、确定递归函数的参数和返回值：这里我们要求一个节点偷与不偷的两个状态所得到的金钱，那么返回值就是一个长度为 `2` 的数组。
+	+ 2、确定终止条件：在遍历的过程中，如果遇到空节点的话，很明显，无论偷还是不偷都是 `0`，所以就返回 `{0, 0}` 。
+	+ 3、确定遍历顺序：
+		+ 首先明确的是使用**后序遍历**。因为要通过递归函数的返回值来做下一步计算。
+		+ 通过递归**左节点**，得到左节点偷与不偷的金钱。
+		+ 通过递归**右节点**，得到右节点偷与不偷的金钱。
+	+ 4、确定单层递归的逻辑：
+		+ 如果是偷当前节点，那么左右孩子就不能偷，`dp[1] = root->val + val_1[0] + val_2[0];`
+		+ 如果不偷当前节点，那么左右孩子就可以偷，至于到底偷不偷一定是选一个最大的，所以：`dp[0] = max (val_1[0], val_1[1]) + max (val_2[0], val_2[1]);`
+		+ 最后当前节点的状态就是 `{dp[0], dp[1]}` 。即：{ 不偷当前节点得到的最大金钱，偷当前节点得到的最大金钱 }。
++ 代码：
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> robTree(TreeNode* root){
+        // 终止条件
+        if(root == nullptr)
+            return {0,0};
+        vector<int> val_1 = robTree(root->left);
+        vector<int> val_2 = robTree(root->right);
+        vector<int> dp(2, 0);
+        // 不偷该节点
+        dp[0] = max(val_1[0], val_1[1]) + max(val_2[0], val_2[1]);
+        // 偷该节点
+        dp[1] = root->val + val_1[0] + val_2[0];
+        return dp;
+    }
+
+    int rob(TreeNode* root) {
+        vector<int> dp = robTree(root);
+        return max(dp[0], dp[1]);
+    }
+};
+```
+
+### 买卖股票的最佳时机
++ 买卖股票的最佳时机：[121.买卖股票的最佳时机](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/description/)
++ 贪心思路：
+	+ 因为股票就买卖一次，那么贪心的想法很自然就是取最左最小值，取最右最大值，那么得到的差值就是最大利润。
++ 贪心思路代码：
+
+```cpp
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int low = INT_MAX;
+        int result = 0;
+        for (int i = 0; i < prices.size(); i++) {
+            low = min(low, prices[i]);  // 取最左最小价格
+            result = max(result, prices[i] - low); // 直接取最大区间利润
+        }
+        return result;
+    }
+};
+```
+
++ 动规思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][0]` 表示不持有股票，`dp[i][1]` 表示持有股票。
+		+ 确定递推公式：
+			+ 第 `i` 天如果不持有股票：`dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i]);`
+			+ 第 `i` 天如果持有股票：`dp[i][1] = max(dp[i-1][1], 0-prices[i]);`
+		+ `dp` 数组如何初始化：`dp[0][0] = 0;` 、`dp[0][1] = 0-prices[0];` 、其余初始化成 `0`；
+		+ 确定遍历顺序：在 `i` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 动规思路代码：
+
+```cpp
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        // dp[i][0]表示不持有股票，dp[i][1]表示持有股票
+        vector<vector<int>> dp(prices.size(), vector<int>(2, 0));
+        dp[0][0] = 0;
+        dp[0][1] = 0-prices[0];
+        for(int i=1; i<prices.size(); i++){
+            dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i]);
+            dp[i][1] = max(dp[i-1][1], 0-prices[i]);
+        }
+        return dp[prices.size()-1][0];
+    }
+};
+```
