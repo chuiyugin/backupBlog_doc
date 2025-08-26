@@ -2275,3 +2275,74 @@ public:
     }
 };
 ```
+
+### 买卖股票的最佳时机II
++ 买卖股票的最佳时机 II：[122.买卖股票的最佳时机II](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][0]` 表示不持有股票，`dp[i][1]` 表示持有股票。
+		+ 确定递推公式：
+			+ 第 `i` 天如果不持有股票：`dp[i][0] = max(dp[i-1][1]+prices[i], dp[i-1][0]);`
+			+ 第 `i` 天如果持有股票：`dp[i][1] = max(dp[i-1][0]-prices[i], dp[i-1][1]);`
+		+ `dp` 数组如何初始化：`dp[0][0] = 0;` 、`dp[0][1] = 0-prices[0];` 、其余初始化成 `0`；
+		+ 确定遍历顺序：在 `i` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if(prices.size() == 1)
+            return 0;
+        // dp[i][0] 表示未持有股票的总收益 dp[i][1] 表示持有股票的总收益
+        vector<vector<int>> dp(prices.size(), vector<int>(2,0));
+        dp[0][1] = 0-prices[0];
+        for(int i=1; i<prices.size(); i++){
+            dp[i][0] = max(dp[i-1][1]+prices[i], dp[i-1][0]);
+            dp[i][1] = max(dp[i-1][0]-prices[i], dp[i-1][1]);
+        }
+        return dp[prices.size()-1][0];
+    }
+};
+```
+
+### 买卖股票的最佳时机 III
++ 买卖股票的最佳时机 III：[123.买卖股票的最佳时机III](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iii/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][0]` 表示不操作，`dp[i][1]` 表示第一次持有股票，`dp[i][2]` 表示第一次卖出股票，`dp[i][3]` 表示第二次持有股票，`dp[i][4]` 表示第二次卖出股票；
+		+ 确定递推公式：
+			+ 第 `i` 天如果操作：`dp[i][0] = dp[i-1][0];`
+			+ 第 `i` 天如果第一次持有股票：`dp[i][1] = max(dp[i-1][1], dp[i-1][0]-prices[i]);`
+			+ 第 `i` 天如果第一次卖出股票：`dp[i][2] = max(dp[i-1][2], dp[i-1][1]+prices[i]);`
+			+ 第 `i` 天如果第二次持有股票：`dp[i][3] = max(dp[i-1][3], dp[i-1][2]-prices[i]);`
+			+ 第 `i` 天如果第二次卖出股票：`dp[i][4] = max(dp[i-1][4], dp[i-1][3]+prices[i]);`
+		+ `dp` 数组如何初始化：`dp[0][0] = 0;` 、`dp[0][1] = 0-prices[0];` 、`dp[0][2] = 0;` 、`dp[0][3] = 0-prices[0];` 、`dp[0][4] = 0;` 、其余初始化成 `0`；
+		+ 确定遍历顺序：在 `i` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if(prices.size() == 1)
+            return 0;
+        vector<vector<int>> dp(prices.size(), vector<int>(5,0));
+        dp[0][0] = 0; // 0 代表不操作
+        dp[0][1] = 0-prices[0]; // 1 代表第一次持有
+        dp[0][2] = 0; // 2 代表第一次卖出
+        dp[0][3] = 0-prices[0]; // 3 代表第第二次持有
+        dp[0][4] = 0; // 4 代表第二次卖出
+        for(int i=1; i<prices.size(); i++){
+            dp[i][0] = dp[i-1][0];
+            dp[i][1] = max(dp[i-1][1], dp[i-1][0]-prices[i]);
+            dp[i][2] = max(dp[i-1][2], dp[i-1][1]+prices[i]);
+            dp[i][3] = max(dp[i-1][3], dp[i-1][2]-prices[i]);
+            dp[i][4] = max(dp[i-1][4], dp[i-1][3]+prices[i]);
+        }
+        return dp[prices.size()-1][4];
+    }
+};
+```
