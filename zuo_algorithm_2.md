@@ -2346,3 +2346,62 @@ public:
     }
 };
 ```
+
+### 买卖股票的最佳时机 IV
++ 买卖股票的最佳时机 IV：[188.买卖股票的最佳时机IV](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iv/description/)
++ 思路：
+	+ 和上一道题基本一致，加入 `for` 循环遍历每个状态即可。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int maxProfit(int k, vector<int>& prices) {
+        if(prices.size() == 1)
+            return 0;
+        vector<vector<int>> dp(prices.size(), vector<int>(2*k+1, 0));
+        // 初始化
+        dp[0][0] = 0;
+        for(int j=1; j<=2*k; j+=2){
+            dp[0][j] = 0-prices[0];
+        }
+        // 遍历
+        for(int i=1; i<prices.size(); i++){
+            dp[i][0] = dp[i-1][0];
+            for(int j=1; j<=2*k; j++){
+                if(j%2 == 1)
+                    dp[i][j] = max(dp[i-1][j], dp[i-1][j-1]-prices[i]);
+                else
+                    dp[i][j] = max(dp[i-1][j], dp[i-1][j-1]+prices[i]);
+            }
+        }
+        return dp[prices.size()-1][2*k];
+    }
+};
+```
+
+### 最佳买卖股票时机含冷冻期
++ 最佳买卖股票时机含冷冻期：[309.最佳买卖股票时机含冷冻期](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-with-cooldown/description/)
++ 思路：
+	+ 核心在于需要划分出四个状态：持有股票、卖出状态（过了冷冻期可以买入）、具体卖出的时候、冷冻期。梳理清楚这四个状态的关系即可写出递推公式。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        vector<vector<int>> dp(prices.size(), vector<int>(4, 0));
+        dp[0][0] = 0-prices[0]; // 持有股票
+        dp[0][1] = 0; // 卖出状态（过了冷冻期可以买入）
+        dp[0][2] = 0; // 具体卖出的时候
+        dp[0][3] = 0; // 冷冻期
+        for(int i=1; i<prices.size(); i++){
+            dp[i][0] = max(dp[i-1][0], max(dp[i-1][1]-prices[i], dp[i-1][3]-prices[i]));
+            dp[i][1] = max(dp[i-1][1], dp[i-1][3]);
+            dp[i][2] = dp[i-1][0]+prices[i];
+            dp[i][3] = dp[i-1][2];
+        }
+        return max(dp[prices.size()-1][1],max(dp[prices.size()-1][2], dp[prices.size()-1][3]));
+    }
+};
+```
