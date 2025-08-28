@@ -2405,3 +2405,65 @@ public:
     }
 };
 ```
+
+### 最长递增子序列
++ 最长递增子序列：[300.最长递增子序列](https://leetcode.cn/problems/longest-increasing-subsequence/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i]` 表示 `i` 之前包括 `i` 的以 `nums[i]` 结尾的最长递增子序列的长度。
+		+ 确定递推公式：
+			+ `j` 要从 `0` 循环到 `i`，判断 `nums[i] > nums[j]` 说明满足递增子序列，因此采用递推公式 `dp[i] = max(dp[i], dp[j]+1);` 。
+		+ `dp` 数组如何初始化：全部初始化成 `1`；
+		+ 确定遍历顺序：在 `i` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        // 以nums[i]结尾的最长递增子序列数
+        vector<int> dp(nums.size(), 1);
+        int ans = dp[0];
+        for(int i=1; i<nums.size(); i++){
+            for(int j=0; j<i; j++){
+                if(nums[i] > nums[j])
+                    dp[i] = max(dp[i], dp[j]+1);
+            }
+            if(dp[i] > ans)
+                ans = dp[i];
+        }
+        return ans;
+    }
+};
+```
+
+### 最长连续递增子序列
++ 最长连续递增子序列：[674.最长连续递增子序列](https://leetcode.cn/problems/longest-continuous-increasing-subsequence/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i]` 表示 `i` 之前包括 `i` 的以 `nums[i]` 结尾的最长连续递增子序列的长度。
+		+ 确定递推公式：
+			+ 和上一题的最大不同在于本题要求连续的递增子序列，因此 `i` 只需要和它的前一个元素 `i-1` 来比较即可，因此递推公式为当 `nums[i] > nums[i-1]` 时，有 `dp[i] = dp[i-1]+1;`。
+		+ `dp` 数组如何初始化：全部初始化成 `1`；
+		+ 确定遍历顺序：在 `i` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int findLengthOfLCIS(vector<int>& nums) {
+        // 以nums[i]结尾的最长连续递增子序列数
+        vector<int> dp(nums.size(), 1);
+        int ans = dp[0];
+        for(int i=1; i<nums.size(); i++){
+            if(nums[i]>nums[i-1])
+                dp[i] = dp[i-1]+1;
+            if(dp[i]>ans)
+                ans = dp[i];
+        }
+        return ans;
+    }
+};
+```
