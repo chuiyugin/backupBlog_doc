@@ -2467,3 +2467,68 @@ public:
     }
 };
 ```
+
+### 最长重复子数组
++ 最长重复子数组：[718.最长重复子数组](https://leetcode.cn/problems/maximum-length-of-repeated-subarray/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示以 `nums1[i-1]` 结尾和 `nums2[j-1]` 结尾的最长重复子序列数。
+		+ 确定递推公式：
+			+ 当 `nums1[i-1] == nums2[j-1]` 的时候，`dp[i][j] = dp[i-1][j-1]+1;`
+		+ `dp` 数组如何初始化：全部初始化成 `0`；
+			+ 根据 `dp[i][j]` 的定义，`dp[i][0]` 和 `dp[0][j]` 其实都是没有意义的！但 `dp[i][0]` 和 `dp[0][j]` 要初始值，因为为了方便递归公式 `dp[i][j] = dp[i-1][j-1] + 1;` 所以 `dp[i][0]` 和 `dp[0][j]` 初始化为 `0`。
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int findLength(vector<int>& nums1, vector<int>& nums2) {
+        // dp[i][j] 以 nums1[i-1] 结尾和 nums2[j-1] 结尾的最长重复子序列数
+        vector<vector<int>> dp(nums1.size()+1, vector<int>(nums2.size()+1, 0));
+        int ans = 0;
+        for(int i=1; i<=nums1.size(); i++){
+            for(int j=1; j<=nums2.size(); j++){
+                if(nums1[i-1] == nums2[j-1])
+                    dp[i][j] = dp[i-1][j-1]+1;
+            if(dp[i][j] > ans)
+                ans = dp[i][j];
+            }
+        }
+        return ans;
+    }
+};
+```
+
+### 最长公共子序列
++ 最长公共子序列：[1143.最长公共子序列](https://leetcode.cn/problems/longest-common-subsequence/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示以 `nums1[i-1]` 结尾和 `nums2[j-1]` 结尾的最长公共子序列数。
+		+ 确定递推公式：
+			+ 当 `nums1[i-1] == nums2[j-1]` 的时候，`dp[i][j] = dp[i-1][j-1]+1;`。
+			+ 否则，`dp[i][j] = max(dp[i][j-1], dp[i-1][j]);`
+		+ `dp` 数组如何初始化：全部初始化成 `0`；
+			+ 根据 `dp[i][j]` 的定义，`dp[i][0]` 和 `dp[0][j]` 其实都是没有意义的！但 `dp[i][0]` 和 `dp[0][j]` 要初始值，因为为了方便递归公式 `dp[i][j] = dp[i-1][j-1] + 1;` 所以 `dp[i][0]` 和 `dp[0][j]` 初始化为 `0`。
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int longestCommonSubsequence(string text1, string text2) {
+        vector<vector<int>> dp(text1.size()+1, vector<int>(text2.size()+1, 0));
+        for(int i=1; i<=text1.size(); i++){
+            for(int j=1; j<=text2.size(); j++){
+                if(text1[i-1] == text2[j-1])
+                    dp[i][j] = dp[i-1][j-1]+1;
+                else
+                    dp[i][j] = max(dp[i][j-1], dp[i-1][j]);
+            }
+        }
+        return dp[text1.size()][text2.size()];
+    }
+};
+```
