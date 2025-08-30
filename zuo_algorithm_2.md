@@ -2532,3 +2532,73 @@ public:
     }
 };
 ```
+
+### 不相交的线
++ 不相交的线：[1035.不相交的线](https://leetcode.cn/problems/uncrossed-lines/description/)
++ 思路：
+	+ 直线不能相交，这就是说明在字符串 `nums1` 中找到一个与字符串 `nums2` 相同的子序列，且这个子序列不能改变相对顺序，只要相对顺序不改变，连接相同数字的直线就不会相交。也就将题目转化为了求最长公共子序列问题。
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示以 `nums1[i-1]` 结尾和 `nums2[j-1]` 结尾的最长公共子序列数。
+		+ 确定递推公式：
+			+ 当 `nums1[i-1] == nums2[j-1]` 的时候，`dp[i][j] = dp[i-1][j-1]+1;`。
+			+ 否则，`dp[i][j] = max(dp[i][j-1], dp[i-1][j]);`
+		+ `dp` 数组如何初始化：全部初始化成 `0`；
+			+ 根据 `dp[i][j]` 的定义，`dp[i][0]` 和 `dp[0][j]` 其实都是没有意义的！但 `dp[i][0]` 和 `dp[0][j]` 要初始值，因为为了方便递归公式 `dp[i][j] = dp[i-1][j-1] + 1;` 所以 `dp[i][0]` 和 `dp[0][j]` 初始化为 `0`。
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int maxUncrossedLines(vector<int>& nums1, vector<int>& nums2) {
+        // dp[i][j] 表示 nums1[i-1] 和 nums2[j-1] 结尾的最长公共子序列
+        vector<vector<int>> dp(nums1.size()+1, vector<int>(nums2.size()+1, 0));
+        int ans = 0;
+        for(int i=1; i<=nums1.size(); i++){
+            for(int j=1; j<=nums2.size(); j++){
+                if(nums1[i-1] == nums2[j-1])
+                    dp[i][j] = dp[i-1][j-1]+1;
+                else
+                    dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+            }
+        }
+        return dp[nums1.size()][nums2.size()];
+    }
+};
+```
+
+### 最大子数组和
++ 最大子数组和：[53.最大子数组和](https://leetcode.cn/problems/maximum-subarray/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i]` 表示以 `nums[i]` 结尾的最大子数组和。
+		+ 确定递推公式：
+			+ 以 `nums[i]` 结尾的最大子数组和：
+			+ 要么是之前的最大子数组和加上自身的 `nums[i]`，即 `dp[i-1]+nums[i]` ;
+			+ 要么是之前的最大子数组和不再计算，只计算自身的 `nums[i]`；
+			+ 最终两者取较大值： `dp[i] = max(nums[i], dp[i-1]+nums[i]);`。
+		+ `dp` 数组如何初始化：除了 `dp[0] = nums[0]` ，其他全部初始化成 `INT_MIN`；
+		+ 确定遍历顺序：在 `i` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        if(nums.size() == 1)
+            return nums[0];
+        // dp[i] 以元素nums[i]为结尾的最大子数组和
+        vector<int> dp(nums.size(), INT_MIN);
+        dp[0] = nums[0];
+        int ans = dp[0];
+        for(int i=1; i<nums.size(); i++){
+            dp[i] = max(nums[i], dp[i-1]+nums[i]);
+            if(dp[i] > ans)
+                ans = dp[i];
+        }
+        return ans;
+    }
+};
+```
