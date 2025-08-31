@@ -2602,3 +2602,80 @@ public:
     }
 };
 ```
+
+### 判断子序列
++ 判断子序列：[392.判断子序列](https://leetcode.cn/problems/is-subsequence/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示以 `s[i-1]` 结尾和 `t[j-1]` 结尾的相同子序列的长度。
+		+ 确定递推公式：
+			+ 当 `s[i-1] == t[j-1]` 的时候，`dp[i][j] = dp[i-1][j-1]+1;`，可以理解为是将 `s[i-1]` 和 `t[j-1]` 删除后的子序列的长度加 `1` 。
+			+ 否则，`dp[i][j] = dp[i][j-1];`，可以理解为与删除 `t` 字符串的最后一个元素的相同子序列的长度一致。
+		+ `dp` 数组如何初始化：全部初始化成 `0`；
+			+ 根据 `dp[i][j]` 的定义，`dp[i][0]` 和 `dp[0][j]` 其实都是没有意义的！但 `dp[i][0]` 和 `dp[0][j]` 要初始值，因为为了方便递归公式 `dp[i][j] = dp[i-1][j-1] + 1;` 所以 `dp[i][0]` 和 `dp[0][j]` 初始化为 `0`。
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    bool isSubsequence(string s, string t) {
+        vector<vector<int>> dp(s.size()+1, vector<int>(t.size()+1, 0));
+        dp[0][0] = 0;
+        for(int i=1; i<=s.size(); i++){
+            for(int j=1; j<=t.size(); j++){
+                if(s[i-1] == t[j-1]){
+                    dp[i][j] = dp[i-1][j-1]+1;
+                }else{
+                    dp[i][j] = dp[i][j-1]; // 可以理解为与删除t字符串的最后一个元素的相同子序列的长度一致
+                }    
+            }
+        }
+        if(dp[s.size()][t.size()] == s.size())
+            return true;
+        else
+            return false;
+    }
+};
+```
+
+### 不同的子序列
++ 不同的子序列：[115.不同的子序列](https://leetcode.cn/problems/distinct-subsequences/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示以以 `s[i-1]` 元素结尾的 `s` 中有多少个以 `t[j-1]` 为结尾的子字符串。
+		+ 确定递推公式：
+			+ 当 `s[i-1] == t[j-1]` 的时候，`dp[i][j] = dp[i-1][j-1] + dp[i-1][j];`，可以理解为是将 `s[i-1]` 和 `t[j-1]` 删除后 `s` 中包含 `t` 的数量加上将 `s[i-1]` 删除后 `s` 中包含 `t` 的数量。
+			+ 否则，`dp[i][j] = dp[i][j-1];`，可以理解为与将 `s[i-1]` 删除后 `s` 中包含 `t` 的数量相等。
+		+ `dp` 数组如何初始化：全部初始化成 `0`；
+			+ 根据 `dp[i][j]` 的定义，`dp[i][0]` 表示 `s` 中至少有一个空字符串和 `dp[0][j]` 表示 `s` 为空时没有子字符串！
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
+
+![不同的子序列](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202508311557508.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int numDistinct(string s, string t) {
+        // dp[i][j] 以i-1元素结尾的s中有多少个以j-1为结尾的子字符串
+        vector<vector<uint64_t>> dp(s.size()+1, vector<uint64_t>(t.size()+1, 0));
+        for(int i=0; i<=s.size(); i++)
+            dp[i][0] = 1; // s中至少有一个空字符串
+        for(int j=1; j<=t.size(); j++)
+            dp[0][j] = 0; // s为空时没有子字符串
+        for(int i=1; i<=s.size(); i++){
+            for(int j=1; j<=t.size(); j++){
+                if(s[i-1] == t[j-1])
+                    dp[i][j] = dp[i-1][j-1] + dp[i-1][j];
+                else
+                    dp[i][j] = dp[i-1][j];
+            }
+        }
+        return dp[s.size()][t.size()];
+    }
+};
+```
