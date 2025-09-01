@@ -2644,7 +2644,7 @@ public:
 + 不同的子序列：[115.不同的子序列](https://leetcode.cn/problems/distinct-subsequences/description/)
 + 思路：
 	+ 按照动态规划五部曲进行分析：
-		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示以以 `s[i-1]` 元素结尾的 `s` 中有多少个以 `t[j-1]` 为结尾的子字符串。
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示以 `s[i-1]` 元素结尾的 `s` 中有多少个以 `t[j-1]` 为结尾的子字符串。
 		+ 确定递推公式：
 			+ 当 `s[i-1] == t[j-1]` 的时候，`dp[i][j] = dp[i-1][j-1] + dp[i-1][j];`，可以理解为是将 `s[i-1]` 和 `t[j-1]` 删除后 `s` 中包含 `t` 的数量加上将 `s[i-1]` 删除后 `s` 中包含 `t` 的数量。
 			+ 否则，`dp[i][j] = dp[i][j-1];`，可以理解为与将 `s[i-1]` 删除后 `s` 中包含 `t` 的数量相等。
@@ -2676,6 +2676,89 @@ public:
             }
         }
         return dp[s.size()][t.size()];
+    }
+};
+```
+
+### 两个字符串的删除操作
++ 两个字符串的删除操作：[583.两个字符串的删除操作](https://leetcode.cn/problems/delete-operation-for-two-strings/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示以 `word1[i-1]` 为结尾的字符串 `word1`，和以 `word2[j-1]` 结尾的字符串 `word2`，想要达到相等，所需要删除元素的最少次数。
+		+ 确定递推公式：
+			+ 当 `word1[i-1] == word2[j-1]` 的时候，`dp[i][j] = dp[i-1][j-1];`，可以理解为是将 `word1[i-1]` 和 `word2[j-1]` 删除后使得两个字符串相等的最少次数。
+			+ 否则，`dp[i][j] = min(dp[i-1][j], dp[i][j-1])+1;`，可以理解为前一个状态 `dp[i-1][j]` 或者 `dp[i][j-1]` 的更小者需要通过 `dp[i][j]` 的一次删除操作完成。
+		+ `dp` 数组如何初始化：`dp[i][0]` 初始化为 `i`，`dp[0][j]` 初始化为 `j`，其余全部初始化成 `0`；
+			+ 根据 `dp[i][j]` 的定义，`dp[i][0]` 表示 `word1` 中需要删除 `i` 次变为空字符串与 `word2` 相同。
+			+ 同理，`dp[0][j]` 表示 `word2` 中需要删除 `j` 次变为空字符串与 `word1` 相同。
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
+
+![两个字符串的删除操作](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202509011233604.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int minDistance(string word1, string word2) {
+        vector<vector<int>> dp(word1.size()+1, vector<int>(word2.size()+1, 0));
+        // 初始化
+        for(int i=0; i<=word1.size(); i++)
+            dp[i][0] = i;
+        for(int j=0; j<=word2.size(); j++)
+            dp[0][j] = j;
+        // 递推公式
+        for(int i=1; i<=word1.size(); i++){
+            for(int j=1; j<=word2.size(); j++){
+                if(word1[i-1] == word2[j-1])
+                    dp[i][j] = dp[i-1][j-1];
+                else
+                    dp[i][j] = min(dp[i-1][j], dp[i][j-1])+1;
+            }
+        }
+        return dp[word1.size()][word2.size()];
+    }
+};
+```
+
+### 编辑距离
++ 编辑距离：[72.编辑距离](https://leetcode.cn/problems/edit-distance/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示以 `word1[i-1]` 为结尾的字符串 `word1`，和以 `word2[j-1]` 结尾的字符串 `word2`，想要达到相等，所需要进行三种操作的最少次数。
+		+ 确定递推公式：
+			+ 当 `word1[i-1] == word2[j-1]` 的时候，`dp[i][j] = dp[i-1][j-1];`，可以理解为是将 `word1[i-1]` 和 `word2[j-1]` 删除后使得两个字符串相等的最少次数。
+			+ 否则，`min(dp[i-1][j-1], min(dp[i-1][j], dp[i][j-1]))+1;`，可以理解为前一个状态 `dp[i-1][j]` 或者 `dp[i][j-1]` 的更小者需要通过 `dp[i][j]` 的一次删除、增加或者替换操作完成。
+		+ `dp` 数组如何初始化：`dp[i][0]` 初始化为 `i`，`dp[0][j]` 初始化为 `j`，其余全部初始化成 `0`；
+			+ 根据 `dp[i][j]` 的定义，`dp[i][0]` 表示 `word1` 中需要删除 `i` 次变为空字符串与 `word2` 相同。
+			+ 同理，`dp[0][j]` 表示 `word2` 中需要删除 `j` 次变为空字符串与 `word1` 相同。
+		+ 确定遍历顺序：在 `i` 上正序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
+
+![编辑距离](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202509011231109.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int minDistance(string word1, string word2) {
+        vector<vector<int>> dp(word1.size()+1, vector<int>(word2.size()+1, 0));
+        // 初始化
+        for(int i=0; i<=word1.size(); i++)
+            dp[i][0] = i;
+        for(int j=0; j<=word2.size(); j++)
+            dp[0][j] = j;
+        for(int i=1; i<=word1.size(); i++){
+            for(int j=1; j<=word2.size(); j++){
+                if(word1[i-1] == word2[j-1])
+                    dp[i][j] = dp[i-1][j-1];
+                else
+                    dp[i][j] = min(dp[i-1][j-1], min(dp[i-1][j], dp[i][j-1]))+1;
+            }
+        }
+        return dp[word1.size()][word2.size()];
     }
 };
 ```
