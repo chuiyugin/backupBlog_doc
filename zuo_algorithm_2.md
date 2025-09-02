@@ -2762,3 +2762,85 @@ public:
     }
 };
 ```
+
+### 回文子串
++ 回文子串：[647.回文子串](https://leetcode.cn/problems/palindromic-substrings/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示字符串在 `[i, j]` 的子串是否为回文串。
+		+ 确定递推公式：
+			+ 当 `s[i] == s[j]` 的时候：
+				+ 如果 `j-i<=1`，表示 `a` 或者 `aa` 一定是回文串，因此 `dp[i][j] = true;` 。
+				+ 如果 `dp[i+1][j-1] == true`，表示加上两个相等的元素后的子串也一定是回文串，因此 `dp[i][j] = true;` 。
+				+ 其他情况都是 `false`。
+		+ `dp` 数组如何初始化：全部初始化成 `false`。
+		+ 确定遍历顺序：在 `i` 上倒序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
+
+![回文子串](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202509021238243.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int countSubstrings(string s) {
+        vector<vector<bool>> dp(s.size(), vector<bool>(s.size(), false));
+        int result = 0;
+        for(int i=s.size()-1; i>=0; i--){
+            for(int j=i; j<s.size(); j++){
+                if(s[i] == s[j]){
+                    if(j-i<=1){ // a 或者 aa 一定是回文串
+                        dp[i][j] = true;
+                        result++;
+                    }
+                    else if(dp[i+1][j-1] == true){
+                        dp[i][j] = true;
+                        result++;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+};
+```
+
+### 最长回文子序列
++ 最长回文子序列：[516.最长回文子序列](https://leetcode.cn/problems/longest-palindromic-subsequence/description/)
++ 思路：
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示字符串在 `[i, j]` 的区间内的最长回文子序列长度。
+		+ 确定递推公式：
+			+ 当 `s[i] == s[j]` 的时候，表示上一个最长回文子序列的长度再加上两个相等的字符，因此 `dp[i][j] = dp[i+1][j-1]+2;` 。
+			+ 当 `s[i] != s[j]` 的时候，选择取出 `s[i]` 或者 `s[j]` 元素中的较大回文子序列长度。
+		+ `dp` 数组如何初始化：在 `i==j` 的部分初始化成 `1`（`i==j` 表示至少回文子序列长度为 `1`），其余初始化成 `0`。
+		+ 确定遍历顺序：在 `i` 上倒序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
+
+![最长回文子序列](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202509021243805.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int longestPalindromeSubseq(string s) {
+        vector<vector<int>> dp(s.size(), vector<int>(s.size(), 0));
+        // 初始化 i==j 的部分初始化成 1
+        for(int i=0; i<s.size(); i++){
+            dp[i][i] = 1;
+        }
+        for(int i=s.size()-1; i>=0; i--){
+            for(int j=i+1; j<s.size(); j++){ // 注意 j=i+1 ，避免覆盖掉初始化值
+                if(s[i] == s[j]){
+                    dp[i][j] = dp[i+1][j-1]+2;
+                }else{
+                    dp[i][j] = max(dp[i][j-1], dp[i+1][j]);
+                }
+            }
+        }
+        return dp[0][s.size()-1];
+    }
+};
+```
