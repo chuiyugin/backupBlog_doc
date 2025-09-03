@@ -2844,3 +2844,90 @@ public:
     }
 };
 ```
+
+### 最长回文子串
++ 最长回文子串：[5.最长回文子串](https://leetcode.cn/problems/longest-palindromic-substring/description/)
++ 思路：
+	+ 这道题目和回文子串的题目基本一致，只需要加上一个数组记录 `i` 和 `j` 之间的最长间距以及各自的值即可，后续将其拼接到数组中。
+	+ 按照动态规划五部曲进行分析：
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示字符串在 `[i, j]` 的子串是否为回文串。
+		+ 确定递推公式：
+			+ 当 `s[i] == s[j]` 的时候：
+				+ 如果 `j-i<=1`，表示 `a` 或者 `aa` 一定是回文串，因此 `dp[i][j] = true;` 。
+				+ 如果 `dp[i+1][j-1] == true`，表示加上两个相等的元素后的子串也一定是回文串，因此 `dp[i][j] = true;` 。
+				+ 其他情况都是 `false`。
+		+ `dp` 数组如何初始化：全部初始化成 `false`。
+		+ 确定遍历顺序：在 `i` 上倒序遍历，在 `j` 上正序遍历；
+		+ 举例推导 `dp` 数组符合要求。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        vector<vector<bool>> dp(s.size(), vector<bool>(s.size(), false));
+        vector<int> ans(3, 0);
+        for(int i=s.size()-1; i>=0; i--){
+            for(int j=i; j<s.size(); j++){
+                if(s[i] == s[j]){
+                    if(j-i<=1){ // a 或者 aa 一定是回文串
+                        dp[i][j] = true;
+                        if(j-i>ans[0]){
+                            ans[0] = j-i;
+                            ans[1] = i;
+                            ans[2] = j;
+                        }
+                    }
+                    else if(dp[i+1][j-1] == true){
+                        dp[i][j] = true;
+                        if(j-i>ans[0]){
+                            ans[0] = j-i;
+                            ans[1] = i;
+                            ans[2] = j;
+                        }
+                    }
+                }
+            }
+        }
+        string result = "";
+        for(int i=ans[1]; i<=ans[2]; i++){
+            result+=s[i];
+        }
+        return result;
+    }
+};
+```
+
+## 单调栈
+### 每日温度
++ 每日温度：[739.每日温度](https://leetcode.cn/problems/daily-temperatures/description/)
++ 思路：
+	+ **通常是一维数组，要寻找任一个元素的右边或者左边第一个比自己大或者小的元素的位置，此时我们就要想到可以用单调栈了**。时间复杂度为 $O (n)$。
+	+ **单调栈的本质是空间换时间**，因为在遍历的过程中需要用一个栈来记录右边第一个比当前元素高的元素，优点是整个数组只需要遍历一次。**更直白来说，就是用一个栈来记录我们遍历过的元素**，因为我们遍历数组的时候，我们不知道之前都遍历了哪些元素，以至于遍历一个元素找不到是不是之前遍历过一个更小的，所以我们需要用一个容器（这里用单调栈）来记录我们遍历过的元素。
+	+ 情况一：当前遍历的元素 `temperatures[i]<=temperatures[st.top()]` 的情况，就将元素的下标 `i` 加入到栈中（ `st.push(i);` ）。
+	- 情况二：当前遍历的元素 `temperatures[i]>temperatures[st.top()]` 的情况，要将该元素与栈中的所有小于该元素的数据进行比较，满足则将结果添加的 `result` 数组中（ `result[st.top()] = i-st.top();` ），并弹出栈顶元素，最后记得将该元素的下标 `i` 加入到栈中（ `st.push(i);` ）。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<int> dailyTemperatures(vector<int>& temperatures) {
+        vector<int> result(temperatures.size(), 0);
+        stack<int> st; // 存放下标
+        st.push(0);
+        for(int i=1; i<temperatures.size(); i++){
+            if(temperatures[i]<=temperatures[st.top()]){
+                st.push(i);
+            }
+            else{
+                while(!st.empty() && temperatures[i]>temperatures[st.top()]){
+                    result[st.top()] = i-st.top();
+                    st.pop();
+                }
+                st.push(i);
+            }
+        }
+        return result;
+    }
+};
+```
