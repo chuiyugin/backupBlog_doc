@@ -67,6 +67,137 @@ public:
 };
 ```
 
+### 获取字符串的子串（substr()）
++ 获取字符串的子串 `substr()`：
+
+```cpp
+string substr (size_t pos = 0, size_t len = npos) const;
+```
+
++ `pos`：这是一个 `size_t` 类型的参数，表示子字符串开始的位置，其默认值为 `0`，即从字符串的起始位置开始提取。
++ `len`：同样是 `size_t` 类型的参数，代表要提取的子字符串的长度，默认值为 `std::string::npos`。当使用默认值时，函数会从 `pos` 位置开始提取直到字符串的末尾。
++ 示例题目：
+	+ 分割回文串：[131.分割回文串](https://leetcode.cn/problems/palindrome-partitioning/description/)
+	+ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<vector<string>> result;
+    vector<string> path;
+
+    // 判断是否回文串
+    bool isPalindrome(const string s, int start, int end){
+        int i=start, j=end;
+        while(i<=j){
+            if(s[i] != s[j])
+                return false;
+            i++;
+            j--;
+        }
+        return true;
+    }
+
+    void backtracking(string s, int startpoint){
+        // 终止条件（startpoint能够到达字符串末尾说明一定是满足分割要求）
+        if(startpoint>=s.size()){
+            result.push_back(path);
+            return;
+        }
+        // 递归回溯逻辑
+        for(int i=startpoint; i<s.size(); i++){
+            if(isPalindrome(s, startpoint, i)){
+                // 获取[startpoint,i]在s中的子串
+                string str = s.substr(startpoint, i-startpoint+1);
+                path.push_back(str);
+            }
+            else // 不是回文串，跳过
+                continue;
+            backtracking(s, i+1);
+            path.pop_back();
+        }
+    }
+
+    vector<vector<string>> partition(string s) {
+        backtracking(s, 0);
+        return result;
+    }
+};
+```
+
+### 使用迭代器的方式插入和删除字符串中的字符（insert()、erase()）
++ 使用迭代器的方式插入和删除字符串中的字符:
+
+```cpp
+s.insert(s.begin()+i+1, '.'); // 在 i+1 位置插入字符
+s.erase(s.begin()+i+1); // 在 i+1 位置删除字符
+```
+
++ 示例题目：
+	+ 复原 IP 地址：[93.复原IP地址](https://leetcode.cn/problems/restore-ip-addresses/description/)]( https://leetcode.cn/problems/palindrome-partitioning/description/ )
+	+ 代码：
+
+```cpp
+class Solution {
+public:
+    // 判断子串中的数字是否合法，区间[start, end]
+    bool isVaild(string s, int start, int end){
+        int sum = 0;
+        if(end-start>2)
+            return false;
+        for(int i=start; i<=end; i++){
+            if(s[i]-'0'>9 || s[i]-'0'<0)
+                return false;
+            else{
+                sum *= 10;
+                sum += s[i]-'0';
+            }
+        }
+        if(end-start == 0 && s[start]-'0' == 0)
+            return true;
+        else if(end-start > 0 && s[start]-'0' == 0)
+            return false;
+        else if(sum > 0 && sum <= 255)
+            return true;
+        else
+            return false;
+    }
+
+    vector<string> result;
+
+    void backtracking(string s, int startpoint, int pointSum){
+        // 终止条件
+        if(pointSum == 3){ // 已经插入了 3 个点
+            // 判断从 startpoint 到末尾的子串是否合法
+            if(isVaild(s, startpoint, s.size()-1)){ 
+                result.push_back(s);
+            }
+            return;
+        } 
+        // 递归回溯逻辑
+        for(int i=startpoint; i<s.size(); i++){
+            if(isVaild(s, startpoint, i)){
+                s.insert(s.begin()+i+1, '.');
+                pointSum++;
+                // i+2 跳过刚加上去的 .
+                backtracking(s, i+2, pointSum);
+                pointSum--;
+                s.erase(s.begin()+i+1);
+            }
+            else
+                continue;
+        }
+    }
+
+    vector<string> restoreIpAddresses(string s) {
+        if(s.size() < 4 || s.size() > 12) 
+            return result; // 算是剪枝了
+        backtracking(s, 0, 0);
+        return result;
+    }
+};
+```
+
 ## 哈希表相关
 ### set
 + 在 C++中，`set` 提供以下三种数据结构，其底层实现以及优劣如下表所示：

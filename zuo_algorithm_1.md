@@ -1,5 +1,5 @@
 ---
-title: 左程云算法学习
+title: 左程云、代码随想录算法学习（一）
 tags:
   - 算法学习
 categories:
@@ -7,7 +7,7 @@ categories:
 date: 2025-3-7 15:00:00
 excerpt: C++、编程语言、算法学习
 ---
-# 左程云算法学习
+# 左程云、代码随想录算法学习（一）
 ## 二分法
 + 二分查找法：[704.二分查找](https://leetcode.cn/problems/binary-search/description/)
 + 代码如下：
