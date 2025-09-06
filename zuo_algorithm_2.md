@@ -2931,3 +2931,168 @@ public:
     }
 };
 ```
+
+### 下一个更大元素 I
++ 下一个更大元素 I：[496.下一个更大元素 I](https://leetcode.cn/problems/next-greater-element-i/)
++ 思路：
+	+ 这道题目本质上与上一道题目类似，但需要注意的是 `nums1` 是 `nums2` 的子集，可以使用 `unordered_map<int, int> umap;` 的 `KV` 存储，其中 `Key` 记录 `nums1` 下标的元素，`Value` 记录 `nums1` 的下标。
+	+ 因为 `nums1` 是 `nums2` 的子集，只需要对 `nums2` 进行遍历即可：
+		+ 情况一：当前遍历的元素 `nums2[i] <= nums2[st.top()]` 的情况，就将元素的下标 `i` 加入到栈中（ `st.push(i);` ）。
+		- 情况二：当前遍历的元素 `nums2[i] > nums2[st.top()]` 的情况，通过 `umap.count(nums2[st.top()])>0` 判断栈顶的元素是否在 `nums1` 数组中：
+		- 如果栈顶元素属于 `nums1` 数组，则取出该元素在 `nums1` 中的下标 `index`，将结果记录 `result[index] = nums2[i];`，并弹出栈顶元素，最后记得将该元素的下标 `i` 加入到栈中（ `st.push(i);` ）。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
+        vector<int> result(nums1.size(), -1);
+        if(nums1.size() == 0)
+            return result;
+        unordered_map<int, int> umap; // key: nums1下标的元素，value：nums1的下标
+        for(int i=0; i<nums1.size();i++){
+            umap[nums1[i]] = i;
+        }
+        stack<int> st;
+        st.push(0);
+        for(int i=1; i<nums2.size(); i++){
+            if(nums2[i] <= nums2[st.top()]){
+                st.push(i);
+            }
+            else{
+                while(!st.empty() && nums2[i] > nums2[st.top()]){
+                    if(umap.count(nums2[st.top()])>0){ // 需要注意 nums1 是 nums2 的子集
+                        int index = umap[nums2[st.top()]];
+                        result[index] = nums2[i];
+                    }
+                    st.pop();
+                }
+                st.push(i);
+            }
+        }
+        return result;
+    }
+};
+```
+
+### 下一个更大元素 II
++ 下一个更大元素 II：[503.下一个更大元素 II](https://leetcode.cn/problems/next-greater-element-ii/)
++ 思路：
+	+ 这道题目和每日温度基本一致，关键在于处理循环数组，循环数组的处理可以通过遍历的长度变为原来的两倍 `nums.size()*2` ，然后循环体内的 `i` 变为取余处理（ `i%nums.size()` ）即可解决。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<int> nextGreaterElements(vector<int>& nums) {
+        vector<int> result(nums.size(), -1);
+        stack<int> st; // 存放下标
+        st.push(0);
+        for(int i=1; i<nums.size()*2; i++){
+            if(nums[i%nums.size()]<=nums[st.top()]){
+                st.push(i%nums.size());
+            }
+            else{
+                while(!st.empty() && nums[i%nums.size()]>nums[st.top()]){
+                    result[st.top()] = nums[i%nums.size()];
+                    st.pop();
+                }
+                st.push(i%nums.size());
+            }
+        }
+        return result;
+    }
+};
+```
+
+### 接雨水
++ 接雨水：[42.接雨水](https://leetcode.cn/problems/trapping-rain-water/)
++ 思路：
+	+ 这道题目采用单调递增栈来进行处理：
+		+ 情况一：当前遍历的元素 `height[i] < height[st.top()]` 的情况，就将元素的下标 `i` 加入到栈中（ `st.push(i);` ）。
+		+ 情况二：当前遍历的元素 `height[i] == height[st.top()]` 的情况，现将栈顶元素弹出，再将元素的下标 `i` 加入到栈中（ `st.push(i);` ）。
+		- 情况三：当前遍历的元素 `height[i] > height[st.top()]` 的情况，记录栈顶元素作为中间节点 `mid`（ `int mid = st.top();` ），再将栈顶元素弹出（ `st.pop();` ），因为是单调递增栈，此时有 `height[mid] < height[st.top()]` 以及 `height[mid] < height[i]` 这两个关系，就能够按照行的方式计算它们之间的收集雨水面积。
+
+![按照行方式计算接雨水](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250905152138.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        if(height.size() == 0)
+            return 0;
+        int ans = 0;
+        stack<int> st;
+        st.push(0);
+        for(int i=1; i<height.size(); i++){
+            if(height[i]<height[st.top()])
+                st.push(i);
+            else if(height[i] == height[st.top()]){
+                st.pop();
+                st.push(i);
+            }
+            else{
+                while(!st.empty() && height[i]>height[st.top()]){
+                    int mid = st.top();
+                    st.pop();
+                    if(!st.empty()){
+                        int h = min(height[i], height[st.top()])-height[mid];
+                        int w = i-st.top()-1;
+                        ans+=h*w;
+                    }
+                }
+                st.push(i);
+            }
+        }
+        return ans;
+    }
+};
+```
+
+### 柱状图中最大的矩形
++ 柱状图中最大的矩形：[84.柱状图中最大的矩形](https://leetcode.cn/problems/largest-rectangle-in-histogram/)
++ 思路：
+	+ 这道题目整体上和上一题类似，但是要在数组的首位插入元素 `0`，要采用单调递减栈来进行处理：
+		+ 情况一：当前遍历的元素 `heights[i] > heights[st.top()]` 的情况，就将元素的下标 `i` 加入到栈中（ `st.push(i);` ）。
+		+ 情况二：当前遍历的元素 `heights[i] == heights[st.top()]` 的情况，现将栈顶元素弹出，再将元素的下标 `i` 加入到栈中（ `st.push(i);` ）。
+		- 情况三：当前遍历的元素 `heights[i] < heights[st.top()]` 的情况，记录栈顶元素作为中间节点 `mid`（ `int mid = st.top();` ），再将栈顶元素弹出（ `st.pop();` ），因为是单调递减栈，此时有 `heights[mid] > height[st.top()]` 以及 `height[mid] > height[i]` 这两个关系，就能够按照行的方式计算它们之间的最大矩形面积。
+- 代码：
+
+```cpp
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        if(heights.size() == 1)
+            return heights[0];
+        int ans = 0;
+        // 数组前后加 0
+        heights.insert(heights.begin(), 0);
+        heights.push_back(0);
+        stack<int> st;
+        st.push(0);
+        // 单调递减栈
+        for(int i=1; i<heights.size(); i++){
+            if(heights[i] > heights[st.top()])
+                st.push(i);
+            else if(heights[i] == heights[st.top()]){
+                st.pop();
+                st.push(i);
+            }else{
+                while(!st.empty() && heights[i] < heights[st.top()]){
+                    int mid = st.top();
+                    st.pop();
+                    if(!st.empty()){
+                        int h = heights[mid];
+                        int w = i-st.top()-1;
+                        ans = max(ans, h*w);
+                    }
+                }
+                st.push(i);
+            }
+        }
+        return ans;
+    }
+};
+```

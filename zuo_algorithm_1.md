@@ -2202,6 +2202,83 @@ public:
 
 + 时间复杂度: $O(n)$，空间复杂度: $O(k)$。
 
+### 题目六
++ 前 K 个高频元素：[347. 前 K 个高频元素](https://leetcode.cn/problems/top-k-frequent-elements/description/)
++ 思路：
+	+ 要用小顶堆（采用优先队列实现），因为要统计最大前 `k` 个元素，只有小顶堆每次将最小的元素弹出，最后小顶堆里积累的才是前 `k` 个最大元素。
+	+ 寻找前 `k` 个最大元素流程如图所示：（图中的频率只有三个，所以正好构成一个大小为 `3` 的小顶堆，如果频率更多一些，则用这个小顶堆进行扫描）
+
+![使用小顶堆寻找前K个高频元素流程](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202509061431129.png)
+
++ 代码：
+
+```cpp
+class Solution {
+public:
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        class cmp{
+            public:
+                bool operator() (const pair<int, int>& lhs, const pair<int, int>& rhs){
+                    return lhs.second > rhs.second; // 大于号从大到小排序（小顶堆）
+                }
+        };
+        // 要统计元素出现频率
+        unordered_map<int, int> mp;
+        for(int i=0; i<nums.size(); i++){
+            mp[nums[i]]++;
+        }
+        // 对频率排序
+        // 定义一个小顶堆，大小为k
+        priority_queue<pair<int, int>, vector<pair<int, int>>, cmp> pri_que;
+        // 用固定大小为k的小顶堆，扫描所有频率的数值
+        for(unordered_map<int, int>::iterator it=mp.begin(); it!=mp.end(); it++){
+            pri_que.push(*it);
+            if(pri_que.size()>k)
+                pri_que.pop();
+        }
+        // 找出前K个高频元素，因为小顶堆先弹出的是最小的，所以倒序来输出到数组
+        vector<int> result(k, 0);
+        for(int i=result.size()-1; i>=0; i--){
+            result[i] = pri_que.top().first;
+            pri_que.pop();
+        }
+        return result;
+    }
+};
+```
+
+### 题目七
++ 数组中第 K 个最大元素：[215. 数组中第 K 个最大元素](https://leetcode.cn/problems/kth-largest-element-in-an-array/description/?envType=study-plan-v2&envId=top-100-liked)
++ 思路：这道题和上一题一样采用小顶堆的方法，令小顶堆的大小为 `k`，当小顶堆满且当前遍历的数组元素大于堆顶元素时（`nums[i] > pri_que.top()` ），弹出堆顶元素，再将该数组元素入堆。
+	+ 最后堆顶元素即为答案。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        class cmp{
+            public:
+                bool operator() (const int& lhs, const int& rhs){
+                    return lhs > rhs; // 大于号从大到小排序（小顶堆）
+                }
+        };
+        // 构建优先队列
+        priority_queue<int, vector<int>, cmp> pri_que;
+        for(int i=0; i<nums.size(); i++){
+            if(pri_que.size()<k)
+                pri_que.push(nums[i]);
+            else if(nums[i] > pri_que.top()){
+                pri_que.pop();
+                pri_que.push(nums[i]);
+            }
+        }
+        // 取出结果
+        return pri_que.top();
+    }
+};
+```
+
 ## 二叉树
 ### 二叉树的递归遍历
 + 前序遍历：[144. 二叉树的前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/description/)
