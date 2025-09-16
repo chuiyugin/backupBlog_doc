@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "zuo_algorithm_2.md",
+                "file": "hot100.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "zuo_algorithm_2"
+              "title": "hot100"
             }
           },
           {
@@ -27,15 +27,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "new_function.md",
+                "file": "hot100.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "new_function"
+              "title": "hot100"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -92,8 +93,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "0edc808bdabaac2f",
@@ -184,13 +184,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "zuo_algorithm_2.md",
+                "file": "hot100.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "zuo_algorithm_2 的大纲"
+              "title": "hot100 的大纲"
             }
           },
           {
@@ -220,11 +220,13 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "a9eade74042ea9b5",
+  "active": "03590907a02332ce",
   "lastOpenFiles": [
     "new_function.md",
-    "zuo_algorithm_2.md",
+    "hot100.md",
     "zuo_algorithm_1.md",
+    "zuo_algorithm_2.md",
+    "Interview.md",
     "houjie_cpp_2.md",
     "houjie_cpp.md",
     "hello-world.md",
@@ -246,8 +248,6 @@
     "Myexe - 副本.md",
     "algorithm2.md",
     "Fliplt - 副本.md",
-    "C_system.md",
-    "algorithm3.md",
     "Untitled.canvas",
     "日记和待办",
     "未命名.canvas"

@@ -2472,7 +2472,7 @@ public:
 + 最长重复子数组：[718.最长重复子数组](https://leetcode.cn/problems/maximum-length-of-repeated-subarray/)
 + 思路：
 	+ 按照动态规划五部曲进行分析：
-		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示以 `nums1[i-1]` 结尾和 `nums2[j-1]` 结尾的最长重复子序列数。
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 表示以 `nums1[i-1]` 结尾和 `nums2[j-1]` 结尾的最长重复子数组长度。
 		+ 确定递推公式：
 			+ 当 `nums1[i-1] == nums2[j-1]` 的时候，`dp[i][j] = dp[i-1][j-1]+1;`
 		+ `dp` 数组如何初始化：全部初始化成 `0`；
@@ -2485,7 +2485,7 @@ public:
 class Solution {
 public:
     int findLength(vector<int>& nums1, vector<int>& nums2) {
-        // dp[i][j] 以 nums1[i-1] 结尾和 nums2[j-1] 结尾的最长重复子序列数
+        // dp[i][j] 以 nums1[i-1] 结尾和 nums2[j-1] 结尾的最长重复子数组长度
         vector<vector<int>> dp(nums1.size()+1, vector<int>(nums2.size()+1, 0));
         int ans = 0;
         for(int i=1; i<=nums1.size(); i++){
