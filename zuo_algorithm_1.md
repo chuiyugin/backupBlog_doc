@@ -3072,7 +3072,7 @@ public:
 ```
 
 ### 平衡二叉树
-+ 平衡二叉树：[110.平衡二叉树](https://leetcode.cn/problems/minimum-depth-of-binary-tree/description/)
++ 平衡二叉树：[110.平衡二叉树](https://leetcode.cn/problems/balanced-binary-tree/description/)
 + 递归思路：思路与求最大深度类似，递归找节点 `root` 左右子树的最大高度，然后在递归中进行处理，如果在该节点 `root` 已经不满足平衡二叉树的时候就返回 `-1`，否则求节点 `root` 左右子树的最大高度，然后加 `1` 返回节点 `root` 的最大高度。再加上单独处理 `-1` 的情况即可。
 + 递归代码：
 
