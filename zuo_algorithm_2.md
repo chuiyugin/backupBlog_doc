@@ -285,7 +285,7 @@ public:
     vector<string> path;
 
     // 判断是否回文串
-    bool isPalindrome(const string s, int start, int end){
+    bool isPalindrome(const string& s, int start, int end){
         int i=start, j=end;
         while(i<=j){
             if(s[i] != s[j])
@@ -336,7 +336,7 @@ public:
 class Solution {
 public:
     // 判断子串中的数字是否合法，区间[start, end]
-    bool isVaild(string s, int start, int end){
+    bool isVaild(string& s, int start, int end){
         int sum = 0;
         if(end-start>2)
             return false;
@@ -360,7 +360,7 @@ public:
 
     vector<string> result;
 
-    void backtracking(string s, int startpoint, int pointSum){
+    void backtracking(string& s, int startpoint, int pointSum){
         // 终止条件
         if(pointSum == 3){ // 已经插入了 3 个点
             // 判断从 startpoint 到末尾的子串是否合法
@@ -956,7 +956,7 @@ public:
 ```
 
 ### K 次取反后最大化的数组和
-+ K次取反后最大化的数组和：[1005.K次取反后最大化的数组和](https://leetcode.cn/problems/jump-game-ii/description/)
++ K 次取反后最大化的数组和：[1005.K 次取反后最大化的数组和](https://leetcode.cn/problems/maximize-sum-of-array-after-k-negations/description/)
 + 思路：
 	+ 贪心的思路：
 		+ 当数组有正数和负数时，局部最优：让绝对值大的负数变为正数，当前数值达到最大。整体最优：整个数组和达到最大。
@@ -1059,7 +1059,7 @@ public:
 + 思路：
 	+ 有如下三种情况：
 		- 情况一：账单是 `5`，直接收下；
-		- 情况二：账单是 ` 10`，消耗一个 `5`，增加一个 `10`；
+		- 情况二：账单是 `10`，消耗一个 `5`，增加一个 `10`；
 		- 情况三：账单是 `20`，优先消耗一个 `10` 和一个 `5`，如果不够，再消耗三个 `5` 。
 	- 贪心策略：优先找零 `10` 元钞票，因为美元 `10` 只能给账单 `20` 找零，而美元 `5` 可以给账单 `10` 和账单 `20` 找零，美元 `5` 更万能！
 + 代码：
@@ -3095,4 +3095,110 @@ public:
         return ans;
     }
 };
+```
+
+## 图论
+### 岛屿数量
++ 岛屿数量：[200.岛屿数量](https://leetcode.cn/problems/number-of-islands/description/)
++ 思路：
+	+ 1. 遍历整个矩阵
+		- 从 `(0,0)` 开始，逐个格子扫描。
+		- 当遇到 `graph[i][j] == 1` 且未访问过时，说明发现了一个新的岛屿。
+	- 2. 启动 DFS/BFS 搜索
+		- 从当前点 `(i, j)` 出发，用 DFS 或 BFS 遍历它的上下左右相邻的格子。
+		- 把所有与它连通的 `1` 都标记为已访问，避免重复计数。
+		- 遍历的方向一般用数组 `dir[4][2] = {{0,1},{1,0},{0,-1},{-1,0}}` 来表示四个方向。
+	- 3. 计数
+		- 每次发现一个新的起点（未访问的 `1`），结果 `result++`。
+		- 搜索完成后，这整块连通区域就不会再被重复计算。
+	- 4. 边界条件
+		- 判断 `x, y` 是否越界。
+		- 避免访问 `0` 或已经访问过的格子。
++ 代码（深度优先搜索）：
+
+```cpp
+class Solution {
+public:
+
+    // 代表上下左右四个方向
+    const int dir[4][2] = {0,1,1,0,0,-1,-1,0};
+
+    void dfs(vector<vector<char>>& graph, vector<vector<bool>>& visited, int x, int y){
+        // 终止条件
+        if(graph[x][y] == '0' || visited[x][y])
+            return;
+        visited[x][y] = true;
+        for(int i=0; i<4; i++){
+            int nextx = x + dir[i][0];
+            int nexty = y + dir[i][1];
+            if(nextx<0 || nextx>=graph.size() || nexty<0 || nexty>=graph[0].size())
+            continue;
+            dfs(graph, visited, nextx, nexty);
+        }
+    }
+
+    int numIslands(vector<vector<char>>& grid) {
+        vector<vector<bool>> visited(grid.size(), vector<bool>(grid[0].size(), false));
+        int result = 0;
+        for(int i=0; i<grid.size(); i++){
+            for(int j=0; j<grid[0].size(); j++){
+                if(grid[i][j] == '1' && !visited[i][j]){
+                    result++;
+                    dfs(grid, visited, i, j);
+                }
+            }
+        }
+        return result;
+    }
+};
+```
+
++ 代码（ACM 版本）：
+
+```cpp
+#include <bits/stdc++.h>
+
+using namespace std;
+
+// 代表上下左右四个方向
+const int dir[4][2] = {0,1,1,0,0,-1,-1,0};
+
+void dfs(vector<vector<int>>& graph, vector<vector<bool>>& visited, int x, int y){
+    // 终止条件
+    if(graph[x][y] == 0 || visited[x][y])
+        return;
+    visited[x][y] = true;
+    for(int i=0; i<4; i++){
+        int nextx = x + dir[i][0];
+        int nexty = y + dir[i][1];
+        if(nextx<0 || nextx>=graph.size() || nexty<0 || nexty>=graph[0].size())
+            continue;
+        dfs(graph, visited, nextx, nexty);
+    }
+}
+
+int main() {
+    int m, n;
+    scanf("%d %d", &m, &n);
+    vector<vector<int>> graph(m, vector<int>(n, 0));
+    vector<vector<bool>> visited(m, vector<bool>(n, false));
+    for(int i=0; i<m; i++){
+        for(int j=0; j<n; j++){
+            scanf("%d", &graph[i][j]);
+            // printf("%d ", graph[i][j]);
+        }
+        // printf("\n");
+    }
+    int result = 0;
+    for(int i=0; i<m; i++){
+        for(int j=0; j<n; j++){
+            if(graph[i][j] == 1 && !visited[i][j]){
+                result++;
+                dfs(graph, visited, i, j);
+            }
+        }
+    }
+    printf("%d\n", result);
+    return 0;
+}
 ```
