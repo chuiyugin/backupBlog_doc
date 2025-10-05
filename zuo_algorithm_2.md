@@ -1508,7 +1508,7 @@ public:
 + 不同路径 II：[63.不同路径 II](https://leetcode.cn/problems/unique-paths-ii/description/)
 + 思路：
 	+ 按照动态规划五部曲进行分析：
-		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 的定义为：表示从 `(1,1)` 出发，到 `(i,j)` 有 `dp[i][j]` 条不同的路径，和上一题的主要区别在于**增加了障碍**，在有障碍的点要令 `dp[i][j]=0` ；
+		+ 确定 `dp` 数组及下标的含义：`dp[i][j]` 的定义为：表示从 `(1,1)` 出发，到 `(i,j)` 有 `dp[i][j]` 条不同的路径，和上一题的主要区别在于**增加了障碍**，在有障碍的点要令 `dp[i][j] = 0` ；
 		+ 确定递推公式：状态转移方程 `dp[i][j] = dp[i][j-1] + dp[i-1][j];` ;
 		+ `dp` 数组如何初始化：`dp[1][1] = 1;` ，其他初始化为 `0`；
 		+ 确定遍历顺序：从上往下、从前往后遍历；
@@ -3195,6 +3195,63 @@ int main() {
             if(graph[i][j] == 1 && !visited[i][j]){
                 result++;
                 dfs(graph, visited, i, j);
+            }
+        }
+    }
+    printf("%d\n", result);
+    return 0;
+}
+```
+
++ 代码（广度优先搜索）：
+
+```cpp
+#include <bits/stdc++.h>
+
+using namespace std;
+
+// 代表上下左右四个方向
+const int dir[4][2] = {0,1,1,0,0,-1,-1,0};
+
+// 广搜
+void bfs(vector<vector<int>>& graph, vector<vector<bool>>& visited, int x, int y){
+    queue<pair<int, int>> que;
+    que.push({x, y});
+    visited[x][y] = true; // 入队列就标记为访问过
+    while(!que.empty()){
+        pair<int, int> cur = que.front();
+        que.pop();
+        for(int i=0; i<4; i++){
+            int nextx = cur.first + dir[i][0];
+            int nexty = cur.second + dir[i][1];
+            if(nextx<0 || nextx>=graph.size() || nexty<0 || nexty>=graph[0].size())
+                continue;
+            if (!visited[nextx][nexty] && graph[nextx][nexty] == 1) {
+                que.push({nextx, nexty});
+                visited[nextx][nexty] = true; // 入队列就标记为访问过
+            }
+        }
+    }
+}
+
+int main() {
+    int m, n;
+    scanf("%d %d", &m, &n);
+    vector<vector<int>> graph(m, vector<int>(n, 0));
+    vector<vector<bool>> visited(m, vector<bool>(n, false));
+    for(int i=0; i<m; i++){
+        for(int j=0; j<n; j++){
+            scanf("%d", &graph[i][j]);
+            // printf("%d ", graph[i][j]);
+        }
+        // printf("\n");
+    }
+    int result = 0;
+    for(int i=0; i<m; i++){
+        for(int j=0; j<n; j++){
+            if(graph[i][j] == 1 && !visited[i][j]){
+                result++;
+                bfs(graph, visited, i, j);
             }
         }
     }
