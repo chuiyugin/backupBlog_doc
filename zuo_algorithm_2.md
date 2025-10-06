@@ -3259,3 +3259,112 @@ int main() {
     return 0;
 }
 ```
+
+### 岛屿的最大面积
++ 岛屿的最大面积：[105.岛屿的最大面积](https://leetcode.cn/problems/ZL6zAn/description/)
++ 思路：
+	+ 1. 遍历整个矩阵
+		- 从 `(0,0)` 开始，逐个格子扫描。
+		- 当遇到 `graph[i][j] == 1` 且未访问过时，说明发现了一个新的岛屿。
+	- 2. 启动 DFS/BFS 搜索
+		- 从当前点 `(i, j)` 出发，用 DFS 或 BFS 遍历它的上下左右相邻的格子。
+		- 把所有与它连通的 `1` 都标记为已访问，避免重复计数，并且将 `1` 的数量加到 `count` 中。
+		- 遍历的方向一般用数组 `dir[4][2] = {{0,1},{1,0},{0,-1},{-1,0}}` 来表示四个方向。
+	- 3. 计数
+		- 每次发现一个新的起点（未访问的 `1`），标记 `count = 0` ，从当前点 `(i, j)` 出发，用 DFS 或 BFS 遍历它的上下左右相邻的格子，并且将 `1` 的数量加到 `count` 中。最后和 `result` 比较取最大值：`result = max(result, count);` 。
+		- 搜索完成后，这整块连通区域就不会再被重复计算。
+	- 4. 边界条件
+		- 判断 `x, y` 是否越界。
+		- 避免访问 `0` 或已经访问过的格子。
++ 代码：
+
+```cpp
+class Solution {
+public:
+    // 代表上下左右四个方向
+    const int dir[4][2] = {0,1,1,0,0,-1,-1,0};
+
+    void dfs(vector<vector<int>>& graph, vector<vector<bool>>& visited, int& count, int x, int y){
+        // 终止条件
+        if(graph[x][y] == 0 || visited[x][y])
+            return;
+        count++;
+        visited[x][y] = true;
+        for(int i=0; i<4; i++){
+            int nextx = x + dir[i][0];
+            int nexty = y + dir[i][1];
+            if(nextx<0 || nextx>=graph.size() || nexty<0 || nexty>=graph[0].size())
+            continue;
+            dfs(graph, visited, count, nextx, nexty);
+        }
+    }
+
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        int count = 0;
+        int result = 0;
+        vector<vector<bool>> visited(grid.size(), vector<bool>(grid[0].size(), false));
+        for(int i=0; i<grid.size(); i++){
+            for(int j=0; j<grid[0].size(); j++){
+                count = 0;
+                dfs(grid, visited, count, i, j);
+                result = max(result, count);
+            }
+        }
+        return result;
+    }
+};
+```
+
++  代码（ACM 版本）：
+
+```cpp
+#include <bits/stdc++.h>
+
+using namespace std;
+
+// 代表上下左右四个方向
+const int dir[4][2] = {0,1,1,0,0,-1,-1,0};
+
+void dfs(vector<vector<int>>& graph, vector<vector<bool>>& visited, int& count, int x, int y){
+    // 终止条件
+    if(graph[x][y] == 0 || visited[x][y])
+        return;
+    count++;
+    visited[x][y] = true;
+    for(int i=0; i<4; i++){
+        int nextx = x + dir[i][0];
+        int nexty = y + dir[i][1];
+        if(nextx<0 || nextx>=graph.size() || nexty<0 || nexty>=graph[0].size())
+            continue;
+        dfs(graph, visited, count, nextx, nexty);
+    }
+}
+
+int main() {
+    int m, n;
+    scanf("%d %d", &m, &n);
+    vector<vector<int>> graph(m, vector<int>(n, 0));
+    vector<vector<bool>> visited(m, vector<bool>(n, false));
+    for(int i=0; i<m; i++){
+        for(int j=0; j<n; j++){
+            scanf("%d", &graph[i][j]);
+            // printf("%d ", graph[i][j]);
+        }
+        // printf("\n");
+    }
+    int result = 0;
+    // 记录岛屿最大面积
+    int count = 0;
+    for(int i=0; i<m; i++){
+        for(int j=0; j<n; j++){
+            if(graph[i][j] == 1 && !visited[i][j]){
+                count = 0;
+                dfs(graph, visited, count, i, j);
+                result = max(result, count);
+            }
+        }
+    }
+    printf("%d\n", result);
+    return 0;
+}
+```
