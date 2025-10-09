@@ -3010,7 +3010,7 @@ public:
 + 思路：
 	+ 这道题目采用单调递增栈来进行处理：
 		+ 情况一：当前遍历的元素 `height[i] < height[st.top()]` 的情况，就将元素的下标 `i` 加入到栈中（ `st.push(i);` ）。
-		+ 情况二：当前遍历的元素 `height[i] == height[st.top()]` 的情况，现将栈顶元素弹出，再将元素的下标 `i` 加入到栈中（ `st.push(i);` ）。
+		+ 情况二：当前遍历的元素 `height[i] == height[st.top()]` 的情况，先将栈顶元素弹出，再将元素的下标 `i` 加入到栈中（ `st.push(i);` ）。
 		- 情况三：当前遍历的元素 `height[i] > height[st.top()]` 的情况，记录栈顶元素作为中间节点 `mid`（ `int mid = st.top();` ），再将栈顶元素弹出（ `st.pop();` ），因为是单调递增栈，此时有 `height[mid] < height[st.top()]` 以及 `height[mid] < height[i]` 这两个关系，就能够按照行的方式计算它们之间的收集雨水面积。
 
 ![按照行方式计算接雨水](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/20250905152138.png)
@@ -3361,6 +3361,81 @@ int main() {
                 count = 0;
                 dfs(graph, visited, count, i, j);
                 result = max(result, count);
+            }
+        }
+    }
+    printf("%d\n", result);
+    return 0;
+}
+```
+
+### 孤岛的总面积
++ 孤岛的总面积：[101.孤岛的总面积](https://kamacoder.com/problempage.php?pid=1173)
++ 思路：
+	+ 1. 遍历矩阵的边
+		- 遍历矩阵的四个边。
+		- 当遇到 `graph[i][j] == 1` 时，说明发现了一个新的不是孤岛的岛屿。
+	- 2. 启动 DFS/BFS 搜索
+		- 从当前点 `(i, j)` 出发，用 DFS 或 BFS 遍历它的上下左右相邻的格子。
+		- 把所有与它连通的 `1` 都标记为 `0` ，避免重复计数。
+		- 遍历的方向一般用数组 `dir[4][2] = {{0,1},{1,0},{0,-1},{-1,0}}` 来表示四个方向。
+	- 3. 计数
+		- 四条边搜索完成后，把和陆地相连的岛屿全部变成 `0`，剩下的全部是孤岛，只需要再遍历一次 `graph` 把 `1` 的数量统计出来就是孤岛的面积了。
+	- 4. 边界条件
+		- 判断 `x, y` 是否越界。
+		- 避免访问 `0` 或已经访问过的格子。
++ 代码：
+
+```cpp
+#include <bits/stdc++.h>
+
+using namespace std;
+
+// 代表上下左右四个方向
+const int dir[4][2] = {0,1,1,0,0,-1,-1,0};
+
+void dfs(vector<vector<int>>& graph, int x, int y){
+    // 终止条件
+    if(graph[x][y] == 0)
+        return;
+    graph[x][y] = 0;
+    for(int i=0; i<4; i++){
+        int nextx = x + dir[i][0];
+        int nexty = y + dir[i][1];
+        if(nextx<0 || nextx>=graph.size() || nexty<0 || nexty>=graph[0].size())
+            continue;
+        dfs(graph, nextx, nexty);
+    }
+}
+
+int main() {
+    int m, n;
+    scanf("%d %d", &m, &n);
+    vector<vector<int>> graph(m, vector<int>(n, 0));
+    vector<vector<bool>> visited(m, vector<bool>(n, false));
+    for(int i=0; i<m; i++){
+        for(int j=0; j<n; j++){
+            scanf("%d", &graph[i][j]);
+        }
+    }
+    // 代码逻辑部分
+    for(int i=0; i<m; i++){
+        if(graph[i][0] == 1)
+            dfs(graph, i, 0);
+        if(graph[i][n-1] == 1)
+            dfs(graph, i, n-1);
+    }
+    for(int i=0; i<n; i++){
+        if(graph[0][i] == 1)
+            dfs(graph, 0, i);
+        if(graph[m-1][i] == 1)
+            dfs(graph, m-1, i);
+    }
+    int result = 0;
+    for(int i=0; i<m; i++){
+        for(int j=0; j<n; j++){
+            if(graph[i][j] == 1){
+                result++;
             }
         }
     }
