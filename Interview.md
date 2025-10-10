@@ -89,7 +89,7 @@ excerpt: 面经汇总
 		+ 其中无缓冲管道的发送和接收必须同时存在，发送操作会阻塞直到有接收者，适合用于**同步通信**。
 		+ 而有缓冲管道可以存储一定数量的元素，当缓冲区未满时，发送不会阻塞；当缓冲区为空时，接收会阻塞；更适合异步任务队列。
 	+ 管道是**并发安全的**，内部使用 **锁和环形队列** 实现；无需额外的 `mutex` 就能保证安全通信。
-	+ 管道的关闭只能由发送方关闭；接收方可以检测通道是否关闭；
+	+ 管道的关闭只能由发送方关闭，接收方可以检测通道是否关闭，但发送方往关闭的管道发送数据会触发 `panic`。
 
 #### Contex 相关
 + 介绍一下 `contex` 接口中的四个方法
@@ -147,7 +147,64 @@ excerpt: 面经汇总
 #### GC 相关
 + 介绍一下 GC 流程
 	+ Golang 中的垃圾回收采用并发三色标记法+混合写屏障机制。
-	+ 
+		+ 三色标记法的流程：
+			+ 对象分为三种颜色标记：黑、灰、白
+			- 黑对象代表，对象自身存活，且其指向对象都已标记完成
+			- 灰对象代表，对象自身存活，但其指向对象还未标记完成
+			- 白对象代表，对象尙未被标记到，可能是垃圾对象
+			- 标记开始前，将根对象（全局对象、栈上局部变量等）置黑，将其所指向的对象置灰
+			- 标记规则是，从灰对象出发，将其所指向的对象都置灰. 所有指向对象都置灰后，当前灰对象置黑
+			- 标记结束后，白色对象就是不可达的垃圾对象，需要进行清扫
+		- 混合写屏障机制：
+			- 插入写屏障（Dijkstra）：目标是实现强三色不变式，保证当一个黑色对象指向一个白色对象前，会先触发屏障将白色对象置为灰色，再建立引用
+			- 删除写屏障（Yuasa barrier）：目标是实现弱三色不变式，保证当一个白色对象即将被上游删除引用前，会触发屏障将其置灰，之后再删除上游指向其的引用
+
+![插入写屏障](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202510110106148.png)
+
+
+![删除写屏障](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202510110106267.png)
+
+#### sync.Pool
++ 介绍一下 `sync.Pool`
+	+ `sync.Pool` 是 golang 标准库下并发安全的对象池，适合用于有大量对象资源会存在被反复构造和回收的场景，可缓存资源进行复用，以提高性能并减轻 GC 压力。
+	+ `sync.Pool` 缓存的是 `any` 类型的对象（通常是指针类型），由程序员决定具体类型。
+	+ `sync.Pool` 结构体的源码：
+
+```go
+type Pool struct {
+    noCopy noCopy
+
+    local     unsafe.Pointer // local fixed-size per-P pool, actual type is [P]poolLocal
+    localSize uintptr        // size of the local array
+
+    victim     unsafe.Pointer // local from previous cycle
+    victimSize uintptr        // size of victims array
+
+    // New optionally specifies a function to generate
+    // a value when Get would otherwise return nil.
+    // It may not be changed concurrently with calls to Get.
+    New func() 
+```
+
+- `noCopy` 防拷贝标志；
+- `local` 类型为 `[P]poolLocal` 的数组，数组容量 P 为 goroutine 处理器 P 的个数；
+- `victim` 为经过一轮 gc 回收，暂存的上一轮 local；
+- `New` 为用户指定的工厂函数，当 Pool 内存量元素不足时，会调用该函数构造新的元素。
+
+```go
+type poolLocal struct {
+    poolLocalInternal
+}
+
+// Local per-P Pool appendix.
+type poolLocalInternal struct {
+    private any       // Can be used only by the respective P.
+    shared  poolChain // Local P can pushHead/popHead; any P can popTail.
+}
+```
+- `poolLocal` 为 Pool 中对应于某个 P 的缓存数据；
+- `poolLocalInternal.private`：对应于某个 P 的私有元素，操作时无需加锁；
+- `poolLocalInternal.shared` : 某个 P 下的共享元素链表，由于各 P 都有可能访问，因此需要加锁.
 
 ## 计网相关
 ### HTTP 篇
@@ -214,3 +271,8 @@ excerpt: 面经汇总
 
 ## Redis
 + 缓存击穿和缓存雪崩的概念，以及怎么解决？
+	+ **缓存击穿**是指缓存中某个热点数据过期了，此时有大量请求访问这个数据，导致无法从缓存中直接读取，会去访问数据库，此时数据库很容易被高并发请求击垮，称为缓存击穿。解决方法是不给热点数据设置过期缓存，由后台异步更新缓存。
+	+ 缓存雪崩是指缓存中有大量数据在同一时间段过期了，此时有大量的用户请求无法访问到缓存中的数据，会去访问数据库，此时数据库很容易被高并发请求击垮，称为缓存雪崩。解决方法是均匀设置缓存的过期时间，不要让大量数据在同一时间段过期。或者不给热点数据设置过期缓存，由后台异步更新缓存。
+
++ 缓存一致性怎么解决？
+	+ 采用旁路缓存，读的话先读缓存，缓存命中则返回。缓存未命中，则读数据库，然后将数据写入缓存，再返回。然后写操作： 先更新数据库，再删除缓存。
