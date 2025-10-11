@@ -90,6 +90,12 @@ excerpt: 面经汇总
 		+ 而有缓冲管道可以存储一定数量的元素，当缓冲区未满时，发送不会阻塞；当缓冲区为空时，接收会阻塞；更适合异步任务队列。
 	+ 管道是**并发安全的**，内部使用 **锁和环形队列** 实现；无需额外的 `mutex` 就能保证安全通信。
 	+ 管道的关闭只能由发送方关闭，接收方可以检测通道是否关闭，但发送方往关闭的管道发送数据会触发 `panic`。
++ `select` 是怎么和 `channel` 配合的？
+	+ `select` 是 Go 专门用于**同时等待多个 channel 操作**的控制结构。它的作用类似于多路复用器，让 `goroutine` 能够「同时监听多个 `channel` 」，只要其中任意一个可以通信（发送或接收），就立即执行对应的分支。
+	+ `select` 的行为可以分为三种情况：
+		+ 至少有一个 `case` 可执行，随机选择一个执行；
+		+ 所有通道都阻塞，阻塞等待直到某个通道可用；
+		+ 有 `default` 且所有通道都阻塞，立即执行 `default`（非阻塞）。
 
 #### Contex 相关
 + 介绍一下 `contex` 接口中的四个方法
@@ -205,6 +211,40 @@ type poolLocalInternal struct {
 - `poolLocal` 为 Pool 中对应于某个 P 的缓存数据；
 - `poolLocalInternal.private`：对应于某个 P 的私有元素，操作时无需加锁；
 - `poolLocalInternal.shared` : 某个 P 下的共享元素链表，由于各 P 都有可能访问，因此需要加锁.
+
+#### defer
++ 介绍一下 `defer` 以及执行顺序
+	+ `defer` 主要用在函数或者方法上面，作用是用于函数和方法的延迟调用。
+	+ `defer` 的执行顺序和栈一样，是先调用，后执行。
+	+ `defer` 有两个主要的实际用处：
+		+ 用于资源回收，根据其延迟调用的机制，可以优雅地处理资源回收问题。
+		+ 可以配合 `recover()` 一起处理 `panic` 。
+	+ `defer` 和 `return` 的处理顺序：
+		+ 先设置返回值
+		+ 执行 `defer` 语句
+		+ 将结果返回
+	+ 注意下面这个例子输出是 `2` ：
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+   res := deferRun()
+   fmt.Println(res)
+}
+
+func deferRun() (res int) {
+  num := 1
+  
+  defer func() {
+    res++
+  }()
+  
+  return num
+}
+```
 
 ## 计网相关
 ### HTTP 篇
