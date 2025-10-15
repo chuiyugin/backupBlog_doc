@@ -9,6 +9,26 @@ excerpt: 面经汇总
 ---
 
 # 知识复习汇总
+
+## 项目相关
+### ReviewCloud 项目
++ `ES` 前面的 `Redis` 缓存是怎么存的？
+	+ 把 `storeID`，`offset`，`limit` 合并设置为缓存的 `key`，返回的数据设置为 `value`。
+
+```go
+key := fmt.Sprintf("review:%d:%d:%d", storeID, offset, limit)
+```
+
++ `ES` 是在哪里分词的？
+	+ 分词行为由 `Elasticsearch` 的索引定义（mapping）决定。
++ `Canal` 怎么知道传那个表的信息？
++ `gRPC` 和 `HTTP` 的区别？
++ `protobuf` 和 `json` 的区别？
++ `Kafka` 怎么保证不丢数据？
+	+ 生产端：幂等 + acks=all + 重试
+	+ Broker：多副本 + 顺序写 + ISR 机制
+	+ 消费端：offset 管理 + 事务
+
 ## 数据结构
 ### 哈希相关
 + 简单介绍一下哈希表？
@@ -120,6 +140,33 @@ excerpt: 面经汇总
 		- 注意事项：
 			- 不建议滥用 context 存放大量数据；
 			- 只应用于跨 API、跨 `goroutine` 传递**请求级别元信息**。
+
+#### interface 相关
++ `interface` 和 `interface{}` 的区别
+	+ `interface{}` 是可以接受任何类型的接口。Go 1.18 之后，`any` 是 `interface{}` 的别名。
+	+ 例如：
+
+```go
+// 表示任何类型参数
+func PrintAny(v interface{}) {
+    fmt.Println(v)
+}
+
+// 动态类型容器
+var data = []interface{}{1, "hello", true}
+```
+
++ `interface` 是“定义行为规范的接口类型”。
++ 例如：
+
+```go
+// 定义了一组方法签名。
+// 只有实现了这些方法的类型 才算实现了该接口。
+// 是 Go 的多态机制核心。
+type Reader interface {
+    Read(p []byte) (n int, err error)
+}
+```
 
 #### Gin 框架
 + 介绍一下 `Gin` 框架的路由注册
@@ -246,6 +293,27 @@ func deferRun() (res int) {
 }
 ```
 
+#### GORM 相关
++ 讲讲 `gorm` 框架？
+	+ `gorm` 框架可以将数据库表和代码中的类（结构体）建立映射。其三大核心思想包括：数据库表和类（结构体）映射、表中列字段和类（结构体）属性映射、对象操作转换为 SQL 语句。
++ `gorm` 框架为什么要使用反射？
+	+ `gorm` 框架不能在编译期硬编码针对每个 `struct` 的逻辑，反射让它可以在运行期做到“识别任意类型”，从而适配多种不同结构体的不同字段。
++ `gorm` 对象与字段映射的底层实现？
+	+ 创建 `schema.Schema` 对象，保存表与字段的映射，通过结构体反射 + tag 解析实现。
+		+ `reflect.TypeOf(User{})` 获取结构体类型；
+		+ 遍历字段；
+		+ 解析每个字段的 tag（如 `gorm:"primaryKey"`、`gorm:"column:email_address"`）；
+		+ 根据命名策略生成表名和列名；
+		+ 构造 `Schema`，存入缓存。
++ `gorm` 标签底层怎么处理？
+	+ 通过 `ParseTagSetting` 函数处理成 `map[string]string` 的形式，tag 中以分号 `;` 拆分 tag 内容
+	+ 通过 `:` 来分割 `key:value`：
+		+ 如果有 `:`，如 `size:100` → key= `size`, value= `100`
+		+ 如果没有 `:`，如 `primaryKey` → key= `primaryKey`, value= `true`
++ `gorm` 每次提取标签都要进行一次反射吗？
+	+ GORM 并不会每次都反射提取标签；
+	+ 它只在第一次遇到某个模型类型时用反射解析所有字段和 tag，之后所有 SQL 构造和操作都直接复用缓存的 `Schema` 信息，只在运行时通过轻量级反射访问字段值。
+
 ## 计网相关
 ### HTTP 篇
 + HTTPS 比 HTTP 安全在哪？证书在其中起到什么作用，如何验证证书？
@@ -316,3 +384,18 @@ func deferRun() (res int) {
 
 + 缓存一致性怎么解决？
 	+ 采用旁路缓存，读的话先读缓存，缓存命中则返回。缓存未命中，则读数据库，然后将数据写入缓存，再返回。然后写操作： 先更新数据库，再删除缓存。
+
+## git 相关
++ `git` 分支的作用？
+	+ `git` 分支只是一个指向提交（ `commit` ）的指针，它没有复制文件或代码。不同分支的修改互不影响，开发完成后可以通过 `merge`（合并）或 `rebase`（变基）整合到主线。
++ `git pull` 和 `git fetch` 的区别？
+	+ `git fetch` 仅仅把远程仓库的新提交取回到本地仓库，但**不会改变你当前分支的状态**。
+	+ `git pull` 实际上等价于 `fetch` + `merge`（或 `rebase`），会更新本地分支，并且可能修改工作区。
++ `git checkout` 和 `git stash` 的区别？
+	+ `git checkout` 是切换分支或恢复文件到某个版本，可能会丢弃或覆盖当前修改。
+	+ `git stash` 是临时保存当前未提交的更改，会安全地保存修改并清理工作区。
++ `git merge` 和 `git rebase` 的区别？
+	+ `git merge` 把两个分支的内容合并，保留原有提交历史，会生成一个新的“合并提交”。
+	+ `git rebase` 会重写提交历史，使之线性化，不会合并两个分支。
++ 说一下 `git cherrypick`
+	+ `git cherrypick` 是从其他分支中“挑选”一个或多个提交（`commit`），并把它们应用到当前分支上。
