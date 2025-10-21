@@ -396,6 +396,14 @@ func deferRun() (res int) {
 	- 4、服务端通过“预主密钥” (Pre-Master Secret)计算出会话密钥后向客户端发信息：发送加密算法改变的通知，表示后续信息都用会话密钥来加密。
 
 ### TCP 相关
++ TCP 三次握手状态转移图：
+
+![TCP 三次握手状态转移图](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202510212125355.png)
+
++ TCP 四次挥手状态转移图：
+
+![TCP 四次挥手状态转移图](https://yugin-blog-1313489805.cos.ap-guangzhou.myqcloud.com/202510212126097.png)
+
 + UDP 和 TCP 假如同时发一个 100 M 带宽的网络最终是一个什么情况？
 	+ UDP 没有拥塞控制，会尽力占用全部 100 M；
 	+ TCP 会检测到丢包率升高，RTT 延长，于是快速减小发送窗口；
@@ -473,7 +481,10 @@ func deferRun() (res int) {
 	+ Producer：消息的生产者
 	+ Consumer：消息的消费者
 	+ Consumer Group：消息的消费群组
-
++ Kafka 怎么保证数据不丢失？
+	+ 生产者：消息**被可靠写入多个副本**后再返回成功；失败要**可重试且不重复**。
+	+ Broker / 主题（Topic）与集群层：**副本冗余 + 正确的选主与同步策略**，避免单点和“脏主”导致的数据缺失。
+	+ 消费者（Consumer）与 Offset 提交：**处理完再提交偏移**，或者用事务做到**精确一次（EOS）**。
 
 ## git 相关
 + `git` 分支的作用？
