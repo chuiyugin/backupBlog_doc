@@ -2401,7 +2401,7 @@ public:
             dp[i][2] = dp[i-1][0]+prices[i];
             dp[i][3] = dp[i-1][2];
         }
-        return max(dp[prices.size()-1][1],max(dp[prices.size()-1][2], dp[prices.size()-1][3]));
+        return max(dp[prices.size()-1][1], max(dp[prices.size()-1][2], dp[prices.size()-1][3]));
     }
 };
 ```
