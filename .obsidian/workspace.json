@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Interview.md",
+                "file": "tazi_algorithm.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Interview"
+              "title": "tazi_algorithm"
             }
           }
         ]
@@ -169,13 +169,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Interview.md",
+                "file": "tazi_algorithm.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Interview 的大纲"
+              "title": "tazi_algorithm 的大纲"
             }
           },
           {
@@ -208,9 +208,11 @@
   "active": "03590907a02332ce",
   "lastOpenFiles": [
     "zuo_algorithm_2.md",
-    "Interview.md",
-    "zuo_algorithm_1.md",
+    "tazi_algorithm.md",
     "hot100.md",
+    "hot100 - 副本.md",
+    "zuo_algorithm_1.md",
+    "Interview.md",
     "hello-world.md",
     "vue_learning.md",
     "Josephus.md",
@@ -233,8 +235,6 @@
     "exercise1.md",
     "Deep_laerning.md",
     "Assembly_language.md",
-    "Myexe - 副本.md",
-    "algorithm2.md",
     "Untitled.canvas",
     "日记和待办",
     "未命名.canvas"
