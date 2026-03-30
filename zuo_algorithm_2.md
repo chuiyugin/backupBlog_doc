@@ -3132,7 +3132,7 @@ public:
             int nextx = x + dir[i][0];
             int nexty = y + dir[i][1];
             if(nextx<0 || nextx>=graph.size() || nexty<0 || nexty>=graph[0].size())
-            continue;
+	            continue;
             dfs(graph, visited, nextx, nexty);
         }
     }

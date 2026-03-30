@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tazi_algorithm.md",
+                "file": "hot100.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "tazi_algorithm"
+              "title": "hot100"
             }
           }
         ]
@@ -169,13 +169,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "tazi_algorithm.md",
+                "file": "hot100.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "tazi_algorithm 的大纲"
+              "title": "hot100 的大纲"
             }
           },
           {
@@ -196,22 +196,22 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "bases:新建数据库": false,
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
       "canvas:新建白板": false,
       "daily-notes:打开/创建今天的日记": false,
       "templates:插入模板": false,
-      "command-palette:打开命令面板": false
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
     }
   },
   "active": "03590907a02332ce",
   "lastOpenFiles": [
     "zuo_algorithm_2.md",
     "tazi_algorithm.md",
+    "zuo_algorithm_1.md",
     "hot100.md",
     "hot100 - 副本.md",
-    "zuo_algorithm_1.md",
     "Interview.md",
     "hello-world.md",
     "vue_learning.md",
