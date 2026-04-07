@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "zuo_algorithm_2.md",
+                "file": "Interview.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "zuo_algorithm_2"
+              "title": "Interview"
             }
           }
         ]
@@ -169,13 +169,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "zuo_algorithm_2.md",
+                "file": "Interview.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "zuo_algorithm_2 的大纲"
+              "title": "Interview 的大纲"
             }
           },
           {
@@ -207,11 +207,11 @@
   },
   "active": "03590907a02332ce",
   "lastOpenFiles": [
+    "zuo_algorithm_1.md",
+    "zuo_algorithm_2.md",
     "algorithm2.md",
     "hot100.md",
-    "zuo_algorithm_2.md",
     "tazi_algorithm.md",
-    "zuo_algorithm_1.md",
     "hot100 - 副本.md",
     "Interview.md",
     "hello-world.md",
